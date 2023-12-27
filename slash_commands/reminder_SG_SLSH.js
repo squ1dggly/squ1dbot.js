@@ -114,7 +114,7 @@ async function subcommand_list(interaction) {
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
-				.replace("$REPEAT", r.repeat ? "✅" : "⛔")
+				.replace("$REPEAT", r.repeat ? "\`✅\`" : "\`⛔\`")
 				.replace("$LIMIT", r.limit)
 				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
 		})
@@ -128,7 +128,7 @@ async function subcommand_list(interaction) {
 		let embed = new BetterEmbed({
 			interaction,
 			title: "Reminder List",
-			description: reminders_f_chunk[i].join("\n\n"),
+			description: reminders_f_chunk[i].join("\n"),
 			footer: `Page ${i + 1} of ${reminders_f_chunk.length}`
 		});
 
