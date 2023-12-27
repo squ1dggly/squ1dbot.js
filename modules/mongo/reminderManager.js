@@ -14,7 +14,7 @@ async function fetchAll(userID, guildID) {
 	return await models.reminder.find({ user_id: userID, guild_id: guildID });
 }
 
-async function add(userID, guildID, channelID, repeat, repeat_count) {
+async function add(userID, guildID, channelID, name, repeat, repeat_count, timestamp) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await exists(id)) return await createUniqueID();
@@ -27,8 +27,10 @@ async function add(userID, guildID, channelID, repeat, repeat_count) {
 		user_id: userID,
 		guild_id: guildID,
 		channel_id: channelID,
+		name,
 		repeat,
-		repeat_count
+		repeat_count,
+		timestamp
 	};
 
 	/* - - - - - { Add the Reminder to the Database } - - - - - */

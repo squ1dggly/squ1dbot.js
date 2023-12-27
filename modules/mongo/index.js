@@ -12,6 +12,8 @@ const MONGO_URI = process.env.MONGO_URI || require("../../configs/config_client.
 module.exports = {
 	models,
 
+	reminderManager: require("./reminderManager"),
+
 	/** Connect to MongoDB */
 	connect: async (uri = MONGO_URI) => {
 		// Try to connect to MongoDB

@@ -1,6 +1,7 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 
 const { BetterEmbed } = require("../modules/discordTools");
+const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
 /** @param {CommandInteraction} interaction */
@@ -11,6 +12,26 @@ async function subcommand_add(interaction) {
 	let channel = interaction.options.getChannel("channel") || null;
 	let repeat = interaction.options.getBoolean("repeat") || false;
 	let repeat_count = interaction.options.getInteger("repeat-count") || 0;
+
+	// Create and add the reminder to the database
+	let reminder = await reminderManager.add(
+		interaction.user.id,
+		interaction.guild.id,
+		channel.id,
+		name,
+		repeat,
+		repeat_count,
+		jt.parseTime(time, { fromNow: true })
+	);
+
+	/* - - - - - { Send the Result } - - - - - */
+	// prettier-ignore
+	let embed_newReminder = new BetterEmbed({
+		interaction, title: "Add Reminder",
+		description: `Your next reminder will be <t:${reminder.timestamp}:R>.`
+    });
+    
+    return await embed_newReminder.send();
 }
 
 /** @param {CommandInteraction} interaction */
