@@ -67,7 +67,7 @@ async function subcommand_delete(interaction) {
 		if (!confirmation) return;
 
 		// Delete all reminders for the user in the current guild
-		await reminderManager.delete(interaction.user.id, interaction.guild.id);
+		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else await reminderManager.delete(id);
 
 	/* - - - - - { Send the Result } - - - - - */

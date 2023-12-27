@@ -11,7 +11,8 @@ const schema_reminder = new Schema(
 		name: { type: String, require: true },
 		repeat: { type: Boolean, default: false },
 		repeat_count: { type: Number, default: null },
-		timestamp: { type: Number, require: true }
+		timestamp: { type: Number, require: true },
+		time: { type: String, require: true }
 	},
 	{ collection: "reminders" }
 );

@@ -60,6 +60,18 @@ async function del(id) {
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-async function delAll(userID, guildID) {}
+async function delAll(userID, guildID) {
+	await models.reminder.deleteMany({ user_id: userID, guild_id: guildID });
+}
 
-module.exports = { exists, count, fetch, fetchAll, fetchAllActiveInGuild, update, add, delete: del };
+module.exports = {
+	exists,
+	count,
+	fetch,
+	fetchAll,
+	fetchAllActiveInGuild,
+	update,
+	add,
+	delete: del,
+	deleteAll: delAll
+};
