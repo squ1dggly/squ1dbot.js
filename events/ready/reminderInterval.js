@@ -42,7 +42,7 @@ module.exports = {
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
 						channel, title: "⏰ Reminder",
-                        description: `Your reminder for **${reminder.name}** is up!`,
+                        description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
                         footer: `id: ${reminder._id}`
                     });
 
@@ -55,5 +55,14 @@ module.exports = {
 				});
 			}
 		};
+
+		// Set an interval for checking reminders every 5 seconds
+		setInterval(async () => {
+			// Fetch every guild the client's in
+			let guilds = await client.guilds.fetch();
+
+            // Check for reminders in all of them
+			for (let guild of guilds) checkRemindersInGuild(guild);
+		}, 5000);
 	}
 };
