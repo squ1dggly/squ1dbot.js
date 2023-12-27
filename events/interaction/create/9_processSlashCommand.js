@@ -74,7 +74,7 @@ module.exports = {
 		} catch (err) {
 			return logger.error(
 				"Failed to execute command",
-				`SLSH_CMD: /${args.interaction.commandName} | guildID: ${args.message.guildId} | userID: ${args.message.author.id}`,
+				`SLSH_CMD: /${args.interaction.commandName} | guildID: ${args.interaction.guild.id} | userID: ${args.interaction.user.id}`,
 				err
 			);
 		}

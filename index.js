@@ -18,7 +18,6 @@ const client = new Client({
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildMessageReactions,
-		GatewayIntentBits.GuildPresences, // Requires Presence intent in the dev portal
 		GatewayIntentBits.MessageContent, // Requires Message Content intent in the dev portal
 		GatewayIntentBits.DirectMessageReactions, // Allows bot to see reactions in DMs
 		GatewayIntentBits.DirectMessages // Allows bot to read DMs
@@ -45,18 +44,18 @@ logger.log("connecting to Discord...");
 // prettier-ignore
 client.login(TOKEN).then(async () => {
 	// Register slash commands to a specific server :: { LOCAL }
-	// await slashCommandManager.push(client, { ids: "your_server_id" });
+	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
 	// Register slash commands :: { GLOBAL }
 	// await slashCommandManager.push(client, { global: true });
 
 	// Remove commands (does nothing if commands were registered globally) :: { LOCAL }
-	// await slashCommandManager.remove(client, { ids: "your_server_id" });
+	// await slashCommandManager.remove(client, { ids: "1052726201086656612" });
 
 	// Remove commands (does nothing if commands were registered locally) :: { GLOBAL }
 	// await slashCommandManager.remove(client, { global: true });
 
-	// await mongo.connect();
+	await mongo.connect();
 });
 
 // Quick & dirty extra error handling
