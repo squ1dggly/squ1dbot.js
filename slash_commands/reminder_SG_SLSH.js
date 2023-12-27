@@ -29,15 +29,15 @@ async function subcommand_add(interaction) {
 	// prettier-ignore
 	// Create and add the reminder to the database
 	let reminder = await reminderManager.add(
-		interaction.user.id, interaction.guild.id, channel.id,
+		interaction.user.id, interaction.guild.id, channel?.id || null,
 		name, repeat, repeat_count, time
 	);
 
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore
 	let embed_reminderAdd = new BetterEmbed({
-		interaction, title: "Reminder Add",
-		description: `Your next reminder will be <t:${reminder.timestamp}:R>.`
+		interaction, title: "Reminder Added",
+		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.`
     });
 
 	return await embed_reminderAdd.send();
@@ -74,7 +74,7 @@ async function subcommand_delete(interaction) {
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// prettier-ignore
-		if (!await reminderManager.exists(id)) return await interaction.reply({
+		if (!await reminderManager.exists(id)) return await interaction.editReply({
 			content: `I couldn't find a reminder with the ID of \`${id}\`. Are you sure you got that right?`
 		});
 
@@ -85,7 +85,7 @@ async function subcommand_delete(interaction) {
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore
 	let embed_reminderDelete = new BetterEmbed({
-		interaction, title: "Reminder Delete",
+		interaction, title: "Reminder Deleted",
 		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
     });
 
@@ -94,13 +94,15 @@ async function subcommand_delete(interaction) {
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_list(interaction) {
+	await interaction.deferReply().catch(() => null);
+
 	let reminders = await reminderManager.fetchAll(interaction.user.id, interaction.guild.id);
 
 	// prettier-ignore
 	// Check if the user has any active reminders
-	if (!reminders.length) return await new BetterEmbed({
-		interaction, description: "You don't have any active reminders!"
-	}).send();
+	if (!reminders.length) return await interaction.editReply({
+		content: "You don't have any active reminders!"
+	});
 
 	/* - - - - - { Create the Pages } - - - - - */
 	let reminders_f = await Promise.all(
@@ -147,7 +149,7 @@ async function subcommand_list(interaction) {
 }
 
 module.exports = {
-	options: { icon: "⏰", deferReply: true },
+	options: { icon: "⏰", deferReply: false },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("reminder")
@@ -159,7 +161,7 @@ module.exports = {
                 .setRequired(true))
 
             .addStringOption(option => option.setName("time")
-                .setDescription("When should I remind you? | ex. \"1h\", \"30m\", \"1d\"")
+                .setDescription("When should I remind you? | ex. \"30m\", \"1h\", \"1d\"")
                 .setRequired(true))
 
             .addChannelOption(option => option.setName("channel")

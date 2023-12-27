@@ -59,8 +59,9 @@ module.exports = {
 		// Set an interval for checking reminders every 5 seconds
 		setInterval(async () => {
 			// Fetch every guild the client's currently in
-			let guilds = await client.guilds.fetch();
-
+			let oAuth2Guilds = await client.guilds.fetch();
+            let guilds = await Promise.all(oAuth2Guilds.map(o => client.guilds.fetch(o.id)));
+            
 			// Check for reminders in all of them
 			for (let guild of guilds) checkRemindersInGuild(guild);
 		}, 5000);

@@ -30,7 +30,7 @@ module.exports = {
 		if (!args.message?.guild || !args.message?.author || !args.message?.content) return;
 
 		// Check if we have permission to send messages in this channel
-		if (!args.message.guild.members.me.permissionsIn(args.message.channel).has(PermissionFlagsBits.SendMessages)) return;
+		if (!args.message.guild.members.me.permissionsIn(args.message.channel).has(PermissionsBitField.Flags.SendMessages)) return;
 
 		/* - - - - - { Check for Prefix } - - - - - */
 		let prefix = config.client.PREFIX.toLowerCase() || null;
