@@ -49,8 +49,6 @@ module.exports = {
 					let channel = null;
 					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
 
-					console.log(reminder);
-
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
