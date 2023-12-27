@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
@@ -75,10 +75,11 @@ async function subcommand_delete(interaction) {
 			interaction, description: "You don't have any active reminders!"
 		}).send();
 
+		// prettier-ignore
 		// Await the user's confirmation
 		let confirmation = await awaitConfirm({
 			interaction,
-			description: `Are you sure you want to delete \`${reminderCount}\` reminders?`
+			description: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`
 		});
 
 		if (!confirmation) return;
@@ -95,13 +96,12 @@ async function subcommand_delete(interaction) {
 		await reminderManager.delete(id);
 	}
 
-	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderDelete = new BetterEmbed({
-		interaction,
-		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
+	// Send the result
+	return await interaction.editReply({
+		content: reminderCount
+			? `You deleted \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}.`
+			: "Reminder deleted."
 	});
-
-	return await embed_reminderDelete.send();
 }
 
 /** @param {CommandInteraction} interaction */
