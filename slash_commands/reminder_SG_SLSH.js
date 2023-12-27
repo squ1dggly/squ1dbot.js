@@ -79,7 +79,8 @@ async function subcommand_delete(interaction) {
 		// Await the user's confirmation
 		let confirmation = await awaitConfirm({
 			interaction,
-			description: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`
+			messageContent: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`,
+			dontEmbed
 		});
 
 		if (!confirmation) return;
@@ -100,7 +101,9 @@ async function subcommand_delete(interaction) {
 	return await interaction.editReply({
 		content: reminderCount
 			? `You deleted \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}.`
-			: "Reminder deleted."
+			: "Reminder deleted.",
+		embeds: [],
+		components: []
 	});
 }
 
