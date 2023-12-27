@@ -21,9 +21,11 @@ module.exports = {
 				// Check if the reminder is repeating
 				if (reminder.repeat) {
 					// Check if repeat is set to a limit
-					if (reminders.repeat_count > 0)
+                    if (reminder.repeat_count > 0) {
 						// Subtract the repeat count
-						reminderManager.update(reminder._id, { $increment: { repeat_count: -1 } });
+						reminderManager.update(reminder._id, { $inc: { repeat_count: -1 } });
+                        reminder.repeat_count--;
+                    }
 					// Delete the reminder (since we reached the repeat limit)
 					else reminderManager.delete(reminder._id);
 
@@ -41,9 +43,10 @@ module.exports = {
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
-						channel, title: "⏰ Reminder",
+						channel, title: `⏰ Reminder: ${reminder.name}`,
                         description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
-                        footer: `id: ${reminder._id}`
+                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.repeat_count ? `• repeat: ${reminder.repeat_count} more ${reminder.repeat_count === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
+                        timestamp: true
                     });
 
 					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
@@ -51,7 +54,7 @@ module.exports = {
 					// Send the notification to the fetched channel
 					if (channel) return await embed_reminder.send({ content: messageContent, sendMethod: "channel" });
 					// Send the notification to the user's DMs
-					else return await user.send({ content: messageContent, embeds: [embed_reminder] });
+					else return await user.send({ embeds: [embed_reminder] });
 				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
 			}
 		};
@@ -60,8 +63,8 @@ module.exports = {
 		setInterval(async () => {
 			// Fetch every guild the client's currently in
 			let oAuth2Guilds = await client.guilds.fetch();
-            let guilds = await Promise.all(oAuth2Guilds.map(o => client.guilds.fetch(o.id)));
-            
+			let guilds = await Promise.all(oAuth2Guilds.map(o => client.guilds.fetch(o.id)));
+
 			// Check for reminders in all of them
 			for (let guild of guilds) checkRemindersInGuild(guild);
 		}, 5000);
