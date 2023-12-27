@@ -78,7 +78,7 @@ async function subcommand_delete(interaction) {
 		// Await the user's confirmation
 		let confirmation = await awaitConfirm({
 			interaction,
-			description: `Are you sure you want to delete \`${reminderCount}\` reminders?`
+			description: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`
 		});
 
 		if (!confirmation) return;
