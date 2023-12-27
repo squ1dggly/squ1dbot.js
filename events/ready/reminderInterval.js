@@ -36,7 +36,7 @@ module.exports = {
 				/* - - - - - { Send the Reminder } - - - - - */
 				client.users.fetch(reminder.user_id).then(async user => {
 					let channel = null;
-					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id);
+					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
 
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
@@ -52,16 +52,16 @@ module.exports = {
 					if (channel) return await embed_reminder.send({ content: messageContent, sendMethod: "channel" });
 					// Send the notification to the user's DMs
 					else return await user.send({ content: messageContent, embeds: [embed_reminder] });
-				});
+				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
 			}
 		};
 
 		// Set an interval for checking reminders every 5 seconds
 		setInterval(async () => {
-			// Fetch every guild the client's in
+			// Fetch every guild the client's currently in
 			let guilds = await client.guilds.fetch();
 
-            // Check for reminders in all of them
+			// Check for reminders in all of them
 			for (let guild of guilds) checkRemindersInGuild(guild);
 		}, 5000);
 	}
