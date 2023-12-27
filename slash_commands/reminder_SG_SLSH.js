@@ -1,14 +1,14 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 
-const { BetterEmbed } = require("../modules/discordTools");
+const { BetterEmbed, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_add(interaction) {
 	// Get interaction options
-	let name = interaction.options.getString("name");
-	let time = interaction.options.getString("time");
+	let name = interaction.options.getString("name").trim();
+	let time = interaction.options.getString("time").trim();
 	let channel = interaction.options.getChannel("channel") || null;
 	let repeat = interaction.options.getBoolean("repeat") || false;
 	let repeat_count = interaction.options.getInteger("repeat-count") || 0;
@@ -27,15 +27,43 @@ async function subcommand_add(interaction) {
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore
 	let embed_newReminder = new BetterEmbed({
-		interaction, title: "Add Reminder",
+		interaction, title: "Reminder Add",
 		description: `Your next reminder will be <t:${reminder.timestamp}:R>.`
     });
-    
-    return await embed_newReminder.send();
+
+	return await embed_newReminder.send();
 }
 
 /** @param {CommandInteraction} interaction */
-async function subcommand_delete(interaction) {}
+async function subcommand_delete(interaction) {
+	// Get interaction options
+	let id = interaction.options.getString("id").toLowerCase().trim();
+
+	let reminderCount = 0;
+
+	if (id === "all") {
+		// Count existing reminders before deleting
+		reminderCount = await reminderManager.count(interaction.user.id, interaction.guild.id);
+
+		// prettier-ignore
+		if (!reminderCount) return await new BetterEmbed({
+			interaction, title: "Reminder Delete",
+			description: "You don't have any active reminders!"
+		}).send();
+
+		// Delete all reminders for the user in the current guild
+		await reminderManager.delete(interaction.user.id, interaction.guild.id);
+	} else await reminderManager.delete(id);
+
+	/* - - - - - { Send the Result } - - - - - */
+	// prettier-ignore
+	let embed_newReminder = new BetterEmbed({
+		interaction, title: "Reminder Delete",
+		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
+    });
+
+	return await embed_newReminder.send();
+}
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_list(interaction) {}
@@ -68,7 +96,7 @@ module.exports = {
     
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
             .addStringOption(option => option.setName("id")
-                .setDescription("The ID of the reminder you wish to delete.")
+				.setDescription("The ID of the reminder you wish to delete. Use \"all\" to clear all reminders in the server.")
                 .setRequired(true))
         )
     

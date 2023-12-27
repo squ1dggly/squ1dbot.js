@@ -6,12 +6,16 @@ async function exists(id) {
 	return await models.reminder.exists({ _id: id });
 }
 
+async function count(userID, guildID) {
+	return (await models.reminder.count({ user_id: userID, guild_id: guildID })) || 0;
+}
+
 async function fetch(id) {
 	return await models.reminder.findById(id).lean();
 }
 
 async function fetchAll(userID, guildID) {
-	return await models.reminder.find({ user_id: userID, guild_id: guildID });
+	return await models.reminder.find({ user_id: userID, guild_id: guildID }).lean();
 }
 
 async function add(userID, guildID, channelID, name, repeat, repeat_count, timestamp) {
@@ -46,4 +50,4 @@ async function del(id) {
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-module.exports = { exists, fetch, fetchAll, add, delete: del };
+module.exports = { exists, count, fetch, fetchAll, add, delete: del };
