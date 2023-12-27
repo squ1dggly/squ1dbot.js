@@ -11,7 +11,7 @@ async function subcommand_add(interaction) {
 	let time = interaction.options.getString("time").trim();
 	let channel = interaction.options.getChannel("channel") || null;
 	let repeat = interaction.options.getBoolean("repeat") || false;
-	let repeat_count = interaction.options.getInteger("repeat-count") || 0;
+	let limit = interaction.options.getInteger("limit") || 0;
 
 	// prettier-ignore
 	// Check if the user provided a valid time
@@ -30,15 +30,14 @@ async function subcommand_add(interaction) {
 	// Create and add the reminder to the database
 	let reminder = await reminderManager.add(
 		interaction.user.id, interaction.guild.id, channel?.id || null,
-		name, repeat, repeat_count, time
+		name, repeat, limit, time
 	);
 
 	/* - - - - - { Send the Result } - - - - - */
-	// prettier-ignore
 	let embed_reminderAdd = new BetterEmbed({
-		interaction, title: "Reminder Added",
+		interaction, title: "Added reminder",
 		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.`
-    });
+	});
 
 	return await embed_reminderAdd.send();
 }
@@ -58,8 +57,7 @@ async function subcommand_delete(interaction) {
 
 		// prettier-ignore
 		if (!reminderCount) return await new BetterEmbed({
-			interaction, title: "Reminder Delete",
-			description: "You don't have any active reminders!"
+			interaction, description: "You don't have any active reminders!"
 		}).send();
 
 		// Await the user's confirmation
@@ -83,11 +81,10 @@ async function subcommand_delete(interaction) {
 	}
 
 	/* - - - - - { Send the Result } - - - - - */
-	// prettier-ignore
 	let embed_reminderDelete = new BetterEmbed({
-		interaction, title: "Reminder Deleted",
+		interaction,
 		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
-    });
+	});
 
 	return await embed_reminderDelete.send();
 }
@@ -106,19 +103,20 @@ async function subcommand_list(interaction) {
 
 	/* - - - - - { Create the Pages } - - - - - */
 	let reminders_f = await Promise.all(
-		chunk.map(async r => {
+		reminders.map(async r => {
 			// Fetch the notification channel from the guild
 			let _channel = r.channel_id
 				? interaction.guild.channels.cache.get(r.channel_id) ||
 				  (await interaction.guild.channels.fetch(r.channel_id))
 				: null;
 
-			return "`$ID` **$NAME** $TIMESTAMP $REPEAT $CHANNEL"
+			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT$CHANNEL"
+				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
 				.replace("$REPEAT", r.repeat ? "✅" : "⛔")
-				.replace("$REPEAT_COUNT", r.repeat_count)
-				.replace("$CHANNEL", _channel);
+				.replace("$LIMIT", r.limit)
+				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
 		})
 	);
 
@@ -170,7 +168,7 @@ module.exports = {
             .addBooleanOption(option => option.setName("repeat")
                 .setDescription("Do you wish to keep being reminded about this? (optional)"))
             
-            .addIntegerOption(option => option.setName("repeat-count")
+            .addIntegerOption(option => option.setName("limit")
                 .setDescription("How many times do you wish to repeat this reminder? (optional)"))
         )
     

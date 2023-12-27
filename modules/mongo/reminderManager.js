@@ -27,7 +27,7 @@ async function update(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
-async function add(userID, guildID, channelID, name, repeat, repeat_count, time) {
+async function add(userID, guildID, channelID, name, repeat, limit, time) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await exists(id)) return await createUniqueID();
@@ -41,8 +41,8 @@ async function add(userID, guildID, channelID, name, repeat, repeat_count, time)
 		guild_id: guildID,
 		channel_id: channelID,
 		name,
-		repeat: repeat_count ? true : repeat,
-		repeat_count,
+		repeat: limit ? true : repeat,
+		limit: limit || null,
 		timestamp: jt.parseTime(time, { fromNow: true }),
 		time
 	};

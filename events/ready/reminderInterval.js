@@ -21,21 +21,22 @@ module.exports = {
 				// Check if the reminder is repeating
 				if (reminder.repeat) {
 					// Check if repeat is set to a limit
-					if (reminder.repeat_count >= 1) {
-						if (reminder.repeat_count - 1 === 0) {
-							// Delete the reminder
-							reminderManager.delete(reminder._id);
-							// Subtract the repeat count
-							reminder.repeat_count--;
-						} else {
-							// Update the reminder
-							reminderManager.update(reminder._id, { $inc: { repeat_count: -1 } });
-							// Subtract the repeat count
-							reminder.repeat_count--;
+					if (reminder.limit)
+						if (reminder.limit >= 1) {
+							if (reminder.limit - 1 === 0) {
+								// Delete the reminder
+								reminderManager.delete(reminder._id);
+								// Subtract the repeat count
+								reminder.limit--;
+							} else {
+								// Update the reminder
+								reminderManager.update(reminder._id, { $inc: { limit: -1 } });
+								// Subtract the repeat count
+								reminder.limit--;
+							}
 						}
-					}
-					// Delete the reminder (since we reached the repeat limit)
-					else return reminderManager.delete(reminder._id);
+						// Delete the reminder (since we reached the repeat limit)
+						else return reminderManager.delete(reminder._id);
 
 					// Increment the timestamp
 					reminderManager.update(reminder._id, { timestamp: jt.parseTime(reminder.time, { fromNow: true }) });
@@ -53,14 +54,14 @@ module.exports = {
 					let embed_reminder = new BetterEmbed({
 						channel, title: `⏰ Reminder: ${reminder.name}`,
                         description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
-                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.repeat_count !== null ? `• repeat: ${reminder.repeat_count} more ${reminder.repeat_count === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
+                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
                         timestamp: true
                     });
 
-					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
+                    let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
 
 					// Send the notification to the fetched channel
-					if (channel) return await embed_reminder.send({ content: messageContent, sendMethod: "channel" });
+					if (channel) return await embed_reminder.send({ messageContent, sendMethod: "channel" });
 					// Send the notification to the user's DMs
 					else return await user.send({ embeds: [embed_reminder] });
 				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
