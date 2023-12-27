@@ -32,7 +32,7 @@ async function add(userID, guildID, channelID, name, repeat, repeat_count, times
 		guild_id: guildID,
 		channel_id: channelID,
 		name,
-		repeat,
+		repeat: repeat_count ? true : repeat,
 		repeat_count,
 		timestamp
 	};

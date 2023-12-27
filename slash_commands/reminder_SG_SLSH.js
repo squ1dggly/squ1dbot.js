@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 
-const { BetterEmbed, awaitConfirm } = require("../modules/discordTools");
+const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
@@ -26,12 +26,12 @@ async function subcommand_add(interaction) {
 
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore
-	let embed_newReminder = new BetterEmbed({
+	let embed_reminderAdd = new BetterEmbed({
 		interaction, title: "Reminder Add",
 		description: `Your next reminder will be <t:${reminder.timestamp}:R>.`
     });
 
-	return await embed_newReminder.send();
+	return await embed_reminderAdd.send();
 }
 
 /** @param {CommandInteraction} interaction */
@@ -51,22 +51,81 @@ async function subcommand_delete(interaction) {
 			description: "You don't have any active reminders!"
 		}).send();
 
+		// Await the user's confirmation
+		let confirmation = await awaitConfirm({
+			interaction,
+			description: `Are you sure you want to delete \`${reminderCount}\` reminders?`
+		});
+
+		if (!confirmation) return;
+
 		// Delete all reminders for the user in the current guild
 		await reminderManager.delete(interaction.user.id, interaction.guild.id);
 	} else await reminderManager.delete(id);
 
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore
-	let embed_newReminder = new BetterEmbed({
+	let embed_reminderDelete = new BetterEmbed({
 		interaction, title: "Reminder Delete",
 		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
     });
 
-	return await embed_newReminder.send();
+	return await embed_reminderDelete.send();
 }
 
 /** @param {CommandInteraction} interaction */
-async function subcommand_list(interaction) {}
+async function subcommand_list(interaction) {
+	let reminders = await reminderManager.fetchAll(interaction.user.id, interaction.guild.id);
+
+	// prettier-ignore
+	// Check if the user has any active reminders
+	if (!reminders.length) return await new BetterEmbed({
+		interaction, description: "You don't have any active reminders!"
+	}).send();
+
+	/* - - - - - { Create the Pages } - - - - - */
+	let reminders_f = await Promise.all(
+		chunk.map(async r => {
+			// Fetch the notification channel from the guild
+			let _channel = r.channel_id
+				? interaction.guild.channels.cache.get(r.channel_id) ||
+				  (await interaction.guild.channels.fetch(r.channel_id))
+				: null;
+
+			return "`$ID` **$NAME** $TIMESTAMP $REPEAT $CHANNEL"
+				.replace("$NAME", r.name)
+				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
+				.replace("$REPEAT", r.repeat ? "✅" : "⛔")
+				.replace("$REPEAT_COUNT", r.repeat_count)
+				.replace("$CHANNEL", _channel);
+		})
+	);
+
+	let reminders_f_chunk = jt.chunk(reminders_f, 5);
+	let embeds_reminderList = [];
+
+	for (let i = 0; i < reminders_f_chunk.length; i++) {
+		// Create the embed :: { REMINDER LIST }
+		let embed = new BetterEmbed({
+			interaction,
+			title: "Reminder List",
+			description: reminders_f_chunk[i].join("\n\n"),
+			footer: `Page ${i + 1} of ${reminders_f_chunk.length}`
+		});
+
+		// Push the embed to the array
+		embeds_reminderList.push(embed);
+	}
+
+	// Setup pagination
+	let pagination = new EmbedNavigator({
+		interaction,
+		embeds: [embeds_reminderList],
+		pagination: { type: "short" }
+	});
+
+	return await pagination.send();
+}
 
 module.exports = {
 	options: { icon: "⏰", deferReply: true },
