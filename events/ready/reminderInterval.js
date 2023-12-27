@@ -13,8 +13,6 @@ module.exports = {
 	/** @param {Client} client  */
 	execute: async client => {
 		const checkRemindersInGuild = async guild => {
-			console.log(client, guild);
-
 			// Fetch the active reminders in the guild
 			let reminders = await reminderManager.fetchAllActiveInGuild(guild.id);
 			if (!reminders.length) return;
@@ -50,6 +48,8 @@ module.exports = {
 				client.users.fetch(reminder.user_id).then(async user => {
 					let channel = null;
 					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
+
+					console.log(channel);
 
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
