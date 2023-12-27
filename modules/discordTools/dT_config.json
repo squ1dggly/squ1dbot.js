@@ -1,0 +1,55 @@
+{
+	"INVIS_CHAR": "\u200b",
+	"EMBED_COLOR": ["#2B2D31"],
+	"CONFIRMATION_TITLE": "⚠️ Please confirm this action",
+
+	"timeouts": {
+		"PAGINATION": "30s",
+		"CONFIRMATION": "15s",
+		"ERROR_MESSAGE": "5s"
+	},
+
+	"navigator": {
+		"buttons": {
+			"to_first": { "TEXT": "◀◀", "emoji": { "NAME": "⏮️", "ID": "⏮️" } },
+			"back": { "TEXT": "◀", "emoji": { "NAME": "◀️", "ID": "◀️" } },
+			"jump": { "TEXT": "📄", "emoji": { "NAME": "📄", "ID": "📄" } },
+			"next": { "TEXT": "▶", "emoji": { "NAME": "▶️", "ID": "▶️" } },
+			"to_last": { "TEXT": "▶▶", "emoji": { "NAME": "⏭️", "ID": "⏭️" } }
+		}
+	},
+
+	"ansi": {
+		"ESCAPE": "\u001b",
+
+		"formats": {
+			"NORMAL": 0,
+			"BOLD": 1,
+			"UNDERLINE": 2
+		},
+
+		"colors": {
+			"text": {
+				"GRAY": 30,
+				"RED": 31,
+				"GREEN": 32,
+				"YELLOW": 33,
+				"BLUE": 34,
+				"PINK": 35,
+				"CYAN": 36,
+				"WHITE": 37
+			},
+
+			"bg": {
+				"FIREFLY_DARK_BLUE": 40,
+				"ORANGE": 41,
+				"MARBLE_BLUE": 42,
+				"GRAYISH_TURQOUISE": 43,
+				"GRAY": 44,
+				"INDIGO": 45,
+				"LIGHT_GRAY": 46,
+				"WHITE": 47
+			}
+		}
+	}
+}

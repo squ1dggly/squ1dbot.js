@@ -1,0 +1,39 @@
+{
+	"TOKEN": "",
+	"MONGO_URI": "",
+	"MODE": "DEV",
+	"PREFIX": "$MENTION ",
+
+	"OWNER_ID": "",
+	"ADMIN_IDS": [""],
+	"admin_bypass_ids": {},
+
+	"client_presence": {
+		"host": {
+			"STATUS": "online",
+			"activity": {
+				"TYPE": "WATCHING",
+				"NAME": "/invite",
+				"STREAM_URL": ""
+			}
+		},
+
+		"production": {
+			"STATUS": "online",
+			"activity": {
+				"TYPE": "WATCHING",
+				"NAME": "/invite",
+				"STREAM_URL": ""
+			}
+		},
+
+		"dev": {
+			"STATUS": "dnd",
+			"activity": {
+				"TYPE": "PLAYING",
+				"NAME": "with unstable substances",
+				"STREAM_URL": ""
+			}
+		}
+	}
+}
