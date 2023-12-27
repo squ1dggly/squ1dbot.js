@@ -21,13 +21,21 @@ module.exports = {
 				// Check if the reminder is repeating
 				if (reminder.repeat) {
 					// Check if repeat is set to a limit
-                    if (reminder.repeat_count > 0) {
-						// Subtract the repeat count
-						reminderManager.update(reminder._id, { $inc: { repeat_count: -1 } });
-                        reminder.repeat_count--;
-                    }
+					if (reminder.repeat_count >= 1) {
+						if (reminder.repeat_count - 1 === 0) {
+							// Delete the reminder
+							reminderManager.delete(reminder._id);
+							// Subtract the repeat count
+							reminder.repeat_count--;
+						} else {
+							// Update the reminder
+							reminderManager.update(reminder._id, { $inc: { repeat_count: -1 } });
+							// Subtract the repeat count
+							reminder.repeat_count--;
+						}
+					}
 					// Delete the reminder (since we reached the repeat limit)
-					else reminderManager.delete(reminder._id);
+					else return reminderManager.delete(reminder._id);
 
 					// Increment the timestamp
 					reminderManager.update(reminder._id, { timestamp: jt.parseTime(reminder.time, { fromNow: true }) });
@@ -45,7 +53,7 @@ module.exports = {
 					let embed_reminder = new BetterEmbed({
 						channel, title: `⏰ Reminder: ${reminder.name}`,
                         description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
-                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.repeat_count ? `• repeat: ${reminder.repeat_count} more ${reminder.repeat_count === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
+                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.repeat_count !== null ? `• repeat: ${reminder.repeat_count} more ${reminder.repeat_count === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
                         timestamp: true
                     });
 
