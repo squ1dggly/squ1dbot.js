@@ -49,7 +49,7 @@ module.exports = {
 					let channel = null;
 					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
 
-					console.log(channel);
+					console.log(reminder);
 
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
