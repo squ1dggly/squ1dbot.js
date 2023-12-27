@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
