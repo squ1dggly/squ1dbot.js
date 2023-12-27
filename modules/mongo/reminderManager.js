@@ -27,7 +27,7 @@ async function update(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
-async function add(userID, guildID, channelID, name, repeat, repeat_count, timestamp) {
+async function add(userID, guildID, channelID, name, repeat, repeat_count, time) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await exists(id)) return await createUniqueID();
@@ -43,7 +43,8 @@ async function add(userID, guildID, channelID, name, repeat, repeat_count, times
 		name,
 		repeat: repeat_count ? true : repeat,
 		repeat_count,
-		timestamp
+		time,
+		timestamp: jt.parseTime(time, { fromNow: true })
 	};
 
 	/* - - - - - { Add the Reminder to the Database } - - - - - */
@@ -59,8 +60,6 @@ async function del(id) {
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-async function delAll(userID, guildID) {
-
-}
+async function delAll(userID, guildID) {}
 
 module.exports = { exists, count, fetch, fetchAll, fetchAllActiveInGuild, update, add, delete: del };

@@ -13,15 +13,22 @@ async function subcommand_add(interaction) {
 	let repeat = interaction.options.getBoolean("repeat") || false;
 	let repeat_count = interaction.options.getInteger("repeat-count") || 0;
 
+	// prettier-ignore
+	// Check if the user provided a valid time
+	try {
+		let parsedTime = jt.parseTime(time);
+		if (parsedTime < 5000) return await interaction.reply({
+			content: "You cannot set a reminder that's less than 5 seconds.", ephemeral: true
+		});
+	} catch {
+		return await interaction.reply({content: `\`${time}\` is not a valid time you can use.`, ephemeral: true});
+	}
+
+	// prettier-ignore
 	// Create and add the reminder to the database
 	let reminder = await reminderManager.add(
-		interaction.user.id,
-		interaction.guild.id,
-		channel.id,
-		name,
-		repeat,
-		repeat_count,
-		jt.parseTime(time, { fromNow: true })
+		interaction.user.id, interaction.guild.id, channel.id,
+		name, repeat, repeat_count, time
 	);
 
 	/* - - - - - { Send the Result } - - - - - */
