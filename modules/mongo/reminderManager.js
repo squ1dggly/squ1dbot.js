@@ -20,8 +20,7 @@ async function fetchAll(userID, guildID) {
 
 async function fetchAllActiveInGuild(guildID) {
 	let pipeline = [{ $match: { $and: [{ guild_id: guildID }, { timestamp: { $lte: Date.now() } }] } }];
-	console.log("hi", await models.reminder.aggregate(pipeline));
-	return (await models.reminder.aggregate(pipeline)[0]) || [];
+	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
 async function update(id, query) {
