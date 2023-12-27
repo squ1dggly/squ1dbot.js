@@ -13,16 +13,30 @@ async function subcommand_add(interaction) {
 	let repeat = interaction.options.getBoolean("repeat") || false;
 	let limit = interaction.options.getInteger("limit") || 0;
 
-	// prettier-ignore
 	// Check if the user provided a valid time
 	try {
 		let parsedTime = jt.parseTime(time);
+		// prettier-ignore
 		if (parsedTime < 5000) return await interaction.reply({
 			content: "You cannot set a reminder that's less than 5 seconds.", ephemeral: true
 		});
 	} catch {
-		return await interaction.reply({content: `\`${time}\` is not a valid time you can use.`, ephemeral: true});
+		return await interaction.reply({ content: `\`${time}\` is not a valid time you can use.`, ephemeral: true });
 	}
+
+	// Check if the user has permission to send messsages in the selected channel
+	if (channel && !channel.permissionsFor(interaction.user).has(PermissionFlagsBits.SendMessages))
+		return await interaction.reply({
+			content: `This reminder can't be added because you don't have permission to send messages in ${channel}.`,
+			ephemeral: true
+		});
+
+	// Check if the user has permission to send messsages in the selected channel
+	if (channel && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages))
+		return await interaction.reply({
+			content: `This reminder can't be added because I don't have permission to send messages in ${channel}.`,
+			ephemeral: true
+		});
 
 	await interaction.deferReply().catch(() => null);
 
@@ -35,7 +49,8 @@ async function subcommand_add(interaction) {
 
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderAdd = new BetterEmbed({
-		interaction, title: "Added reminder",
+		interaction,
+		title: "Added reminder",
 		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.`
 	});
 
@@ -114,7 +129,7 @@ async function subcommand_list(interaction) {
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
-				.replace("$REPEAT", r.repeat ? "\`✅\`" : "\`⛔\`")
+				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
 				.replace("$LIMIT", r.limit)
 				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
 		})

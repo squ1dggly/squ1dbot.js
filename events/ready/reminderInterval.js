@@ -1,6 +1,6 @@
 /** @file Executed as soon as the bot's connected to Discord @author xsqu1znt */
 
-const { Client } = require("discord.js");
+const { Client, PermissionFlagsBits } = require("discord.js");
 const { BetterEmbed } = require("../../modules/discordTools");
 const { reminderManager } = require("../../modules/mongo");
 const logger = require("../../modules/logger");
@@ -58,12 +58,22 @@ module.exports = {
                         timestamp: true
                     });
 
-                    let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
+					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
+					
+					let userHasPermission = channel.permissionsFor(user).has(PermissionFlagsBits.SendMessages);
+					let clientHasPermission = channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages);
 
 					// Send the notification to the fetched channel
-					if (channel) return await embed_reminder.send({ messageContent, sendMethod: "channel" });
-					// Send the notification to the user's DMs
-					else return await user.send({ embeds: [embed_reminder] });
+					if (channel && userHasPermission && clientHasPermission)
+						return await embed_reminder.send({ messageContent, sendMethod: "channel" });
+					else {
+						let _messageContent = "";
+						if (!userHasPermission) _messageContent = `You don't have permission to send messages in ${channel}, so here's your reminder!`
+						if (!clientHasPermission) _messageContent = `I don't have permission to send messages in ${channel}, so here's your reminder!`
+						
+						// Send the notification to the user's DMs
+						return await user.send({ content: _messageContent || undefined, embeds: [embed_reminder] });
+					}
 				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
 			}
 		};
