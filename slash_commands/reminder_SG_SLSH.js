@@ -4,7 +4,14 @@ const { BetterEmbed } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
 /** @param {CommandInteraction} interaction */
-async function subcommand_add(interaction) {}
+async function subcommand_add(interaction) {
+	// Get interaction options
+	let name = interaction.options.getString("name");
+	let time = interaction.options.getString("time");
+	let channel = interaction.options.getChannel("channel") || null;
+	let repeat = interaction.options.getBoolean("repeat") || false;
+	let repeat_count = interaction.options.getInteger("repeat-count") || 0;
+}
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_delete(interaction) {}
@@ -29,18 +36,18 @@ module.exports = {
                 .setRequired(true))
 
             .addChannelOption(option => option.setName("channel")
-                .setDescription("What channel do you want to be pinged in?"))
+                .setDescription("What channel do you want to be pinged in? Leave blank to be DM'd (optional)"))
             
             .addBooleanOption(option => option.setName("repeat")
-                .setDescription("Do you wish to keep being reminded about this?"))
+                .setDescription("Do you wish to keep being reminded about this? (optional)"))
             
             .addIntegerOption(option => option.setName("repeat-count")
-                .setDescription("How many times do you wish to repeat this reminder?"))
+                .setDescription("How many times do you wish to repeat this reminder? (optional)"))
         )
     
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
             .addStringOption(option => option.setName("id")
-                .setDescription("The ID of the reminder you want to delete")
+                .setDescription("The ID of the reminder you wish to delete.")
                 .setRequired(true))
         )
     

@@ -3,13 +3,15 @@
 const mongoose = require("mongoose");
 const logger = require("../logger");
 
-/* const models = {
-	user: require("../models/userModel').model
-}; */
+const models = {
+	reminder: require("../../models/reminderModel").model
+};
 
 const MONGO_URI = process.env.MONGO_URI || require("../../configs/config_client.json").MONGO_URI;
 
 module.exports = {
+	models,
+
 	/** Connect to MongoDB */
 	connect: async (uri = MONGO_URI) => {
 		// Try to connect to MongoDB
