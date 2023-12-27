@@ -24,6 +24,8 @@ async function subcommand_add(interaction) {
 		return await interaction.reply({content: `\`${time}\` is not a valid time you can use.`, ephemeral: true});
 	}
 
+	await interaction.deferReply().catch(() => null);
+
 	// prettier-ignore
 	// Create and add the reminder to the database
 	let reminder = await reminderManager.add(
@@ -43,6 +45,8 @@ async function subcommand_add(interaction) {
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_delete(interaction) {
+	await interaction.deferReply().catch(() => null);
+
 	// Get interaction options
 	let id = interaction.options.getString("id").toLowerCase().trim();
 
@@ -68,7 +72,15 @@ async function subcommand_delete(interaction) {
 
 		// Delete all reminders for the user in the current guild
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
-	} else await reminderManager.delete(id);
+	} else {
+		// prettier-ignore
+		if (!await reminderManager.exists(id)) return await interaction.reply({
+			content: `I couldn't find a reminder with the ID of \`${id}\`. Are you sure you got that right?`
+		});
+
+		// Delete the reminder
+		await reminderManager.delete(id);
+	}
 
 	/* - - - - - { Send the Result } - - - - - */
 	// prettier-ignore

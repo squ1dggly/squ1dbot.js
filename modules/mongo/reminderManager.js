@@ -43,8 +43,8 @@ async function add(userID, guildID, channelID, name, repeat, repeat_count, time)
 		name,
 		repeat: repeat_count ? true : repeat,
 		repeat_count,
-		time,
-		timestamp: jt.parseTime(time, { fromNow: true })
+		timestamp: jt.parseTime(time, { fromNow: true }),
+		time
 	};
 
 	/* - - - - - { Add the Reminder to the Database } - - - - - */
