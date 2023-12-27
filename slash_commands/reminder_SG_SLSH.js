@@ -96,15 +96,12 @@ async function subcommand_delete(interaction) {
 		await reminderManager.delete(id);
 	}
 
-	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderDelete = new BetterEmbed({
-		interaction,
-		description: reminderCount
+	// Send the result
+	return await interaction.editReply({
+		content: reminderCount
 			? `You deleted \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}.`
 			: "Reminder deleted."
 	});
-
-	return await embed_reminderDelete.send();
 }
 
 /** @param {CommandInteraction} interaction */
