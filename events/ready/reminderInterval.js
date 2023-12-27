@@ -72,7 +72,7 @@ module.exports = {
 					if (channel && userHasPermission && clientHasPermission)
 						return await embed_reminder.send({ messageContent, sendMethod: "channel" });
 					else {
-						let error = !userHasPermission && !clientHasPermission
+						let error = channel && !userHasPermission && !clientHasPermission
 							? `Either you or me don't have permission to send messages in ${channel}, so here's your reminder!`
 							: undefined;
 
