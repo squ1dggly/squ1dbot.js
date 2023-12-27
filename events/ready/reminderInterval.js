@@ -60,8 +60,13 @@ module.exports = {
 
 					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
 					
-					let userHasPermission = channel.permissionsFor(user).has(PermissionFlagsBits.SendMessages);
-					let clientHasPermission = channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages);
+					let userHasPermission = channel
+						? channel.permissionsFor(user).has(PermissionFlagsBits.SendMessages)
+						: null;
+
+					let clientHasPermission = channel
+						? channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
+						: null;
 
 					// Send the notification to the fetched channel
 					if (channel && userHasPermission && clientHasPermission)

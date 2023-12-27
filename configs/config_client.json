@@ -10,19 +10,19 @@
 
 	"client_presence": {
 		"host": {
-			"STATUS": "online",
+			"STATUS": "dnd",
 			"activity": {
 				"TYPE": "PLAYING",
-				"NAME": "/help",
+				"NAME": "with unstable substances",
 				"STREAM_URL": ""
 			}
 		},
 
 		"production": {
-			"STATUS": "online",
+			"STATUS": "dnd",
 			"activity": {
 				"TYPE": "PLAYING",
-				"NAME": "/help",
+				"NAME": "with unstable substances",
 				"STREAM_URL": ""
 			}
 		},
