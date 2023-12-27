@@ -67,12 +67,12 @@ module.exports = {
 					if (channel && userHasPermission && clientHasPermission)
 						return await embed_reminder.send({ messageContent, sendMethod: "channel" });
 					else {
-						let _messageContent = "";
-						if (!userHasPermission) _messageContent = `You don't have permission to send messages in ${channel}, so here's your reminder!`
-						if (!clientHasPermission) _messageContent = `I don't have permission to send messages in ${channel}, so here's your reminder!`
-						
+						let error = !userHasPermission && !clientHasPermission
+							? `Either you or me don't have permission to send messages in ${channel}, so here's your reminder!`
+							: undefined;
+
 						// Send the notification to the user's DMs
-						return await user.send({ content: _messageContent || undefined, embeds: [embed_reminder] });
+						return await user.send({ content: error, embeds: [embed_reminder] });
 					}
 				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
 			}
