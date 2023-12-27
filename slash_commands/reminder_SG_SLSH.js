@@ -75,6 +75,7 @@ async function subcommand_delete(interaction) {
 			interaction, description: "You don't have any active reminders!"
 		}).send();
 
+		// prettier-ignore
 		// Await the user's confirmation
 		let confirmation = await awaitConfirm({
 			interaction,
@@ -98,7 +99,9 @@ async function subcommand_delete(interaction) {
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderDelete = new BetterEmbed({
 		interaction,
-		description: reminderCount ? `You deleted \`${reminderCount}\` reminders.` : "Reminder deleted."
+		description: reminderCount
+			? `You deleted \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}.`
+			: "Reminder deleted."
 	});
 
 	return await embed_reminderDelete.send();
