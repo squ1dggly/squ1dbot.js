@@ -18,6 +18,15 @@ async function fetchAll(userID, guildID) {
 	return await models.reminder.find({ user_id: userID, guild_id: guildID }).lean();
 }
 
+async function fetchAllActiveInGuild(guildID) {
+	let pipeline = [{ $match: { $and: [{ guild_id: guildID }, { timestamp: { $lte: Date.now() } }] } }];
+	return (await models.reminder.aggregate(pipeline)[0]) || [];
+}
+
+async function update(id, query) {
+	await models.reminder.findByIdAndUpdate(id, query);
+}
+
 async function add(userID, guildID, channelID, name, repeat, repeat_count, timestamp) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
@@ -50,4 +59,8 @@ async function del(id) {
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-module.exports = { exists, count, fetch, fetchAll, add, delete: del };
+async function delAll(userID, guildID) {
+
+}
+
+module.exports = { exists, count, fetch, fetchAll, fetchAllActiveInGuild, update, add, delete: del };
