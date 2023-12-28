@@ -81,7 +81,7 @@ async function subcommand_add(interaction) {
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
 		title: "Added reminder",
-		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.${assistMessage ? `\nAssistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.` : ""}`
+		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.${assistMessage ? `\nAssistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.` : ""}${reminder.repeat ? reminder.limit !== null ? `\nRepeating: ${reminder.limit} ${reminder.limit === 1 ? "time" : "times"}` : "\nRepeat: ✅" : ""}`
 	});
 
 	return await embed_reminderAdd.send();
@@ -157,13 +157,20 @@ async function subcommand_list(interaction) {
 				? interaction.guild.channels.cache.get(r.channel_id) ||
 				  (await interaction.guild.channels.fetch(r.channel_id))
 				: null;
+			
+			// Fetch the bot that the user wanted assistance with
+			let _assistBot = r.assisted_command_bot_id
+				? interaction.guild.members.cache.get(r.assisted_command_bot_id) ||
+				  (await interaction.guild.members.fetch(r.assisted_command_bot_id))
+				: null;
 
-			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT$CHANNEL"
+			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT$ASSISTANCE$CHANNEL"
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
 				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
 				.replace("$LIMIT", r.limit)
+				.replace("$ASSISTANCE", _assistBot ? ` | Assist: ${_assistBot}'s \`/${r.assisted_command_name}\`` : "")
 				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
 		})
 	);
