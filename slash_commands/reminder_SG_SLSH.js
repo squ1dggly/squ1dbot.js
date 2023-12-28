@@ -233,7 +233,7 @@ module.exports = {
 				.setDescription("How many times do you want the reminder to repeat? (optional)"))
 			
 			.addStringOption(option => option.setName("assist")
-                .setDescription("Reset the timer whenever you use a certain slash command. Message ID of the command."))
+                .setDescription("Reset the timer whenever you use a certain slash command. Requires the message ID of the command."))
 		)
     
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
