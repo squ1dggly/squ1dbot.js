@@ -10,7 +10,7 @@ const greetings = [
 	'Why hello there! Don\'t forget about "$REMINDER"!',
 	'Hey there! I heard you wanted to be reminded of "$REMINDER"!',
 	'I think it\'s time for "$REMINDER". If you know what I mean. 😎',
-	'Yo! I heard it\'s time for "$REMINDER".',
+	'Yo! I heard it\'s time for "$REMINDER"!',
 	'I believe some time ago you requested to be notified of "$REMINDER". So, here you go I guess.',
 	'Once upon a time... "$REMINDER"! 🌠'
 ];
@@ -55,7 +55,9 @@ module.exports = {
 
 				/* - - - - - { Send the Reminder } - - - - - */
 				// prettier-ignore
-				client.users.fetch(reminder.user_id).then(async user => {
+				guild.members.fetch(reminder.user_id).then(async guildMember => {
+					if (!guildMember) return;
+
 					let channel = null;
 					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
 
@@ -69,7 +71,7 @@ module.exports = {
 						timestamp: true
 					});
 
-					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
+					let messageContent = `${guildMember} you have a reminder for **${reminder.name}**!`;
 
 					if (!channel) {
 						let error = reminder.channel_id
@@ -77,11 +79,11 @@ module.exports = {
 							: undefined;
 
 						// Send the notification to the user's DMs
-						return await user.send({ content: error, embeds: [embed_reminder] });
+						return await guildMember.send({ content: error, embeds: [embed_reminder] });
 					}
-					
+
 					let userHasPermission = channel
-						? channel.permissionsFor(user).has(PermissionFlagsBits.SendMessages)
+						? channel.permissionsFor(guildMember).has(PermissionFlagsBits.SendMessages)
 						: false;
 
 					let clientHasPermission = channel
@@ -97,7 +99,7 @@ module.exports = {
 							: undefined;
 
 						// Send the notification to the user's DMs
-						return await user.send({ content: error, embeds: [embed_reminder] });
+						return await guildMember.send({ content: error, embeds: [embed_reminder] });
 					}
 				}).catch(err => {
 					logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)
