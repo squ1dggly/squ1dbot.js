@@ -70,10 +70,15 @@ module.exports = {
 
 					// Send the notification to the fetched channel
 					if (channel && userHasPermission && clientHasPermission)
-						return await embed_reminder.send({ messageContent, sendMethod: "channel" });
+						return await channel.send({ content: messageContent, embeds: [embed_reminder] })
+							// Send the notification to the user's DMs
+							.catch(async () => await user.send({
+								content: `I couldn't send your reminder to ${channel}, so here's your reminder!`,
+								embeds: [embed_reminder]
+							}));
 					else {
 						let error = channel && !userHasPermission && !clientHasPermission
-							? `Either you or me don't have permission to send messages in ${channel}, so here's your reminder!`
+							? `I couldn't send your reminder to ${channel}, so here's your reminder!`
 							: undefined;
 
 						// Send the notification to the user's DMs
