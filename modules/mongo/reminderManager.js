@@ -50,7 +50,7 @@ async function add(userID, guildID, channelID, name, repeat, limit, time, assist
 		limit: limit || null,
 		timestamp: jt.parseTime(time, { fromNow: true }),
 		time,
-		assisted_command_bot_id: assistMessage?.interaction?.user?.id || null,
+		assisted_command_bot_id: assistMessage?.author?.id || null,
 		assisted_command_name: assistMessage?.interaction?.commandName || null
 	};
 
