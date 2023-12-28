@@ -18,7 +18,12 @@ module.exports = {
 		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot || !args.message?.interaction) return;
 
 		// Fetch assisted reminders, if any
-		let reminders = await reminderManager.fetchAllAssistedInGuild(args.message.author.id, args.message.guild);
+		let reminders = await reminderManager.fetchAllAssistedInGuild(
+			args.message.interaction.user.id,
+			args.message.guild.id,
+			args.message.interaction.commandName
+		);
+
 		if (!reminders.length) return;
 
 		// prettier-ignore
@@ -26,18 +31,16 @@ module.exports = {
 		await Promise.all(reminders.map(async r => {
             // Check if the message is from the bot the user enabled assistance on
             if (args.message.interaction.user.id !== r.assisted_command_bot_id) return;
-            // Check if the command used is what the user enabled assistance on
-            if (args.message.interaction.commandName !== r.assisted_command_name) return;
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
             for (let keyword in returnKeywords)
                 if (args.message.content.toLowerCase().includes(keyword)) return;
             
             for (let regex in returnRegexes)
-                if (args.message.content.toLowerCase().match(regex).length) return;
+                if (args.message.content.toLowerCase().match(regex)) return;
             
             // Reset the timer for the reminder
-            await reminderManager.update(r._id, { timestamp: jt.parseTime(r.time) });
+            await reminderManager.update(r._id, { timestamp: jt.parseTime(r.time, { fromNow: true }) });
 
             // React to the message to let the user know we're here
             args.message.react("⏰").catch(() => null);
