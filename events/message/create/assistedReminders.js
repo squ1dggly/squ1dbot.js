@@ -40,17 +40,18 @@ module.exports = {
                 // Check the first embed
                 if (args.message.embeds[0]) {
                     // Title
-                    if (args.message.embeds[0].title.toLowerCase().includes(keyword)) return;
+                    if (args.message.embeds[0]?.title && args.message.embeds[0].title.toLowerCase().includes(keyword)) return;
                     // Description
-                    if (args.message.embeds[0].description.toLowerCase().includes(keyword)) return;
+                    if (args.message.embeds[0]?.description && args.message.embeds[0].description.toLowerCase().includes(keyword)) return;
 
                     // Fields
-                    for (let field of args.message.embeds[0].fields) {
-                        // Name
-                        if (field.name.toLowerCase().includes(keyword)) return;
-                        // Value
-                        if (field.value.toLowerCase().includes(keyword)) return;
-                    }
+                    if (args.message.embeds[0]?.fields)
+                        for (let field of args.message.embeds[0].fields) {
+                            // Name
+                            if (field?.name && field.name.toLowerCase().includes(keyword)) return;
+                            // Value
+                            if (field?.value && field.value.toLowerCase().includes(keyword)) return;
+                        }
                 }
             }
             
@@ -61,17 +62,18 @@ module.exports = {
                 // Check the first embed
                 if (args.message.embeds[0]) {
                     // Title
-                    if (args.message.embeds[0].title.toLowerCase().match(regex)) return;
+                    if (args.message.embeds[0]?.title && args.message.embeds[0].title.toLowerCase().match(regex)) return;
                     // Description
-                    if (args.message.embeds[0].description.toLowerCase().match(regex)) return;
+                    if (args.message.embeds[0]?.description && args.message.embeds[0].description.toLowerCase().match(regex)) return;
 
                     // Fields
-                    for (let field of args.message.embeds[0].fields) {
-                        // Name
-                        if (field.name.toLowerCase().match(regex)) return;
-                        // Value
-                        if (field.value.toLowerCase().match(regex)) return;
-                    }
+                    if (args.message.embeds[0]?.fields)
+                        for (let field of args.message.embeds[0].fields) {
+                            // Name
+                            if (field?.name && field.name.toLowerCase().match(regex)) return;
+                            // Value
+                            if (field?.value && field.value.toLowerCase().match(regex)) return;
+                        }
                 }
             }
             
