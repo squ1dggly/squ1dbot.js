@@ -12,7 +12,10 @@ const schema_reminder = new Schema(
 		repeat: { type: Boolean, default: false },
 		limit: { type: Number, default: null },
 		timestamp: { type: Number, require: true },
-		time: { type: String, require: true }
+		time: { type: String, require: true },
+		assisted_command_bot_id: { type: String, default: null },
+		assisted_command_name: { type: String, default: null },
+		created: { type: Number, default: Date.now() }
 	},
 	{ collection: "reminders" }
 );

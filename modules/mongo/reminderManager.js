@@ -1,3 +1,4 @@
+const { Message } = require("discord.js");
 const jt = require("../jsTools");
 
 const models = { reminder: require("../../models/reminderModel").model };
@@ -23,11 +24,15 @@ async function fetchAllActiveInGuild(guildID) {
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
+async function fetchAllAssistedInGuild(userID, guildID, commandName) {
+	return await models.reminder.find({ user_id: userID, guild_id: guildID, assisted_command_name: commandName }).lean();
+}
+
 async function update(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
-async function add(userID, guildID, channelID, name, repeat, limit, time) {
+async function add(userID, guildID, channelID, name, repeat, limit, time, assistMessage = null) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await exists(id)) return await createUniqueID();
@@ -44,7 +49,9 @@ async function add(userID, guildID, channelID, name, repeat, limit, time) {
 		repeat: limit ? true : repeat,
 		limit: limit || null,
 		timestamp: jt.parseTime(time, { fromNow: true }),
-		time
+		time,
+		assisted_command_bot_id: assistMessage?.author?.id || null,
+		assisted_command_name: assistMessage?.interaction?.commandName || null
 	};
 
 	/* - - - - - { Add the Reminder to the Database } - - - - - */
@@ -70,6 +77,7 @@ module.exports = {
 	fetch,
 	fetchAll,
 	fetchAllActiveInGuild,
+	fetchAllAssistedInGuild,
 	update,
 	add,
 	delete: del,

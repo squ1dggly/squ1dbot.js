@@ -12,6 +12,8 @@ async function subcommand_add(interaction) {
 	let channel = interaction.options.getChannel("channel") || null;
 	let repeat = interaction.options.getBoolean("repeat") || false;
 	let limit = interaction.options.getInteger("limit") || 0;
+	let assistMessageID = interaction.options.getString("assist") || null;
+	let assistMessage = null;
 
 	// Check if the user provided a valid time
 	try {
@@ -40,18 +42,57 @@ async function subcommand_add(interaction) {
 
 	await interaction.deferReply().catch(() => null);
 
+	// Check if the user provided a valid message ID
+	if (assistMessageID) {
+		assistMessage = await interaction.channel.messages.fetch(assistMessageID).catch(() => null);
+
+		// prettier-ignore
+		// Let the user know it was invalid
+		if (!assistMessage) return await interaction.editReply({
+			content: "I couldn't find the message you wanted assistance with!\nMake sure it's a slash command that's in the same channel you're in right now."
+		});
+
+		// prettier-ignore
+		// Check if the message is a slash command
+		if (!assistMessage?.interaction) return await interaction.editReply({
+			content: "Woah there, I can only assist you with slash commands at this time."
+		});
+
+		// prettier-ignore
+		// Check if the message was sent by the same user
+		if (assistMessage.interaction.user.id !== interaction.user.id) return await interaction.editReply({
+			content: "You can't just jack someone else's command! I can only assist you with slash commands sent by you."
+		});
+
+		// Check if the user enabled repeat
+		if (!repeat)
+			return await interaction.editReply({
+				content: "Repeat must be enabled to take advantage of the assist feature."
+			});
+	}
+
 	// prettier-ignore
 	// Create and add the reminder to the database
 	let reminder = await reminderManager.add(
 		interaction.user.id, interaction.guild.id, channel?.id || null,
-		name, repeat, limit, time
+		name, repeat, limit, time, assistMessage
 	);
 
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
 		title: "Added reminder",
-		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.`
+		description: `You will be reminded about \"${reminder.name}\" ${reminder.repeat ? "every" : "in"} ${jt.eta(reminder.timestamp)}.${
+			assistMessage
+				? `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
+				: ""
+		}${
+			reminder.repeat
+				? reminder.limit !== null
+					? `\n> Repeating: ${reminder.limit} ${reminder.limit === 1 ? "time" : "times"}`
+					: "\n> Repeat: ✅"
+				: ""
+		}`
 	});
 
 	return await embed_reminderAdd.send();
@@ -128,13 +169,15 @@ async function subcommand_list(interaction) {
 				  (await interaction.guild.channels.fetch(r.channel_id))
 				: null;
 
-			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT$CHANNEL"
+			// prettier-ignore
+			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
 				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
 				.replace("$LIMIT", r.limit)
-				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
+				.replace("$CHANNEL", _channel ? `${_channel}` : "")
+				.replace("$ASSISTANCE", r.assisted_command_name ? `${_channel ? " | " : ""}Assist: \`/${r.assisted_command_name}\`` : "");
 		})
 	);
 
@@ -173,7 +216,7 @@ module.exports = {
     
         .addSubcommand(option => option.setName("add").setDescription("Add a new reminder")
             .addStringOption(option => option.setName("name")
-                .setDescription("When am I reminding you about?")
+                .setDescription("What am I reminding you about?")
                 .setRequired(true))
 
             .addStringOption(option => option.setName("time")
@@ -187,8 +230,11 @@ module.exports = {
                 .setDescription("Do you wish to keep being reminded about this? (optional)"))
             
             .addIntegerOption(option => option.setName("limit")
-                .setDescription("How many times do you wish to repeat this reminder? (optional)"))
-        )
+				.setDescription("How many times do you want the reminder to repeat? (optional)"))
+			
+			.addStringOption(option => option.setName("assist")
+                .setDescription("Reset the timer whenever you use a certain slash command. Requires the message ID of the command."))
+		)
     
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
             .addStringOption(option => option.setName("id")

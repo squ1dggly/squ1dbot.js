@@ -6,6 +6,15 @@ const { reminderManager } = require("../../modules/mongo");
 const logger = require("../../modules/logger");
 const jt = require("../../modules/jsTools");
 
+const greetings = [
+	'Why hello there! Don\'t forget about "$REMINDER"!',
+	'Hey there! I heard you wanted to be reminded of "$REMINDER"!',
+	'I think it\'s time for "$REMINDER". If you know what I mean. 😎',
+	'Yo! I heard it\'s time for "$REMINDER"!',
+	'I believe some time ago you requested to be notified of "$REMINDER". So, here you go I guess.',
+	'Once upon a time... "$REMINDER"! 🌠'
+];
+
 module.exports = {
 	name: "reminderInterval",
 	event: "ready",
@@ -45,41 +54,56 @@ module.exports = {
 				else reminderManager.delete(reminder._id);
 
 				/* - - - - - { Send the Reminder } - - - - - */
-				client.users.fetch(reminder.user_id).then(async user => {
+				// prettier-ignore
+				guild.members.fetch(reminder.user_id).then(async guildMember => {
+					if (!guildMember) return;
+
 					let channel = null;
 					if (reminder.channel_id) channel = await guild.channels.fetch(reminder.channel_id).catch(() => null);
 
 					// prettier-ignore
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
-						channel, title: `⏰ Reminder: ${reminder.name}`,
-                        description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
-                        footer: `id: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
-                        timestamp: true
-                    });
+						title: `⏰ Reminder: ${reminder.name}`,
+						// description: `Hey there! I heard you wanted to be reminded of "${reminder.name}"!`,
+						description: jt.choice(greetings).replace("$REMINDER", reminder.name),
+						footer: `id: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
+						timestamp: true
+					});
 
-					let messageContent = `${user} you have a reminder for **${reminder.name}**!`;
-					
-					let userHasPermission = channel
-						? channel.permissionsFor(user).has(PermissionFlagsBits.SendMessages)
-						: null;
+					let messageContent = `${guildMember} you have a reminder for **${reminder.name}**!`;
 
-					let clientHasPermission = channel
-						? channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
-						: null;
-
-					// Send the notification to the fetched channel
-					if (channel && userHasPermission && clientHasPermission)
-						return await embed_reminder.send({ messageContent, sendMethod: "channel" });
-					else {
-						let error = channel && !userHasPermission && !clientHasPermission
-							? `Either you or me don't have permission to send messages in ${channel}, so here's your reminder!`
+					if (!channel) {
+						let error = reminder.channel_id
+							? `I couldn't send your reminder to the channel you have set, so here's your reminder!`
 							: undefined;
 
 						// Send the notification to the user's DMs
-						return await user.send({ content: error, embeds: [embed_reminder] });
+						return await guildMember.send({ content: error, embeds: [embed_reminder] });
 					}
-				}).catch(err => logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)); // prettier-ignore
+
+					let userHasPermission = channel
+						? channel.permissionsFor(guildMember).has(PermissionFlagsBits.SendMessages)
+						: false;
+
+					let clientHasPermission = channel
+						? channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
+						: false;
+
+					// Send the notification to the fetched channel
+					if (userHasPermission && clientHasPermission) {
+						return await channel.send({ content: messageContent, embeds: [embed_reminder] });
+					} else {
+						let error = channel && !userHasPermission && !clientHasPermission
+							? `Either you or I don't have permission to send messages in ${channel}, so here's your reminder!`
+							: undefined;
+
+						// Send the notification to the user's DMs
+						return await guildMember.send({ content: error, embeds: [embed_reminder] });
+					}
+				}).catch(err => {
+					logger.error("Failed to send reminder", `id: '${reminder._id}' | guild: '${reminder.guild_id}' | user: '${reminder.user_id}'`, err)
+				});
 			}
 		};
 
