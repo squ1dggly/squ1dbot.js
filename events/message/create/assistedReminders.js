@@ -33,11 +33,47 @@ module.exports = {
             if (args.message.interaction.user.id !== r.assisted_command_bot_id) return;
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
-            for (let keyword in returnKeywords)
+            for (let keyword in returnKeywords) {
+                // Message content
                 if (args.message.content.toLowerCase().includes(keyword)) return;
+
+                // Check the first embed
+                if (args.message.embeds[0]) {
+                    // Title
+                    if (args.message.embeds[0].title.toLowerCase().includes(keyword)) return;
+                    // Description
+                    if (args.message.embeds[0].description.toLowerCase().includes(keyword)) return;
+
+                    // Fields
+                    for (let field of args.message.embeds[0].fields) {
+                        // Name
+                        if (field.name.toLowerCase().includes(keyword)) return;
+                        // Value
+                        if (field.value.toLowerCase().includes(keyword)) return;
+                    }
+                }
+            }
             
-            for (let regex in returnRegexes)
+            for (let regex in returnRegexes) {
+                // Message content
                 if (args.message.content.toLowerCase().match(regex)) return;
+
+                // Check the first embed
+                if (args.message.embeds[0]) {
+                    // Title
+                    if (args.message.embeds[0].title.toLowerCase().match(regex)) return;
+                    // Description
+                    if (args.message.embeds[0].description.toLowerCase().match(regex)) return;
+
+                    // Fields
+                    for (let field of args.message.embeds[0].fields) {
+                        // Name
+                        if (field.name.toLowerCase().match(regex)) return;
+                        // Value
+                        if (field.value.toLowerCase().match(regex)) return;
+                    }
+                }
+            }
             
             // Reset the timer for the reminder
             await reminderManager.update(r._id, { timestamp: jt.parseTime(r.time, { fromNow: true }) });
