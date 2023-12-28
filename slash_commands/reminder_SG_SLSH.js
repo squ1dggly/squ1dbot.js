@@ -169,14 +169,15 @@ async function subcommand_list(interaction) {
 				  (await interaction.guild.channels.fetch(r.channel_id))
 				: null;
 
+			// prettier-ignore
 			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
 				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
 				.replace("$LIMIT", r.limit)
-				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "")
-				.replace("$ASSISTANCE", r.assisted_command_name ? ` | Assist: \`/${r.assisted_command_name}\`` : "");
+				.replace("$CHANNEL", _channel ? `${_channel}` : "")
+				.replace("$ASSISTANCE", r.assisted_command_name ? `${_channel ? " | " : ""}Assist: \`/${r.assisted_command_name}\`` : "");
 		})
 	);
 
