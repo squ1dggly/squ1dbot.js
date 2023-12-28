@@ -84,13 +84,13 @@ async function subcommand_add(interaction) {
 		title: "Added reminder",
 		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.${
 			assistMessage
-				? `\nAssistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
+				? `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
 				: ""
 		}${
 			reminder.repeat
 				? reminder.limit !== null
-					? `\nRepeating: ${reminder.limit} ${reminder.limit === 1 ? "time" : "times"}`
-					: "\nRepeat: ✅"
+					? `\n> Repeating: ${reminder.limit} ${reminder.limit === 1 ? "time" : "times"}`
+					: "\n> Repeat: ✅"
 				: ""
 		}`
 	});
@@ -169,20 +169,14 @@ async function subcommand_list(interaction) {
 				  (await interaction.guild.channels.fetch(r.channel_id))
 				: null;
 
-			// Fetch the bot that the user wanted assistance with
-			let _assistBot = r.assisted_command_bot_id
-				? interaction.guild.members.cache.get(r.assisted_command_bot_id) ||
-				  (await interaction.guild.members.fetch(r.assisted_command_bot_id))
-				: null;
-
-			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT$ASSISTANCE$CHANNEL"
+			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
 				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
 				.replace("$LIMIT", r.limit)
-				.replace("$ASSISTANCE", _assistBot ? ` | Assist: ${_assistBot}'s \`/${r.assisted_command_name}\`` : "")
-				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
+				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "")
+				.replace("$ASSISTANCE", r.assisted_command_name ? ` | Assist: \`/${r.assisted_command_name}\`` : "");
 		})
 	);
 

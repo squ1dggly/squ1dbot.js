@@ -6,6 +6,15 @@ const { reminderManager } = require("../../modules/mongo");
 const logger = require("../../modules/logger");
 const jt = require("../../modules/jsTools");
 
+const greetings = [
+	'Why hello there! Don\'t forget about "$REMINDER"!',
+	'Hey there! I heard you wanted to be reminded of "$REMINDER"!',
+	'I think it\'s time for "$REMINDER". If you know what I mean. 😎',
+	'Yo! I heard it\'s time for "$REMINDER".',
+	'I believe some time ago you requested to be notified of "$REMINDER". So, here you go I guess.',
+	'Once upon a time... "$REMINDER"! 🌠',
+];
+
 module.exports = {
 	name: "reminderInterval",
 	event: "ready",
@@ -53,7 +62,8 @@ module.exports = {
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
 						channel, title: `⏰ Reminder: ${reminder.name}`,
-                        description: `${jt.eta(Date.now() - jt.parseTime(reminder.time))} you wanted to be reminded of "${reminder.name}".`,
+                        // description: `Hey there! I heard you wanted to be reminded of "${reminder.name}"!`,
+                        description: jt.choice(greetings).replace("$REMINDER", reminder.name),
                         footer: `id: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
                         timestamp: true
                     });
