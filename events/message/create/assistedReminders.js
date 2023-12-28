@@ -33,12 +33,14 @@ module.exports = {
             if (args.message.author.id !== r.assisted_command_bot_id) return;
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
-            for (let keyword in returnKeywords) {
+            for (let keyword of returnKeywords) {
                 // Message content
                 if (args.message.content.toLowerCase().includes(keyword)) return;
 
                 // Check the first embed
                 if (args.message.embeds[0]) {
+                    // Author
+                    if (args.message.embeds[0]?.author?.name && args.message.embeds[0].author.name.toLowerCase().includes(keyword)) return;
                     // Title
                     if (args.message.embeds[0]?.title && args.message.embeds[0].title.toLowerCase().includes(keyword)) return;
                     // Description
@@ -55,24 +57,26 @@ module.exports = {
                 }
             }
             
-            for (let regex in returnRegexes) {
+            for (let regex of returnRegexes) {
                 // Message content
-                if (args.message.content.toLowerCase().match(regex)) return;
+                if (args.message.content.toLowerCase().match(regex)?.length) return;
 
                 // Check the first embed
                 if (args.message.embeds[0]) {
+                    // Author
+                    if (args.message.embeds[0]?.author?.name && args.message.embeds[0].author.name.toLowerCase().match(regex)?.length) return;
                     // Title
-                    if (args.message.embeds[0]?.title && args.message.embeds[0].title.toLowerCase().match(regex)) return;
+                    if (args.message.embeds[0]?.title && args.message.embeds[0].title.toLowerCase().match(regex)?.length) return;
                     // Description
-                    if (args.message.embeds[0]?.description && args.message.embeds[0].description.toLowerCase().match(regex)) return;
+                    if (args.message.embeds[0]?.description && args.message.embeds[0].description.toLowerCase().match(regex)?.length) return;
 
                     // Fields
                     if (args.message.embeds[0]?.fields)
                         for (let field of args.message.embeds[0].fields) {
                             // Name
-                            if (field?.name && field.name.toLowerCase().match(regex)) return;
+                            if (field?.name && field.name.toLowerCase().match(regex)?.length) return;
                             // Value
-                            if (field?.value && field.value.toLowerCase().match(regex)) return;
+                            if (field?.value && field.value.toLowerCase().match(regex)?.length) return;
                         }
                 }
             }
