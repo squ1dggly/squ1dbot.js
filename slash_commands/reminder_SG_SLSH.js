@@ -82,7 +82,7 @@ async function subcommand_add(interaction) {
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
 		title: "Added reminder",
-		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.${
+		description: `You will be reminded about \"${reminder.name}\" ${reminder.repeat ? "every" : "in"} ${jt.eta(reminder.timestamp)}.${
 			assistMessage
 				? `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
 				: ""
