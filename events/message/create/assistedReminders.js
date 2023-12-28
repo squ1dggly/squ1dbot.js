@@ -12,7 +12,7 @@ module.exports = {
 	event: "message_create",
 
 	/** @param {Client} client @param {{message:Message}} args */
-	execute: async (client, args) => {
+    execute: async (client, args) => {
 		// prettier-ignore
 		// Filter out non-guild, and non-user messages, and non-command messages
 		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot || !args.message?.interaction) return;
@@ -30,7 +30,7 @@ module.exports = {
 		// Iterate through the reminders
 		await Promise.all(reminders.map(async r => {
             // Check if the message is from the bot the user enabled assistance on
-            if (args.message.author.user.id !== r.assisted_command_bot_id) return;
+            if (args.message.author.id !== r.assisted_command_bot_id) return;
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
             for (let keyword in returnKeywords) {
