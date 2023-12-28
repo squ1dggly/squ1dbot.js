@@ -63,6 +63,11 @@ async function subcommand_add(interaction) {
 		if (assistMessage.interaction.user.id !== interaction.user.id) return await interaction.editReply({
 			content: "You can't just jack someone else's command! I can only assist you with slash commands sent by you."
 		});
+
+		// Check if the user enabled repeat
+		if (!repeat) return await interaction.editReply({
+			content: "Repeat must be enabled to take advantage of the assist feature."
+		});
 	}
 
 	// prettier-ignore
@@ -76,7 +81,7 @@ async function subcommand_add(interaction) {
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
 		title: "Added reminder",
-		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.`
+		description: `You will be reminded about \"${reminder.name}\" in ${jt.eta(reminder.timestamp)}.${assistMessage ? `\nAssistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.` : ""}`
 	});
 
 	return await embed_reminderAdd.send();
@@ -215,7 +220,7 @@ module.exports = {
 				.setDescription("How many times do you want the reminder to repeat? (optional)"))
 			
 			.addStringOption(option => option.setName("assist")
-                .setDescription("Reset the timer whenever you use a certain slash command. Message ID of the command. | NOTE: this may not work for every bot."))
+                .setDescription("Reset the timer whenever you use a certain slash command. Message ID of the command."))
 		)
     
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")

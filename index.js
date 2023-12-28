@@ -44,7 +44,7 @@ logger.log("connecting to Discord...");
 // prettier-ignore
 client.login(TOKEN).then(async () => {
 	// Register slash commands to a specific server :: { LOCAL }
-	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
+	await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
 	// Register slash commands :: { GLOBAL }
 	// await slashCommandManager.push(client, { global: true });
