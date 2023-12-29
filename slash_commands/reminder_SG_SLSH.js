@@ -121,7 +121,7 @@ async function subcommand_delete(interaction) {
 		let confirmation = await awaitConfirm({
 			interaction,
 			messageContent: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`,
-			dontEmbed
+			dontEmbed: true
 		});
 
 		if (!confirmation) return;
@@ -157,7 +157,7 @@ async function subcommand_list(interaction) {
 	// prettier-ignore
 	// Check if the user has any active reminders
 	if (!reminders.length) return await interaction.editReply({
-		content: "You don't have any active reminders!"
+		content: "You don't have any reminders!"
 	});
 
 	/* - - - - - { Create the Pages } - - - - - */
