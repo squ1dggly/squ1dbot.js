@@ -1,50 +1,54 @@
 const { Message } = require("discord.js");
 const jt = require("../jsTools");
 
-const models = { reminder: require("../../models/reminderModel").model };
+const models = {
+	reminder: require("../../models/reminderModel").model,
+	reminderTrigger: require("../../models/reminderTriggerModel").model
+};
 
-async function exists(id) {
+/* - - - - - { Reminder } - - - - - */
+async function reminder_exists(id) {
 	return await models.reminder.exists({ _id: id });
 }
 
-async function count(userID, guildID) {
-	return (await models.reminder.count({ user_id: userID, guild_id: guildID })) || 0;
+async function reminder_count(user_id, guild_id) {
+	return (await models.reminder.count({ user_id, guild_id })) || 0;
 }
 
-async function fetch(id) {
+async function reminder_fetch(id) {
 	return await models.reminder.findById(id).lean();
 }
 
-async function fetchAll(userID, guildID) {
-	return await models.reminder.find({ user_id: userID, guild_id: guildID }).lean();
+async function reminder_fetchAll(user_id, guild_id) {
+	return await models.reminder.find({ user_id, guild_id }).lean();
 }
 
-async function fetchAllActiveInGuild(guildID) {
-	let pipeline = [{ $match: { $and: [{ guild_id: guildID }, { timestamp: { $lte: Date.now() } }] } }];
+async function reminder_fetchAllActiveInGuild(guild_id) {
+	let pipeline = [{ $match: { $and: [{ guild_id }, { timestamp: { $lte: Date.now() } }] } }];
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
-async function fetchAllAssistedInGuild(userID, guildID, commandName) {
-	return await models.reminder.find({ user_id: userID, guild_id: guildID, assisted_command_name: commandName }).lean();
+async function reminder_fetchAllAssistedInGuild(user_id, guild_id, assist_command_name) {
+	return await models.reminder.find({ user_id, guild_id, assist_command_name }).lean();
 }
 
-async function update(id, query) {
+async function reminder_update(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
-async function add(userID, guildID, channelID, name, repeat, limit, time, assistMessage = null) {
+async function reminder_add(user_id, guild_id, channel_id, name, repeat, limit, time, assistMessage = null) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
-		if (await exists(id)) return await createUniqueID();
+		if (await reminder_exists(id)) return await createUniqueID();
 		return id;
 	};
 
 	// Create the data object for the new reminder
 	let reminderData = {
 		_id: await createUniqueID(),
-		user_id: userID,
-		guild_id: guildID,
-		channel_id: channelID,
+		user_id,
+		guild_id,
+		channel_id,
 		name,
 		repeat: limit ? true : repeat,
 		limit: limit || null,
@@ -62,24 +66,46 @@ async function add(userID, guildID, channelID, name, repeat, limit, time, assist
 	return reminderData;
 }
 
-async function del(id) {
-	if (!(await exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
+async function reminder_del(id) {
+	if (!(await reminder_exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-async function delAll(userID, guildID) {
-	await models.reminder.deleteMany({ user_id: userID, guild_id: guildID });
+async function reminder_delAll(user_id, guild_id) {
+	await models.reminder.deleteMany({ user_id: user_id, guild_id: guild_id });
+}
+
+/* - - - - - { Reminder Trigger } - - - - - */
+async function trigger_exists(id) {
+	return await models.reminderTrigger.exists({ _id: id });
+}
+
+async function reminder_count(user_id, guild_id) {
+	return (await models.reminderTrigger.count({ user_id, guild_id })) || 0;
+}
+
+async function trigger_fetch(id) {
+	return await models.reminderTrigger.findById(id).lean();
+}
+
+async function trigger_fetchInGuild(user_id, guild_id) {
+	
 }
 
 module.exports = {
-	exists,
-	count,
-	fetch,
-	fetchAll,
-	fetchAllActiveInGuild,
-	fetchAllAssistedInGuild,
-	update,
-	add,
-	delete: del,
-	deleteAll: delAll
+	exists: reminder_exists,
+	count: reminder_count,
+	fetch: reminder_fetch,
+	fetchAll: reminder_fetchAll,
+	fetchAllActiveInGuild: reminder_fetchAllActiveInGuild,
+	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
+	update: reminder_update,
+	add: reminder_add,
+	delete: reminder_del,
+	deleteAll: reminder_delAll,
+
+	trigger: {
+		exists: trigger_exists,
+		fetch: trigger_fetch
+	}
 };
