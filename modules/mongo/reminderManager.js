@@ -125,12 +125,23 @@ async function reminder_add(data) {
 }
 
 async function reminder_delete(id) {
-	if (!(await reminder_exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
-	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
+	// Check if the document exists
+	if (!(await reminder_exists(id))) return logger.log(`Could not delete non-existent reminder '${id}'`);
+
+	// Delete the document
+	await models.reminder.findByIdAndDelete(id).catch(err => logger.error("Could not delete reminder", `id: '${id}'`, err));
 }
 
 async function reminder_deleteAll(user_id, guild_id) {
-	await models.reminder.deleteMany({ user_id: user_id, guild_id: guild_id });
+	// prettier-ignore
+	// Delete all documents that include both the user and guild's ID
+	if (guild_id) await models.reminder
+		.deleteMany({ user_id, guild_id })
+		.catch(err => logger.error(`Could not delete reminders`, `user_id: '${user_id}' | guild_id: '${guild_id}'`, err));
+	// Delete all documents that include the user's ID
+	else await models.reminder
+		.deleteMany({ user_id })
+		.catch(err => logger.error("Could not delete reminders", `user_id: '${user_id}'`, err));
 }
 
 /* - - - - - { Reminder Trigger } - - - - - */
@@ -171,18 +182,25 @@ async function trigger_add(data) {
 }
 
 async function trigger_delete(id) {
-	if (!(await trigger_exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
-	await models.reminderTrigger.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
+	// Check if the document exists
+	if (!(await trigger_exists(id))) return logger.log(`Could not delete non-existent reminder trigger '${id}'`);
+
+	// Delete the document
+	await models.reminderTrigger
+		.findByIdAndDelete(id)
+		.catch(err => logger.error("Could not delete reminder trigger", `id: '${id}'`, err));
 }
 
 async function trigger_deleteAll(user_id, guild_id = null) {
 	// prettier-ignore
+	// Delete all documents that include both the user and guild's ID
 	if (guild_id) await models.reminderTrigger
 		.deleteMany({ user_id, guild_id })
-		.catch(err => logger.error(`Could not delete reminder triggers`, `user_id: ${user_id} | guild_id: ${guild_id}`, err));
+		.catch(err => logger.error(`Could not delete reminder triggers`, `user_id: '${user_id}' | guild_id: '${guild_id}'`, err));
+	// Delete all documents that include the user's ID
 	else await models.reminderTrigger
 		.deleteMany({ user_id })
-		.catch(err => logger.error("Could not delete reminder triggers", `user: ${user_id}`, err));
+		.catch(err => logger.error("Could not delete reminder triggers", `user_id: '${user_id}'`, err));
 }
 
 module.exports = {
@@ -200,6 +218,10 @@ module.exports = {
 	trigger: {
 		exists: trigger_exists,
 		count: trigger_count,
-		fetch: trigger_fetch
+		fetch: trigger_fetch,
+		fetchForUserInGuild: trigger_fetchForUserInGuild,
+		add: trigger_add,
+		delete: trigger_delete,
+		deleteAll: trigger_deleteAll,
 	}
 };
