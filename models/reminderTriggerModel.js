@@ -19,7 +19,7 @@ const schema_reminder = new Schema(
 			repeat: false,
 			limit: null,
 			timestamp: null,
-			time: "",
+			raw_time: "",
 
 			assist_type: 0,
 			assist_bot_id: "",

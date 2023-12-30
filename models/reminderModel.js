@@ -14,7 +14,7 @@ const schema_reminder = new Schema(
 		repeat: { type: Boolean, default: false },
 		limit: { type: Number, default: null },
 		timestamp: { type: Number, require: true },
-		time: { type: String, require: true },
+		raw_time: { type: String, require: true },
 
 		assist_type: { type: Number, default: 0 },
 		assist_bot_id: { type: String, default: null },

@@ -1,10 +1,78 @@
+/** @typedef ReminderData
+ * @property {string} _id
+ *
+ * @property {string} user_id
+ * @property {string} guild_id
+ * @property {string|null} channel_id
+ *
+ * @property {boolean} enabled
+ *
+ * @property {string} name
+ * @property {boolean} repeat
+ * @property {number|null} limit
+ * @property {number} timestamp
+ * @property {string} raw_time
+ *
+ * @property {number|null} assist_type
+ * @property {string|null} assist_bot_id
+ * @property {string|null} assist_command_name
+ * @property {string[]} assist_message_content
+ * @property {Boolean} assist_message_content_includes_name
+ *
+ * @property {number} created */
+
+/** @typedef ReminderTriggerData
+ * @property {string} user_id
+ * @property {string} guild_id
+ * @property {Reminder} reminder_data */
+
 const { Message } = require("discord.js");
+const logger = require("../logger");
 const jt = require("../jsTools");
 
 const models = {
 	reminder: require("../../models/reminderModel").model,
 	reminderTrigger: require("../../models/reminderTriggerModel").model
 };
+
+/* - - - - - { Classes } - - - - - */
+class Reminder {
+	/** @param {ReminderData} data */
+	constructor(data) {
+		this._id = data._id;
+
+		this.user_id = data.user_id;
+		this.guild_id = data.guild_id;
+		this.channel_id = data?.channel_id || null;
+
+		this.name = data.name;
+		this.repeat = data?.limit ? true : data?.repeat || false;
+		this.limit = data?.limit || null;
+		this.timestamp = jt.parseTime(data.raw_time, { fromNow: true });
+		this.raw_time = data.raw_time;
+
+		this.assist_type = data?.assist_type || null;
+		this.assist_bot_id = data?.assist_bot_id || null;
+		this.assist_message_content = data?.assist_message_content || null;
+		this.assist_message_content_includes_name = data?.assist_message_content_includes_name || false;
+
+		return { ...this };
+	}
+}
+
+class ReminderTrigger {
+	/** @param {ReminderTriggerData} data */
+	constructor(data) {
+		this._id = data._id;
+
+		this.user_id = data.user_id;
+		this.guild_id = data.guild_id;
+
+		this.reminder_data = data.reminder_data;
+
+		return { ...this };
+	}
+}
 
 /* - - - - - { Reminder } - - - - - */
 async function reminder_exists(id) {
@@ -36,34 +104,24 @@ async function reminder_update(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
-async function reminder_add(user_id, guild_id, channel_id, name, repeat, limit, time, assistMessage = null) {
+/** @param {ReminderData} data */
+async function reminder_add(data) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await reminder_exists(id)) return await createUniqueID();
 		return id;
 	};
 
-	// Create the data object for the new reminder
-	let reminderData = {
-		_id: await createUniqueID(),
-		user_id,
-		guild_id,
-		channel_id,
-		name,
-		repeat: limit ? true : repeat,
-		limit: limit || null,
-		timestamp: jt.parseTime(time, { fromNow: true }),
-		time,
-		assisted_command_bot_id: assistMessage?.author?.id || null,
-		assisted_command_name: assistMessage?.interaction?.commandName || null
-	};
+	// Create a new reminder object
+	let reminder = new Reminder(data);
 
-	/* - - - - - { Add the Reminder to the Database } - - - - - */
-	let doc = new models.reminder(reminderData);
+	// Create a new document
+	let doc = new models.reminderTrigger(reminder);
+
+	// Save the document to the database
 	await doc.save().catch(err => console.error("Failed to save reminder", err));
 
-	// Return the reminder data object
-	return reminderData;
+	return reminder;
 }
 
 async function reminder_delete(id) {
@@ -92,42 +150,39 @@ async function trigger_fetchForUserInGuild(user_id, guild_id) {
 	return await models.reminderTrigger.findById({ user_id, guild_id }).lean();
 }
 
-async function trigger_add(user_id, guild_id, reminder_data) {
+/** @param {ReminderTriggerData} data */
+async function trigger_add(data) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
 		if (await trigger_exists(id)) return await createUniqueID();
 		return id;
 	};
 
-	// Create the reminder trigger data object
-	let reminderTriggerData = {
-		_id: await createUniqueID(),
-		user_id: user_id,
-		guild_id: guild_id,
-
-		reminder_data: {
-			user_id: user_id,
-			guild_id: guild_id,
-			channel_id: reminder_data.channel_id || null,
-			name: reminder_data.name,
-			repeat: reminder_data.limit ? true : reminder_data.repeat,
-			limit: reminder_data.limit || null,
-			timestamp: jt.parseTime(reminder_data.time, { fromNow: true }),
-			time: reminder_data.time,
-			assisted_command_bot_id: reminder_data.assistMessage?.author?.id || null,
-			assisted_command_name: reminder_data.assistMessage?.interaction?.commandName || null
-		}
-	};
+	// Create a new reminder object
+	let reminderTrigger = new ReminderTrigger(data);
 
 	// Create a new document
-	let doc = new models.reminderTrigger();
+	let doc = new models.reminderTrigger(reminderTrigger);
+
+	// Save the document to the database
+	await doc.save().catch(err => console.error("Failed to save reminder trigger", err));
+
+	return reminderTrigger;
 }
 
-async function trigger_delete(id) {}
+async function trigger_delete(id) {
+	if (!(await trigger_exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
+	await models.reminderTrigger.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
+}
 
 async function trigger_deleteAll(user_id, guild_id = null) {
-	if (guild_id) return await models.reminderTrigger.deleteMany({ user_id, guild_id });
-	else return await models.reminderTrigger.deleteMany({ user_id });
+	// prettier-ignore
+	if (guild_id) await models.reminderTrigger
+		.deleteMany({ user_id, guild_id })
+		.catch(err => logger.error(`Could not delete reminder triggers`, `user_id: ${user_id} | guild_id: ${guild_id}`, err));
+	else await models.reminderTrigger
+		.deleteMany({ user_id })
+		.catch(err => logger.error("Could not delete reminder triggers", `user: ${user_id}`, err));
 }
 
 module.exports = {
