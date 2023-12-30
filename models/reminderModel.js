@@ -16,6 +16,7 @@ const schema_reminder = new Schema(
 		timestamp: { type: Number, require: true },
 		time: { type: String, require: true },
 
+		assist_type: { type: Number, default: 0 },
 		assist_bot_id: { type: String, default: null },
 		assist_command_name: { type: String, default: null },
 		assist_message_content: { type: Array, default: [] },

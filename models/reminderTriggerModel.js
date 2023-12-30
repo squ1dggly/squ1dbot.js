@@ -21,6 +21,7 @@ const schema_reminder = new Schema(
 			timestamp: null,
 			time: "",
 
+			assist_type: 0,
 			assist_bot_id: "",
 			assist_command_name: "",
 			assist_message_content: [],

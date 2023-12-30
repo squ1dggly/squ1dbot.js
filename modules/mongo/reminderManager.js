@@ -66,12 +66,12 @@ async function reminder_add(user_id, guild_id, channel_id, name, repeat, limit, 
 	return reminderData;
 }
 
-async function reminder_del(id) {
+async function reminder_delete(id) {
 	if (!(await reminder_exists(id))) return console.log(`Can not delete non-existent reminder '${id}'`);
 	await models.reminder.findByIdAndDelete(id).catch(err => console.error("Failed to delete reminder", err));
 }
 
-async function reminder_delAll(user_id, guild_id) {
+async function reminder_deleteAll(user_id, guild_id) {
 	await models.reminder.deleteMany({ user_id: user_id, guild_id: guild_id });
 }
 
@@ -80,7 +80,7 @@ async function trigger_exists(id) {
 	return await models.reminderTrigger.exists({ _id: id });
 }
 
-async function reminder_count(user_id, guild_id) {
+async function trigger_count(user_id, guild_id) {
 	return (await models.reminderTrigger.count({ user_id, guild_id })) || 0;
 }
 
@@ -88,8 +88,46 @@ async function trigger_fetch(id) {
 	return await models.reminderTrigger.findById(id).lean();
 }
 
-async function trigger_fetchInGuild(user_id, guild_id) {
-	
+async function trigger_fetchForUserInGuild(user_id, guild_id) {
+	return await models.reminderTrigger.findById({ user_id, guild_id }).lean();
+}
+
+async function trigger_add(user_id, guild_id, reminder_data) {
+	const createUniqueID = async () => {
+		let id = jt.numericString(7);
+		if (await trigger_exists(id)) return await createUniqueID();
+		return id;
+	};
+
+	// Create the reminder trigger data object
+	let reminderTriggerData = {
+		_id: await createUniqueID(),
+		user_id: user_id,
+		guild_id: guild_id,
+
+		reminder_data: {
+			user_id: user_id,
+			guild_id: guild_id,
+			channel_id: reminder_data.channel_id || null,
+			name: reminder_data.name,
+			repeat: reminder_data.limit ? true : reminder_data.repeat,
+			limit: reminder_data.limit || null,
+			timestamp: jt.parseTime(reminder_data.time, { fromNow: true }),
+			time: reminder_data.time,
+			assisted_command_bot_id: reminder_data.assistMessage?.author?.id || null,
+			assisted_command_name: reminder_data.assistMessage?.interaction?.commandName || null
+		}
+	};
+
+	// Create a new document
+	let doc = new models.reminderTrigger();
+}
+
+async function trigger_delete(id) {}
+
+async function trigger_deleteAll(user_id, guild_id = null) {
+	if (guild_id) return await models.reminderTrigger.deleteMany({ user_id, guild_id });
+	else return await models.reminderTrigger.deleteMany({ user_id });
 }
 
 module.exports = {
@@ -101,11 +139,12 @@ module.exports = {
 	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
 	update: reminder_update,
 	add: reminder_add,
-	delete: reminder_del,
-	deleteAll: reminder_delAll,
+	delete: reminder_delete,
+	deleteAll: reminder_deleteAll,
 
 	trigger: {
 		exists: trigger_exists,
+		count: trigger_count,
 		fetch: trigger_fetch
 	}
 };
