@@ -9,25 +9,24 @@ const schema_reminder = new Schema(
 		guild_id: { type: String, require: true },
 
 		reminder_data: {
-			user_id: String,
-			guild_id: String,
-			channel_id: String,
+			user_id: { type: String, require: true },
+			guild_id: { type: String, require: true },
+			channel_id: { type: String, require: true },
 
-			enabled: Boolean,
+			enabled: { type: Boolean, default: true },
 
-			name: String,
-			repeat: Boolean,
-			limit: Number,
-			timestamp: Number,
-			raw_time: String,
+			name: { type: String, require: true },
+			repeat: { type: Boolean, default: false },
+			limit: { type: Number, default: null },
+			raw_time: { type: String, default: null },
 
-			assist_type: Number,
-			assist_bot_id: String,
-			assist_command_name: String,
-			assist_message_content: Array,
-			assist_message_content_includes_name: Boolean,
+			assist_type: { type: Number, default: 0 },
+			assist_bot_id: { type: String, default: null },
+			assist_command_name: { type: String, default: null },
+			assist_message_content: { type: Array, default: [] },
+			assist_message_content_includes_name: { type: Boolean, default: false },
 
-			created: Number
+			created: { type: Number, default: Date.now() }
 		}
 	},
 	{ collection: "reminder_triggers" }
