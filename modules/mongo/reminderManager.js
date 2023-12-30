@@ -26,7 +26,6 @@
  * @property {string} guild_id
  * @property {Reminder} reminder_data */
 
-const { Message } = require("discord.js");
 const logger = require("../logger");
 const jt = require("../jsTools");
 
@@ -124,6 +123,11 @@ async function reminder_add(data) {
 	return reminder;
 }
 
+/** @param {ReminderTriggerData} reminderTriggerData */
+async function reminder_addFromTrigger(reminderTriggerData) {
+	return await reminder_add(reminderTriggerData.reminder_data);
+}
+
 async function reminder_delete(id) {
 	// Check if the document exists
 	if (!(await reminder_exists(id))) return logger.log(`Could not delete non-existent reminder '${id}'`);
@@ -212,6 +216,7 @@ module.exports = {
 	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
 	update: reminder_update,
 	add: reminder_add,
+	addFromTrigger: reminder_addFromTrigger,
 	delete: reminder_delete,
 	deleteAll: reminder_deleteAll,
 
