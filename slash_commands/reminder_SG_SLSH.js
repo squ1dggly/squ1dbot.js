@@ -90,7 +90,7 @@ async function subcommand_add(interaction) {
 	let button_enableAssist = new ButtonBuilder()
 		.setCustomId("btn_enableAssist")
 		.setStyle(ButtonStyle.Primary)
-		.setLabel("Enable Assist");
+		.setLabel("Reminder Assist");
 
 	// Create the action row
 	let actionRow = new ActionRowBuilder().setComponents(button_enableAssist);
@@ -105,8 +105,29 @@ async function subcommand_add(interaction) {
 	};
 
 	let collector = message
-		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("15s"), limit: 1 })
-		.then(async i => {})
+		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("15s") })
+		.then(async i => {
+			// Remove the button
+			if (message.editable) message.edit({ components: [] }).catch(() => null);
+
+			// prettier-ignore
+			// Let the user know what they have to do
+			await i.followUp({ content: "Alright. You have 15 seconds to react with \`⏰\` to the message you want your reminder to follow.\nIf the message is a slash command, the command has to have been used by you.\nThe message has to be from a bot, by the way." });
+
+			// Create a message collector in the current channel
+			let filter_channel = m => m.author.bot;
+			let collector_channel = message.channel.createMessageCollector({ filter, time: jt.parseTime("15s") });
+			let _reactionCollectors = [];
+
+			let assist_message_id = "";
+
+			collector_channel.on("collect", async _message => {
+				// Add a reaction collector to the message
+				// let filter_reaction = r => r.
+			});
+
+			// Create a message collector and check for the user to react with ⏰
+		})
 		.catch(async () => {
 			if (!message.editable) return;
 
@@ -148,7 +169,7 @@ async function subcommand_add(interaction) {
 	} */
 
 	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderAdsssd = new BetterEmbed({
+	/* let embed_reminderAdsssd = new BetterEmbed({
 		interaction,
 		title: "Reminder added",
 		description: `You will be reminded about \"${reminder.name}\" ${reminder.repeat ? "every" : "in"} ${jt.eta(
@@ -166,7 +187,7 @@ async function subcommand_add(interaction) {
 		}`
 	});
 
-	return await embed_reminderAdd.send();
+	return await embed_reminderAdd.send(); */
 }
 
 /** @param {CommandInteraction} interaction */
