@@ -56,7 +56,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 		interaction,
 		title: "Sync Enabled",
 		description: isSlashCommand
-			? `I'll sync your reminder whenever you use ${slashCommandReference ? `<${sync_command_name}:${slashCommandReference.id}>` : `${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\` command`}.`
+			? `I'll sync your reminder whenever you use ${slashCommandReference ? `</${sync_command_name}:${slashCommandReference.id}>` : `${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\` command`}.`
 			: `I'll sync your reminder whenever you use ${prefixCommandReference ? `the \`${prefixCommandReference.content}\` command` : "that command"}.`,
 		footer: `id: ${reminderID}`
 	});
