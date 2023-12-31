@@ -26,7 +26,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 
 	let sync_command_name = isSlashCommand ? syncMessage.interaction.commandName : null;
 
-	let sync_message_content = isSlashCommand ? null : messageContentToArray(syncMessage, 1);
+	let sync_message_content = isSlashCommand ? [] : messageContentToArray(syncMessage, 1);
 
 	let sync_message_content_includes_name =
 		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
@@ -38,7 +38,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 		sync_type,
 		sync_bot_id,
 		sync_command_name,
-		sync_message_content,
+		sync_message_content: sync_message_content.length ? sync_message_content : null,
 		sync_message_content_includes_name
 	});
 
