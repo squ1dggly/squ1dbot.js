@@ -122,8 +122,28 @@ async function subcommand_add(interaction) {
 			let assist_message_id = "";
 
 			collector_channel.on("collect", async _message => {
+				let filter_reaction = (reaction, user) => user.id === interaction.user.id && reaction.emoji.name === "⏰";
+
 				// Add a reaction collector to the message
-				// let filter_reaction = r => r.
+				let collector_reaction = _message
+					.awaitReactions({ filter, time: jt.parseTime("15s"), max: 1, errors: ["time"] })
+					.then(async collected => {
+						let _collectedReaction = collected.values()[0];
+
+						// prettier-ignore
+						// Check if the message was sent by a bot
+						if (!_collectedReaction.message.author.bot) return await _collectedReaction.message.reply({
+							content: `${interaction.user} I told you I can only assist with messages from ***bots***.`
+						}).catch(() => null);
+
+						// prettier-ignore
+						// Check if the message is a slash command that was used by the user
+						if (!_collectedReaction.message.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
+							return await _collectedReaction.message.reply({
+								content: `${interaction.user} you can't just jack someone else's command, bro. I can only use slash commands used by you.`
+							}).catch(() => null);
+					})
+					.catch(() => null);
 			});
 
 			// Create a message collector and check for the user to react with ⏰
