@@ -14,9 +14,75 @@ const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discor
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
-/** @param {Reminder} reminder @param {Message} assistMessage */
-async function enableReminderAssist(reminder, assistMessage) {
-	
+/** @param {Message} message */
+function breakDownMessageContent(message) {
+	let content = [];
+
+	if (message.content) content.push(...message.content.toLowerCase().split(" "));
+
+	// Go through the first embed because that's all we care about
+	if (message.embeds[0]) {
+		let embed = message.embeds[0];
+
+		if (embed?.title) content.push(...embed.title.split(" "));
+		if (embed?.author?.name) content.push(...embed.author.name.split(" "));
+
+		if (embed?.description) content.push(...embed.description.split(" "));
+
+		if (embed?.fields?.length) {
+			for (let field of embed.fields) {
+				if (field?.name) content.push(...field.name.split(" "));
+				if (field?.value) content.push(...field.value.split(" "));
+			}
+		}
+
+		if (embed?.footer?.text) content.push(...embed.footer.text.split(" "));
+	}
+
+	// Parse and return content
+	return content.map(str => str.trim().toLowerCase());
+}
+
+/** @param {CommandInteraction} interaction @param {Reminder} reminder @param {Message} syncMessage */
+async function enableReminderSync(interaction, reminder, syncMessage) {
+	if (!syncMessage) return;
+
+	let sync_type = syncMessage?.interaction
+		? reminderManager.SyncType.SLASH_COMMAND
+		: reminderManager.SyncType.PREFIX_COMMAND;
+
+	let sync_bot_id = syncMessage.author.id;
+
+	let sync_command_name = syncMessage?.interaction ? syncMessage.interaction.commandName : null;
+
+	let sync_message_content = syncMessage?.interaction ? [] : breakDownMessageContent(syncMessage);
+
+	let sync_message_content_includes_name =
+		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
+		sync_message_content.includes(interaction.member.displayName.toLowerCase());
+
+	await reminderManager.edit(reminder._id, {
+		sync_type,
+		sync_bot_id,
+		sync_command_name,
+		sync_message_content,
+		sync_message_content_includes_name
+	});
+
+	/* - - - - - { Send the Result } - - - - - */
+	let embed_syncEnabled = new BetterEmbed({
+		interaction,
+		title: "+ Reminder Sync Enabled",
+		description: `I'll be on the look out for whenever you run that command.`,
+		footer: `id: ${reminder._id}`
+	});
+
+	// `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
+
+	// Let the user know sync was enabled
+	return await interaction.followUp({
+		content: ""
+	});
 }
 
 /** @param {CommandInteraction} interaction */
@@ -94,13 +160,13 @@ async function subcommand_add(interaction) {
 	});
 
 	// Create a button to enable assist
-	let button_enableAssist = new ButtonBuilder()
-		.setCustomId("btn_enableAssist")
+	let button_enableSync = new ButtonBuilder()
+		.setCustomId("btn_enableSync")
 		.setStyle(ButtonStyle.Primary)
-		.setLabel("Reminder Assist");
+		.setLabel("Auto Sync");
 
 	// Create the action row
-	let actionRow = new ActionRowBuilder().setComponents(button_enableAssist);
+	let actionRow = new ActionRowBuilder().setComponents(button_enableSync);
 
 	// Send the embed with components
 	let message = await embed_reminderAdd.send({ components: repeat ? actionRow : null });
@@ -108,12 +174,12 @@ async function subcommand_add(interaction) {
 	/* - - - - - { Collect Button/Reaction Stuff } - - - - - */
 	let filter = async i => {
 		await i.deferUpdate().catch(() => null);
-		return i.user.id === interaction.user.id && i.customId === "btn_enableAssist";
+		return i.user.id === interaction.user.id && i.customId === "btn_enableSync";
 	};
 
 	// prettier-ignore
 	if (repeat) await message
-		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("15s") })
+		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("30s") })
 		.then(async i => {
 			// Remove the button
 			if (message.editable) message.edit({ components: [] }).catch(() => null);
@@ -155,14 +221,14 @@ async function subcommand_add(interaction) {
 						// prettier-ignore
 						// Check if the message was sent by a bot
 						if (!_collectedReaction.message.author.bot) return await _collectedReaction.message.reply({
-							content: `${interaction.user} I told you I can only assist with messages from ***bots***.`
+							content: `${interaction.user} I told you I can only sync messages by ***bots***.`
 						}).catch(() => null);
 
 						// prettier-ignore
 						// Check if the message is a slash command that was used by the user
 						if (!_collectedReaction.message.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
 							return await _collectedReaction.message.reply({
-								content: `${interaction.user} you can't just jack someone else's command, bro. I can only use slash commands used by you.`
+								content: `${interaction.user} you can't just jack someone else's command, bro. I can only sync slash commands used by you.`
 							}).catch(() => null);
 
 						// Set the assist message to this one
@@ -172,7 +238,7 @@ async function subcommand_add(interaction) {
 						collector_channel.stop();
 
 						// Parse the assist_message
-						return await enableReminderAssist(reminder, assist_message);
+						return await enableReminderSync(interaction, reminder, assist_message);
 					})
 					.catch(() => null);
 
@@ -193,7 +259,7 @@ async function subcommand_add(interaction) {
 			// Remove the button
 			return await message.edit({ components: [] }).catch(() => null);
 		});
-	
+
 	return message;
 
 	// Check if the user enabled assist

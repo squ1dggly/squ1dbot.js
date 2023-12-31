@@ -16,11 +16,11 @@ const schema_reminder = new Schema(
 		timestamp: { type: Number, require: true },
 		raw_time: { type: String, require: true },
 
-		assist_type: { type: Number, default: 0 },
-		assist_bot_id: { type: String, default: null },
-		assist_command_name: { type: String, default: null },
-		assist_message_content: { type: Array, default: [] },
-		assist_message_content_includes_name: { type: Boolean, default: false },
+		sync_type: { type: Number, default: 0 },
+		sync_bot_id: { type: String, default: null },
+		sync_command_name: { type: String, default: null },
+		sync_message_content: { type: Array, default: [] },
+		sync_message_content_includes_name: { type: Boolean, default: false },
 
 		created: { type: Number, default: Date.now() }
 	},

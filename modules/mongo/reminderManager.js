@@ -13,11 +13,11 @@
  * @property {number} timestamp
  * @property {string} raw_time
  *
- * @property {number|null} assist_type
- * @property {string|null} assist_bot_id
- * @property {string|null} assist_command_name
- * @property {string[]} assist_message_content
- * @property {Boolean} assist_message_content_includes_name
+ * @property {number|null} sync_type
+ * @property {string|null} sync_bot_id
+ * @property {string|null} sync_command_name
+ * @property {string[]} sync_message_content
+ * @property {Boolean} sync_message_content_includes_name
  *
  * @property {number} created */
 
@@ -33,6 +33,11 @@ const jt = require("../jsTools");
 const models = {
 	reminder: require("../../models/reminderModel").model,
 	reminderTrigger: require("../../models/reminderTriggerModel").model
+};
+
+const SyncType = {
+	SLASH_COMMAND: 0,
+	PREFIX_COMMAND: 1
 };
 
 /* - - - - - { Classes } - - - - - */
@@ -53,10 +58,11 @@ class Reminder {
 		this.timestamp = jt.parseTime(data.raw_time, { fromNow: true });
 		this.raw_time = data.raw_time;
 
-		this.assist_type = data?.assist_type || null;
-		this.assist_bot_id = data?.assist_bot_id || null;
-		this.assist_message_content = data?.assist_message_content || null;
-		this.assist_message_content_includes_name = data?.assist_message_content_includes_name || false;
+		this.sync_type = data?.sync_type || null;
+		this.sync_bot_id = data?.sync_bot_id || null;
+		this.sync_command_name = data?.sync_command_name || null;
+		this.sync_message_content = data?.sync_message_content || null;
+		this.sync_message_content_includes_name = data?.sync_message_content_includes_name || false;
 
 		return { ...this };
 	}
@@ -213,6 +219,8 @@ async function trigger_deleteAll(user_id, guild_id = null) {
 }
 
 module.exports = {
+	SyncType,
+
 	exists: reminder_exists,
 	count: reminder_count,
 	fetch: reminder_fetch,

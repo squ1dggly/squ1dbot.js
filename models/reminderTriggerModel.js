@@ -20,12 +20,6 @@ const schema_reminder = new Schema(
 			limit: { type: Number, default: null },
 			raw_time: { type: String, default: null },
 
-			assist_type: { type: Number, default: 0 },
-			assist_bot_id: { type: String, default: null },
-			assist_command_name: { type: String, default: null },
-			assist_message_content: { type: Array, default: [] },
-			assist_message_content_includes_name: { type: Boolean, default: false },
-
 			created: { type: Number, default: Date.now() }
 		}
 	},
