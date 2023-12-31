@@ -15,7 +15,7 @@ const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
 /** @param {CommandInteraction} interaction @param {Reminder} reminder @param {Message} syncMessage */
-async function enableReminderSync(interaction, reminder, syncMessage) {
+async function enableReminderSync(interaction, reminderID, syncMessage) {
 	if (!syncMessage) return;
 
 	let sync_type = syncMessage?.interaction
@@ -32,7 +32,7 @@ async function enableReminderSync(interaction, reminder, syncMessage) {
 		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
 		sync_message_content.includes(interaction.member.displayName.toLowerCase());
 
-	await reminderManager.edit(reminder._id, {
+	await reminderManager.edit(reminderID, {
 		sync_type,
 		sync_bot_id,
 		sync_command_name,
@@ -45,14 +45,14 @@ async function enableReminderSync(interaction, reminder, syncMessage) {
 		interaction,
 		title: "+ Reminder Sync Enabled",
 		description: `I'll be on the look out for whenever you run that command.`,
-		footer: `id: ${reminder._id}`
+		footer: `id: ${reminderID}`
 	});
 
 	// Let the user know sync was enabled
 	return await embed_syncEnabled.send({ sendMethod: "followUp" });
 }
 
-async function awaitSyncMessage(interaction, message) {
+async function awaitSyncMessage(interaction, message, reminderID) {
 	let timeouts = {
 		syncButton: jt.parseTime("30s"),
 		reactionCollect: jt.parseTime("45s")
@@ -78,8 +78,6 @@ async function awaitSyncMessage(interaction, message) {
 				ephemeral: true
 			});
 
-			return;
-
 			// prettier-ignore
 			// Create a message collector in the current channel
 			let filter_channel = m => m.author.bot;
@@ -91,12 +89,11 @@ async function awaitSyncMessage(interaction, message) {
 			let _reactionCollectors = [];
 
 			collector_channel.on("collect", async _message => {
-				// Check if the message was found
-				if (syncMessage) collector_channel.stop();
-
-				let filter_reaction = (reaction, user) => {
-					return user.id === interaction.user.id && reaction.emoji.name === "⏰";
-				};
+				let filter_reaction = (reaction, user) =>
+					!user.bot &&
+					reaction.message.author.bot &&
+					user.id === interaction.user.id &&
+					reaction.emoji.name === "⏰";
 
 				// Add a reaction collector to the message
 				let collector_reaction = _message
@@ -105,26 +102,20 @@ async function awaitSyncMessage(interaction, message) {
 						let _collectedReaction = collected.first();
 
 						// prettier-ignore
-						// Check if the message was sent by a bot
-						if (!_collectedReaction.message.author.bot) return await _collectedReaction.message.reply({
-							content: `${interaction.user} I told you I can only sync messages by ***bots***.`
-						}).catch(() => null);
-
-						// prettier-ignore
 						// Check if the message is a slash command that was used by the user
-						if (!_collectedReaction.message.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
+						if (_collectedReaction.message?.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
 							return await _collectedReaction.message.reply({
-								content: `${interaction.user} you can't just jack someone else's command, bro. I can only sync slash commands used by you.`
+								content: `${interaction.user} you can't just jack someone else's command, bro. I'm only syncing slash commands used by you.`
 							}).catch(() => null);
 
 						// Set the assist message to this one
 						syncMessage = _collectedReaction.message;
 
+						// Enable syncing for the selected message
+						enableReminderSync(interaction, reminderID, syncMessage);
+
 						// Stop the channel collector
 						collector_channel.stop();
-
-						// Parse the assist_message
-						return await enableReminderSync(interaction, reminder, syncMessage);
 					})
 					.catch(() => null);
 
@@ -207,36 +198,39 @@ async function subcommand_add(interaction) {
 	// prettier-ignore
 	if (repeat) _options_f.push(limit
 		? `> Repeat: ${limit} ${limit === 1 ? "time" : "times"}`
-		: "> Repeat: ✔️"
+		: "> Repeat: ✅"
 	);
 
 	// Create the embed :: { REMINDER ADD }
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
-		title: "+ Reminder",
-		description: 'You will be reminded about "$NAME" $DYNAMIC $ETA\n$OPTIONS'
+		title: "Reminder Added",
+		description: 'You will be reminded about "$NAME" $DYNAMIC $ETA.\n$OPTIONS'
 			.replace("$NAME", name)
 			.replace("$DYNAMIC", repeat ? "every" : "in")
 			.replace("$ETA", jt.eta(reminder.timestamp))
-			.replace("$OPTIONS", _options_f.length ? _options_f.join("\n") : "")
+			.replace("$OPTIONS", _options_f.length ? _options_f.join("\n") : ""),
+		footer: `id: ${reminder._id}`
 	});
 
-	// Create a button to enable assist
-	let button_enableSync = new ButtonBuilder()
-		.setCustomId("btn_enableSync")
-		.setStyle(ButtonStyle.Primary)
-		.setLabel("Auto Sync");
+	if (repeat) {
+		// Create a button to enable sync
+		let button_enableSync = new ButtonBuilder()
+			.setCustomId("btn_enableSync")
+			.setStyle(ButtonStyle.Primary)
+			.setLabel("Enable Sync");
 
-	// Create the action row
-	let actionRow = new ActionRowBuilder().setComponents(button_enableSync);
+		// Create the action row
+		let actionRow = new ActionRowBuilder().setComponents(button_enableSync);
 
-	// Send the embed with components
-	let message = await embed_reminderAdd.send({ components: repeat ? actionRow : null });
+		// Send the embed with components
+		let message = await embed_reminderAdd.send({ components: actionRow });
 
-	// Await components and reactions
-	if (repeat) awaitSyncMessage(interaction, message);
+		// Await components and reactions
+		awaitSyncMessage(interaction, message, reminder._id);
 
-	return message;
+		return message;
+	} else return await embed_reminderAdd.send();
 }
 
 /** @param {CommandInteraction} interaction */

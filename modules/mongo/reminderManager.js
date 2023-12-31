@@ -36,8 +36,8 @@ const models = {
 };
 
 const SyncType = {
-	SLASH_COMMAND: 0,
-	PREFIX_COMMAND: 1
+	SLASH_COMMAND: 1,
+	PREFIX_COMMAND: 2
 };
 
 /* - - - - - { Classes } - - - - - */
