@@ -114,19 +114,27 @@ async function subcommand_add(interaction) {
 			// Let the user know what they have to do
 			await i.followUp({ content: "Alright. You have 15 seconds to react with \`⏰\` to the message you want your reminder to follow.\nIf the message is a slash command, the command has to have been used by you.\nThe message has to be from a bot, by the way." });
 
+			// prettier-ignore
 			// Create a message collector in the current channel
 			let filter_channel = m => m.author.bot;
-			let collector_channel = message.channel.createMessageCollector({ filter, time: jt.parseTime("15s") });
+			let collector_channel = message.channel.createMessageCollector({ filter: filter_channel, time: jt.parseTime("15s") });
+			
 			let _reactionCollectors = [];
+			let assist_message = null;
 
-			let assist_message_id = "";
+			const parseAssistMessage = async () => {
+				console.log(assist_message);
+			};
 
 			collector_channel.on("collect", async _message => {
+				// Check if the message was found
+				if (assist_message) collector_channel.stop();
+
 				let filter_reaction = (reaction, user) => user.id === interaction.user.id && reaction.emoji.name === "⏰";
 
 				// Add a reaction collector to the message
 				let collector_reaction = _message
-					.awaitReactions({ filter, time: jt.parseTime("15s"), max: 1, errors: ["time"] })
+					.awaitReactions({ filter: filter_reaction, time: jt.parseTime("15s"), max: 1, errors: ["time"] })
 					.then(async collected => {
 						let _collectedReaction = collected.values()[0];
 
@@ -142,11 +150,26 @@ async function subcommand_add(interaction) {
 							return await _collectedReaction.message.reply({
 								content: `${interaction.user} you can't just jack someone else's command, bro. I can only use slash commands used by you.`
 							}).catch(() => null);
+
+						// Set the assist message to this one
+						assist_message = _collectedReaction.message;
+
+						// Stop the channel collector
+						collector_channel.stop();
+
+						// Parse the assist_message
+						return await parseAssistMessage();
 					})
 					.catch(() => null);
+				
+				// Push the newly made reaction collector to the list
+				_reactionCollectors.push(collector_reaction);
 			});
 
-			// Create a message collector and check for the user to react with ⏰
+			// Stop all reaction collectors
+			collector_channel.on("end", () => {
+				try {_reactionCollectors.forEach(c => c.stop());} catch {}
+			});
 		})
 		.catch(async () => {
 			if (!message.editable) return;
