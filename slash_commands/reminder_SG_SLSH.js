@@ -18,19 +18,21 @@ const jt = require("../modules/jsTools");
 async function enableReminderSync(interaction, reminderID, syncMessage) {
 	if (!syncMessage) return;
 
-	let sync_type = syncMessage?.interaction
-		? reminderManager.SyncType.SLASH_COMMAND
-		: reminderManager.SyncType.PREFIX_COMMAND;
+	let isSlashCommand = syncMessage?.interaction !== null;
+
+	let sync_type = isSlashCommand ? reminderManager.SyncType.SLASH_COMMAND : reminderManager.SyncType.PREFIX_COMMAND;
 
 	let sync_bot_id = syncMessage.author.id;
 
-	let sync_command_name = syncMessage?.interaction ? syncMessage.interaction.commandName : null;
+	let sync_command_name = isSlashCommand ? syncMessage.interaction.commandName : null;
 
-	let sync_message_content = syncMessage?.interaction ? [] : messageContentToArray(syncMessage, 1);
+	let sync_message_content = isSlashCommand ? null : messageContentToArray(syncMessage, 1);
 
 	let sync_message_content_includes_name =
 		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
 		sync_message_content.includes(interaction.member.displayName.toLowerCase());
+
+	let prefixCommandReference = (await syncMessage.fetchReference()) || null;
 
 	await reminderManager.edit(reminderID, {
 		sync_type,
@@ -40,16 +42,19 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 		sync_message_content_includes_name
 	});
 
-	/* - - - - - { Send the Result } - - - - - */
+	// prettier-ignore
+	// Create the embed :: { REMINDER SYNC ENABLED }
 	let embed_syncEnabled = new BetterEmbed({
 		interaction,
-		title: "+ Reminder Sync Enabled",
-		description: `I'll be on the look out for whenever you run that command.`,
+		title: "Sync Enabled",
+		description: isSlashCommand
+			? `I'll sync your reminder whenever you use ${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\`.`
+			: `I'll sync your reminder whenever you use ${prefixCommandReference ? `the \`${prefixCommandReference.content}\` command` : "that command"}.`,
 		footer: `id: ${reminderID}`
 	});
 
 	// Let the user know sync was enabled
-	return await embed_syncEnabled.send({ sendMethod: "followUp" });
+	return await embed_syncEnabled.send({ sendMethod: "followUp", ephemeral: true });
 }
 
 async function awaitSyncMessage(interaction, message, reminderID) {
