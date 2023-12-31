@@ -45,6 +45,8 @@ class Reminder {
 		this.guild_id = data.guild_id;
 		this.channel_id = data?.channel_id || null;
 
+		this.enabled = data?.enabled || false;
+
 		this.name = data.name;
 		this.repeat = data?.limit ? true : data?.repeat || false;
 		this.limit = data?.limit || null;
@@ -102,7 +104,7 @@ async function reminder_fetchAllAssistedInGuild(user_id, guild_id, assist_comman
 	return await models.reminder.find({ user_id, guild_id, assist_command_name }).lean();
 }
 
-async function reminder_update(id, query) {
+async function reminder_edit(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
@@ -217,7 +219,7 @@ module.exports = {
 	fetchAll: reminder_fetchAll,
 	fetchAllActiveInGuild: reminder_fetchAllActiveInGuild,
 	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
-	update: reminder_update,
+	edit: reminder_edit,
 	add: reminder_add,
 	addFromTrigger: reminder_addFromTrigger,
 	delete: reminder_delete,

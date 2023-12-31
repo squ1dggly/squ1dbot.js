@@ -11,7 +11,7 @@ async function subcommand_add(interaction) {
 	let time = interaction.options.getString("time").trim();
 	let channel = interaction.options.getChannel("channel") || null;
 	let repeat = interaction.options.getBoolean("repeat") || false;
-	let limit = interaction.options.getInteger("limit") || 0;
+	let limit = interaction.options.getInteger("limit") || null;
 	let assist = interaction.options.getBoolean("assist") || false;
 
 	/* - - - - - { Error Checking } - - - - - */
@@ -41,6 +41,21 @@ async function subcommand_add(interaction) {
 
 	await interaction.deferReply().catch(() => null);
 
+	// prettier-ignore
+	// Create and add the reminder to the database
+	let reminder = await reminderManager.add({
+		user_id: interaction.user.id,
+		guild_id: interaction.guild.id,
+		channel_id: channel?.id || null,
+
+		name, repeat, limit, raw_time: time
+	});
+
+	// Check if the user enabled assist
+	if (assist) {
+		// TODO: message collector stuff to check for ⏰ reactions
+	}
+
 	// Check if the user provided a valid message ID
 	if (assistMessageID) {
 		assistMessage = await interaction.channel.messages.fetch(assistMessageID).catch(() => null);
@@ -69,13 +84,6 @@ async function subcommand_add(interaction) {
 				content: "Repeat must be enabled to take advantage of the assist feature."
 			});
 	}
-
-	// prettier-ignore
-	// Create and add the reminder to the database
-	let reminder = await reminderManager.add(
-		interaction.user.id, interaction.guild.id, channel?.id || null,
-		name, repeat, limit, time, assistMessage
-	);
 
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderAdd = new BetterEmbed({
@@ -135,7 +143,7 @@ async function subcommand_addTrigger() {
 	await interaction.deferReply().catch(() => null);
 
 	// Create and add the trigger to the database
-	await reminderManager.trigger.add({
+	let reminderTrigger = await reminderManager.trigger.add({
 		user_id: interaction.user.id,
 		guild_id: interaction.guild.id,
 		message_trigger,
@@ -153,7 +161,8 @@ async function subcommand_addTrigger() {
 	let embed_reminderTriggerAdd = new BetterEmbed({
 		interaction,
 		title: "Added reminder trigger",
-		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`
+		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
+		footer: `id: ${reminderTrigger._id}`
 	});
 
 	return await embed_reminderTriggerAdd.send();
