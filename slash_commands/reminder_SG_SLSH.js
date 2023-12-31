@@ -10,38 +10,9 @@ const {
 	Message
 } = require("discord.js");
 
-const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
+const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
-
-/** @param {Message} message */
-function breakDownMessageContent(message) {
-	let content = [];
-
-	if (message.content) content.push(...message.content.toLowerCase().split(" "));
-
-	// Go through the first embed because that's all we care about
-	if (message.embeds[0]) {
-		let embed = message.embeds[0];
-
-		if (embed?.title) content.push(...embed.title.split(" "));
-		if (embed?.author?.name) content.push(...embed.author.name.split(" "));
-
-		if (embed?.description) content.push(...embed.description.split(" "));
-
-		if (embed?.fields?.length) {
-			for (let field of embed.fields) {
-				if (field?.name) content.push(...field.name.split(" "));
-				if (field?.value) content.push(...field.value.split(" "));
-			}
-		}
-
-		if (embed?.footer?.text) content.push(...embed.footer.text.split(" "));
-	}
-
-	// Parse and return content
-	return content.map(str => str.trim().toLowerCase());
-}
 
 /** @param {CommandInteraction} interaction @param {Reminder} reminder @param {Message} syncMessage */
 async function enableReminderSync(interaction, reminder, syncMessage) {
@@ -55,7 +26,7 @@ async function enableReminderSync(interaction, reminder, syncMessage) {
 
 	let sync_command_name = syncMessage?.interaction ? syncMessage.interaction.commandName : null;
 
-	let sync_message_content = syncMessage?.interaction ? [] : breakDownMessageContent(syncMessage);
+	let sync_message_content = syncMessage?.interaction ? [] : messageContentToArray(syncMessage, 1);
 
 	let sync_message_content_includes_name =
 		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
