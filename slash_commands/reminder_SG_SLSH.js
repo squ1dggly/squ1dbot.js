@@ -14,7 +14,7 @@ const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = req
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
 
-/** @param {CommandInteraction} interaction @param {Reminder} reminder @param {Message} syncMessage */
+/** @param {CommandInteraction} interaction @param {string} reminderID @param {Message} syncMessage */
 async function enableReminderSync(interaction, reminderID, syncMessage) {
 	if (!syncMessage) return;
 
@@ -62,13 +62,14 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 	});
 
 	// Let the user know sync was enabled
-	return await embed_syncEnabled.send({ sendMethod: "followUp", ephemeral: true });
+	return await embed_syncEnabled.send({ sendMethod: "followUp" /* , ephemeral: true */ });
 }
 
+/** @param {CommandInteraction} interaction @param {Message} message @param {string} reminderID */
 async function awaitSyncMessage(interaction, message, reminderID) {
 	let timeouts = {
 		syncButton: jt.parseTime("30s"),
-		reactionCollect: jt.parseTime("45s")
+		reactionCollect: jt.parseTime("1m")
 	};
 
 	let syncMessage = null;
@@ -87,7 +88,7 @@ async function awaitSyncMessage(interaction, message, reminderID) {
 			// prettier-ignore
 			// Let the user know what they have to do
 			await i.followUp({
-				content: "## Instructions:\nReact with ⏰ to any ***new*** message sent by a bot within the next 45 seconds.\nIf it's a slash command, make sure that it was used by you.",
+				content: "## Instructions:\nReact with ⏰ to any ***new*** message sent by a bot within the next 60 seconds.\nIf it's a slash command, make sure that it was used by you.",
 				ephemeral: true
 			});
 
@@ -247,67 +248,6 @@ async function subcommand_add(interaction) {
 }
 
 /** @param {CommandInteraction} interaction */
-async function subcommand_addTrigger() {
-	// Get interaction options
-	let message_trigger = interaction.options.getString("trigger").trim();
-	let name = interaction.options.getString("name").trim();
-	let time = interaction.options.getString("time").trim();
-	let channel = interaction.options.getChannel("channel") || null;
-
-	/* - - - - - { Error Checking } - - - - - */
-	try {
-		let parsedTime = jt.parseTime(time);
-		// prettier-ignore
-		if (parsedTime < 5000) return await interaction.reply({
-			content: "You can't set a reminder that's less than 5 seconds.", ephemeral: true
-		});
-	} catch {
-		return await interaction.reply({ content: `\`${time}\` is not a valid time you can use.`, ephemeral: true });
-	}
-
-	// Check if the user has permission to send messsages in the selected channel
-	if (channel && !channel.permissionsFor(interaction.user).has(PermissionFlagsBits.SendMessages))
-		return await interaction.reply({
-			content: `I can't send a reminder to ${channel} when you don't even have permission to send messages there, peasant.`,
-			ephemeral: true
-		});
-
-	// Check if the user has permission to send messsages in the selected channel
-	if (channel && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages))
-		return await interaction.reply({
-			content: `I can't send a reminder to ${channel} when I don't have permission to send messages there.`,
-			ephemeral: true
-		});
-
-	await interaction.deferReply().catch(() => null);
-
-	// Create and add the trigger to the database
-	let reminderTrigger = await reminderManager.trigger.add({
-		user_id: interaction.user.id,
-		guild_id: interaction.guild.id,
-		message_trigger,
-
-		reminder_data: {
-			user_id: interaction.user.id,
-			guild_id: interaction.guild.id,
-			name,
-			channel_id: channel?.id || null,
-			raw_time: time
-		}
-	});
-
-	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderTriggerAdd = new BetterEmbed({
-		interaction,
-		title: "+ Reminder Trigger",
-		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
-		footer: `id: ${reminderTrigger._id}`
-	});
-
-	return await embed_reminderTriggerAdd.send();
-}
-
-/** @param {CommandInteraction} interaction */
 async function subcommand_delete(interaction) {
 	await interaction.deferReply().catch(() => null);
 
@@ -416,6 +356,67 @@ async function subcommand_list(interaction) {
 	return await pagination.send();
 }
 
+/** @param {CommandInteraction} interaction */
+async function subcommand_triggerAdd() {
+	// Get interaction options
+	let message_trigger = interaction.options.getString("trigger").trim();
+	let name = interaction.options.getString("name").trim();
+	let time = interaction.options.getString("time").trim();
+	let channel = interaction.options.getChannel("channel") || null;
+
+	/* - - - - - { Error Checking } - - - - - */
+	try {
+		let parsedTime = jt.parseTime(time);
+		// prettier-ignore
+		if (parsedTime < 5000) return await interaction.reply({
+			content: "You can't set a reminder that's less than 5 seconds.", ephemeral: true
+		});
+	} catch {
+		return await interaction.reply({ content: `\`${time}\` is not a valid time you can use.`, ephemeral: true });
+	}
+
+	// Check if the user has permission to send messsages in the selected channel
+	if (channel && !channel.permissionsFor(interaction.user).has(PermissionFlagsBits.SendMessages))
+		return await interaction.reply({
+			content: `I can't send a reminder to ${channel} when you don't even have permission to send messages there, peasant.`,
+			ephemeral: true
+		});
+
+	// Check if the user has permission to send messsages in the selected channel
+	if (channel && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages))
+		return await interaction.reply({
+			content: `I can't send a reminder to ${channel} when I don't have permission to send messages there.`,
+			ephemeral: true
+		});
+
+	await interaction.deferReply().catch(() => null);
+
+	// Create and add the trigger to the database
+	let reminderTrigger = await reminderManager.trigger.add({
+		user_id: interaction.user.id,
+		guild_id: interaction.guild.id,
+		message_trigger,
+
+		reminder_data: {
+			user_id: interaction.user.id,
+			guild_id: interaction.guild.id,
+			name,
+			channel_id: channel?.id || null,
+			raw_time: time
+		}
+	});
+
+	/* - - - - - { Send the Result } - - - - - */
+	let embed_reminderTriggerAdd = new BetterEmbed({
+		interaction,
+		title: "+ Reminder Trigger",
+		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
+		footer: `id: ${reminderTrigger._id}`
+	});
+
+	return await embed_reminderTriggerAdd.send();
+}
+
 module.exports = {
 	options: { icon: "⏰", deferReply: false },
 
@@ -433,16 +434,13 @@ module.exports = {
                 .setRequired(true))
 
             .addChannelOption(option => option.setName("channel")
-                .setDescription("What channel do you want to be pinged in? Leave blank to be DM'd. (optional)"))
-            
+				.setDescription("What channel do you want to be pinged in? Leave blank to be DM'd. (optional)"))
+
             .addBooleanOption(option => option.setName("repeat")
                 .setDescription("Do you wish to keep being reminded about this? (optional)"))
-            
+
             .addIntegerOption(option => option.setName("limit")
 				.setDescription("How many times do you want the reminder to repeat? (optional)"))
-			
-			/* .addStringOption(option => option.setName("assist")
-                .setDescription("Reset the timer whenever you use a certain slash command. Requires the message ID of the command.")) */
 		)
 
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
@@ -491,7 +489,9 @@ module.exports = {
 
             case "delete": return await subcommand_delete(interaction);
 
-            case "list": return await subcommand_list(interaction);
+			case "list": return await subcommand_list(interaction);
+			
+			case "trigger add": return await subcommand_triggerAdd(interaction);
 
             default: return;
         }
