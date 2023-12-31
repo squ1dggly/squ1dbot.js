@@ -48,12 +48,103 @@ async function enableReminderSync(interaction, reminder, syncMessage) {
 		footer: `id: ${reminder._id}`
 	});
 
-	// `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
-
 	// Let the user know sync was enabled
-	return await interaction.followUp({
-		content: ""
-	});
+	return await embed_syncEnabled.send({ sendMethod: "followUp" });
+}
+
+async function awaitSyncMessage(interaction, message) {
+	let timeouts = {
+		syncButton: jt.parseTime("30s"),
+		reactionCollect: jt.parseTime("45s")
+	};
+
+	let syncMessage = null;
+
+	let filter = async i => {
+		await i.deferUpdate().catch(() => null);
+		return i.user.id === interaction.user.id && i.customId === "btn_enableSync";
+	};
+
+	await message
+		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: timeouts.syncButton })
+		.then(async i => {
+			// Remove the button
+			if (message.editable) message.edit({ components: [] }).catch(() => null);
+
+			// prettier-ignore
+			// Let the user know what they have to do
+			await i.followUp({
+				content: "## Instructions:\nReact with ⏰ to any ***new*** message sent by a bot within the next 45 seconds.\nIf it's a slash command, make sure that it was used by you.",
+				ephemeral: true
+			});
+
+			return;
+
+			// prettier-ignore
+			// Create a message collector in the current channel
+			let filter_channel = m => m.author.bot;
+			let collector_channel = message.channel.createMessageCollector({
+				filter: filter_channel,
+				time: jt.parseTime("45s")
+			});
+
+			let _reactionCollectors = [];
+
+			collector_channel.on("collect", async _message => {
+				// Check if the message was found
+				if (syncMessage) collector_channel.stop();
+
+				let filter_reaction = (reaction, user) => {
+					return user.id === interaction.user.id && reaction.emoji.name === "⏰";
+				};
+
+				// Add a reaction collector to the message
+				let collector_reaction = _message
+					.awaitReactions({ filter: filter_reaction, time: timeouts.reactionCollect, max: 1, errors: ["time"] })
+					.then(async collected => {
+						let _collectedReaction = collected.first();
+
+						// prettier-ignore
+						// Check if the message was sent by a bot
+						if (!_collectedReaction.message.author.bot) return await _collectedReaction.message.reply({
+							content: `${interaction.user} I told you I can only sync messages by ***bots***.`
+						}).catch(() => null);
+
+						// prettier-ignore
+						// Check if the message is a slash command that was used by the user
+						if (!_collectedReaction.message.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
+							return await _collectedReaction.message.reply({
+								content: `${interaction.user} you can't just jack someone else's command, bro. I can only sync slash commands used by you.`
+							}).catch(() => null);
+
+						// Set the assist message to this one
+						syncMessage = _collectedReaction.message;
+
+						// Stop the channel collector
+						collector_channel.stop();
+
+						// Parse the assist_message
+						return await enableReminderSync(interaction, reminder, syncMessage);
+					})
+					.catch(() => null);
+
+				// Push the newly made reaction collector to the list
+				_reactionCollectors.push(collector_reaction);
+			});
+
+			// Stop all reaction collectors
+			collector_channel.on("end", () => {
+				try {
+					_reactionCollectors.forEach(c => c.stop());
+				} catch {}
+			});
+		})
+		.catch(async () => {
+			if (!message.editable) return;
+
+			// Remove the button
+			return await message.edit({ components: [] }).catch(() => null);
+		});
 }
 
 /** @param {CommandInteraction} interaction */
@@ -142,150 +233,10 @@ async function subcommand_add(interaction) {
 	// Send the embed with components
 	let message = await embed_reminderAdd.send({ components: repeat ? actionRow : null });
 
-	/* - - - - - { Collect Button/Reaction Stuff } - - - - - */
-	let filter = async i => {
-		await i.deferUpdate().catch(() => null);
-		return i.user.id === interaction.user.id && i.customId === "btn_enableSync";
-	};
-
-	// prettier-ignore
-	if (repeat) await message
-		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("30s") })
-		.then(async i => {
-			// Remove the button
-			if (message.editable) message.edit({ components: [] }).catch(() => null);
-
-			// prettier-ignore
-			// Let the user know what they have to do
-			await i.followUp({
-				content: "Alright. You have 45 seconds to react with `⏰` to the message you want your reminder to follow.\nIf the message is a slash command, the command has to have been used by you.\nThe message has to be from a bot, by the way.",
-				ephemeral: true
-			});
-
-			/* - - - - - { Parse the Assist Message } - - - - - */
-			let assist_message = null;
-
-			// prettier-ignore
-			// Create a message collector in the current channel
-			let filter_channel = m => m.author.bot;
-			let collector_channel = message.channel.createMessageCollector({
-				filter: filter_channel,
-				time: jt.parseTime("45s")
-			});
-
-			let _reactionCollectors = [];
-
-			collector_channel.on("collect", async _message => {
-				// Check if the message was found
-				if (assist_message) collector_channel.stop();
-
-				let filter_reaction = (reaction, user) => {
-					return user.id === interaction.user.id && reaction.emoji.name === "⏰";
-				};
-
-				// Add a reaction collector to the message
-				let collector_reaction = _message
-					.awaitReactions({ filter: filter_reaction, time: jt.parseTime("45s"), max: 1, errors: ["time"] })
-					.then(async collected => {
-						let _collectedReaction = collected.first();
-
-						// prettier-ignore
-						// Check if the message was sent by a bot
-						if (!_collectedReaction.message.author.bot) return await _collectedReaction.message.reply({
-							content: `${interaction.user} I told you I can only sync messages by ***bots***.`
-						}).catch(() => null);
-
-						// prettier-ignore
-						// Check if the message is a slash command that was used by the user
-						if (!_collectedReaction.message.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
-							return await _collectedReaction.message.reply({
-								content: `${interaction.user} you can't just jack someone else's command, bro. I can only sync slash commands used by you.`
-							}).catch(() => null);
-
-						// Set the assist message to this one
-						assist_message = _collectedReaction.message;
-
-						// Stop the channel collector
-						collector_channel.stop();
-
-						// Parse the assist_message
-						return await enableReminderSync(interaction, reminder, assist_message);
-					})
-					.catch(() => null);
-
-				// Push the newly made reaction collector to the list
-				_reactionCollectors.push(collector_reaction);
-			});
-
-			// Stop all reaction collectors
-			collector_channel.on("end", () => {
-				try {
-					_reactionCollectors.forEach(c => c.stop());
-				} catch {}
-			});
-		})
-		.catch(async () => {
-			if (!message.editable) return;
-
-			// Remove the button
-			return await message.edit({ components: [] }).catch(() => null);
-		});
+	// Await components and reactions
+	if (repeat) awaitSyncMessage(interaction, message);
 
 	return message;
-
-	// Check if the user enabled assist
-	// Add an assist button to the embed
-	// TODO: message collector stuff to check for ⏰ reactions
-
-	// Check if the user provided a valid message ID
-	/* if (assistMessageID) {
-		assistMessage = await interaction.channel.messages.fetch(assistMessageID).catch(() => null);
-
-		// prettier-ignore
-		// Let the user know it was invalid
-		if (!assistMessage) return await interaction.editReply({
-			content: "I couldn't find the message you wanted assistance with!\nMake sure it's a slash command that's in the same channel you're in right now."
-		});
-
-		// prettier-ignore
-		// Check if the message is a slash command
-		if (!assistMessage?.interaction) return await interaction.editReply({
-			content: "Woah there, I can only assist you with slash commands at this time."
-		});
-
-		// prettier-ignore
-		// Check if the message was sent by the same user
-		if (assistMessage.interaction.user.id !== interaction.user.id) return await interaction.editReply({
-			content: "You can't just jack someone else's command! I can only assist you with slash commands sent by you."
-		});
-
-		// Check if the user enabled repeat
-		if (!repeat)
-			return await interaction.editReply({
-				content: "Repeat must be enabled to take advantage of the assist feature."
-			});
-	} */
-
-	/* - - - - - { Send the Result } - - - - - */
-	/* let embed_reminderAdsssd = new BetterEmbed({
-		interaction,
-		title: "Reminder added",
-		description: `You will be reminded about \"${reminder.name}\" ${reminder.repeat ? "every" : "in"} ${jt.eta(
-			reminder.timestamp
-		)}.${
-			assistMessage
-				? `\n> Assistance enabled for ${assistMessage.author}'s \`/${assistMessage.interaction.commandName}\`.`
-				: ""
-		}${
-			reminder.repeat
-				? reminder.limit !== null
-					? `\n> Repeating: ${reminder.limit} ${reminder.limit === 1 ? "time" : "times"}`
-					: "\n> Repeat: ✅"
-				: ""
-		}`
-	});
-
-	return await embed_reminderAdd.send(); */
 }
 
 /** @param {CommandInteraction} interaction */
