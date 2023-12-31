@@ -24,10 +24,10 @@ const schema_reminder = new Schema(
 
 		created: { type: Number, default: Date.now() }
 	},
-	{ collection: "reminders" }
+	{ collection: "reminders_dev" }
 );
 
 module.exports = {
 	schema: schema_reminder,
-	model: model("reminders", schema_reminder)
+	model: model("reminders_dev", schema_reminder)
 };

@@ -6,12 +6,18 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
-	ComponentType
+	ComponentType,
+	Message
 } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
+
+/** @param {Reminder} reminder @param {Message} assistMessage */
+async function enableReminderAssist(reminder, assistMessage) {
+	
+}
 
 /** @param {CommandInteraction} interaction */
 async function subcommand_add(interaction) {
@@ -34,9 +40,10 @@ async function subcommand_add(interaction) {
 	}
 
 	// Check if the user's a dumbass and set the limit to less than 1
-	if (limit < 1)
+	if (limit !== null && limit < 1)
 		return await interaction.reply({
-			content: "You can't set the repeat limit to less than 1... That doesn't make any sense."
+			content: "You can't set the repeat limit to less than 1... That doesn't make any sense.",
+			ephemeral: true
 		});
 
 	// Check if the user has permission to send messsages in the selected channel
@@ -78,7 +85,7 @@ async function subcommand_add(interaction) {
 	// Create the embed :: { REMINDER ADD }
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
-		title: "➕ Reminder",
+		title: "+ Reminder",
 		description: 'You will be reminded about "$NAME" $DYNAMIC $ETA\n$OPTIONS'
 			.replace("$NAME", name)
 			.replace("$DYNAMIC", repeat ? "every" : "in")
@@ -96,15 +103,16 @@ async function subcommand_add(interaction) {
 	let actionRow = new ActionRowBuilder().setComponents(button_enableAssist);
 
 	// Send the embed with components
-	let message = await embed_reminderAdd.send({ components: actionRow });
+	let message = await embed_reminderAdd.send({ components: repeat ? actionRow : null });
 
-	// Start an interaction collector for the button
+	/* - - - - - { Collect Button/Reaction Stuff } - - - - - */
 	let filter = async i => {
 		await i.deferUpdate().catch(() => null);
 		return i.user.id === interaction.user.id && i.customId === "btn_enableAssist";
 	};
 
-	let collector = message
+	// prettier-ignore
+	if (repeat) await message
 		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("15s") })
 		.then(async i => {
 			// Remove the button
@@ -112,31 +120,37 @@ async function subcommand_add(interaction) {
 
 			// prettier-ignore
 			// Let the user know what they have to do
-			await i.followUp({ content: "Alright. You have 15 seconds to react with \`⏰\` to the message you want your reminder to follow.\nIf the message is a slash command, the command has to have been used by you.\nThe message has to be from a bot, by the way." });
+			await i.followUp({
+				content: "Alright. You have 45 seconds to react with `⏰` to the message you want your reminder to follow.\nIf the message is a slash command, the command has to have been used by you.\nThe message has to be from a bot, by the way.",
+				ephemeral: true
+			});
+
+			/* - - - - - { Parse the Assist Message } - - - - - */
+			let assist_message = null;
 
 			// prettier-ignore
 			// Create a message collector in the current channel
 			let filter_channel = m => m.author.bot;
-			let collector_channel = message.channel.createMessageCollector({ filter: filter_channel, time: jt.parseTime("15s") });
-			
-			let _reactionCollectors = [];
-			let assist_message = null;
+			let collector_channel = message.channel.createMessageCollector({
+				filter: filter_channel,
+				time: jt.parseTime("45s")
+			});
 
-			const parseAssistMessage = async () => {
-				console.log(assist_message);
-			};
+			let _reactionCollectors = [];
 
 			collector_channel.on("collect", async _message => {
 				// Check if the message was found
 				if (assist_message) collector_channel.stop();
 
-				let filter_reaction = (reaction, user) => user.id === interaction.user.id && reaction.emoji.name === "⏰";
+				let filter_reaction = (reaction, user) => {
+					return user.id === interaction.user.id && reaction.emoji.name === "⏰";
+				};
 
 				// Add a reaction collector to the message
 				let collector_reaction = _message
-					.awaitReactions({ filter: filter_reaction, time: jt.parseTime("15s"), max: 1, errors: ["time"] })
+					.awaitReactions({ filter: filter_reaction, time: jt.parseTime("45s"), max: 1, errors: ["time"] })
 					.then(async collected => {
-						let _collectedReaction = collected.values()[0];
+						let _collectedReaction = collected.first();
 
 						// prettier-ignore
 						// Check if the message was sent by a bot
@@ -158,17 +172,19 @@ async function subcommand_add(interaction) {
 						collector_channel.stop();
 
 						// Parse the assist_message
-						return await parseAssistMessage();
+						return await enableReminderAssist(reminder, assist_message);
 					})
 					.catch(() => null);
-				
+
 				// Push the newly made reaction collector to the list
 				_reactionCollectors.push(collector_reaction);
 			});
 
 			// Stop all reaction collectors
 			collector_channel.on("end", () => {
-				try {_reactionCollectors.forEach(c => c.stop());} catch {}
+				try {
+					_reactionCollectors.forEach(c => c.stop());
+				} catch {}
 			});
 		})
 		.catch(async () => {
@@ -177,6 +193,8 @@ async function subcommand_add(interaction) {
 			// Remove the button
 			return await message.edit({ components: [] }).catch(() => null);
 		});
+	
+	return message;
 
 	// Check if the user enabled assist
 	// Add an assist button to the embed
@@ -286,7 +304,7 @@ async function subcommand_addTrigger() {
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderTriggerAdd = new BetterEmbed({
 		interaction,
-		title: "➕ Reminder Trigger",
+		title: "+ Reminder Trigger",
 		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
 		footer: `id: ${reminderTrigger._id}`
 	});

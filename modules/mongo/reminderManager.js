@@ -117,10 +117,10 @@ async function reminder_add(data) {
 	};
 
 	// Create a new reminder object
-	let reminder = new Reminder(data);
+	let reminder = new Reminder({ _id: await createUniqueID(), ...data });
 
 	// Create a new document
-	let doc = new models.reminderTrigger(reminder);
+	let doc = new models.reminder(reminder);
 
 	// Save the document to the database
 	await doc.save().catch(err => console.error("Failed to save reminder", err));
@@ -179,7 +179,7 @@ async function trigger_add(data) {
 	};
 
 	// Create a new reminder object
-	let reminderTrigger = new ReminderTrigger(data);
+	let reminderTrigger = new ReminderTrigger({ _id: await createUniqueID(), ...data });
 
 	// Create a new document
 	let doc = new models.reminderTrigger(reminderTrigger);
