@@ -24,6 +24,7 @@
 /** @typedef ReminderTriggerData
  * @property {string} user_id
  * @property {string} guild_id
+ * @property {string} message_trigger
  * @property {Reminder} reminder_data */
 
 const logger = require("../logger");
@@ -66,6 +67,8 @@ class ReminderTrigger {
 
 		this.user_id = data.user_id;
 		this.guild_id = data.guild_id;
+
+		this.message_trigger = data.message_trigger;
 
 		this.reminder_data = data.reminder_data;
 
@@ -227,6 +230,6 @@ module.exports = {
 		fetchForUserInGuild: trigger_fetchForUserInGuild,
 		add: trigger_add,
 		delete: trigger_delete,
-		deleteAll: trigger_deleteAll,
+		deleteAll: trigger_deleteAll
 	}
 };
