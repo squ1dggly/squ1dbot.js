@@ -32,7 +32,12 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
 		sync_message_content.includes(interaction.member.displayName.toLowerCase());
 
-	let prefixCommandReference = (await syncMessage.fetchReference()) || null;
+	let prefixCommandReference = isSlashCommand ? null : (await syncMessage.fetchReference().catch(() => null)) || null;
+
+	// prettier-ignore
+	let slashCommandReference = isSlashCommand
+		? interaction.guild.commands.cache.find(slsh => slsh.name === sync_command_name && slsh.client.user.id === syncMessage.author.user.id) || null
+		: null;
 
 	await reminderManager.edit(reminderID, {
 		sync_type,
@@ -48,7 +53,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 		interaction,
 		title: "Sync Enabled",
 		description: isSlashCommand
-			? `I'll sync your reminder whenever you use ${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\`.`
+			? `I'll sync your reminder whenever you use ${slashCommandReference ? slashCommandReference : `${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\` command`}.`
 			: `I'll sync your reminder whenever you use ${prefixCommandReference ? `the \`${prefixCommandReference.content}\` command` : "that command"}.`,
 		footer: `id: ${reminderID}`
 	});
