@@ -1,4 +1,13 @@
-const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const {
+	Client,
+	CommandInteraction,
+	SlashCommandBuilder,
+	PermissionFlagsBits,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ComponentType
+} = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
@@ -10,9 +19,8 @@ async function subcommand_add(interaction) {
 	let name = interaction.options.getString("name").trim();
 	let time = interaction.options.getString("time").trim();
 	let channel = interaction.options.getChannel("channel") || null;
-	let repeat = interaction.options.getBoolean("repeat") || false;
 	let limit = interaction.options.getInteger("limit") || null;
-	let assist = interaction.options.getBoolean("assist") || false;
+	let repeat = interaction.options.getBoolean("repeat") || limit ? true : false;
 
 	/* - - - - - { Error Checking } - - - - - */
 	try {
@@ -24,6 +32,12 @@ async function subcommand_add(interaction) {
 	} catch {
 		return await interaction.reply({ content: `\`${time}\` is not a valid time you can use.`, ephemeral: true });
 	}
+
+	// Check if the user's a dumbass and set the limit to less than 1
+	if (limit < 1)
+		return await interaction.reply({
+			content: "You can't set the repeat limit to less than 1... That doesn't make any sense."
+		});
 
 	// Check if the user has permission to send messsages in the selected channel
 	if (channel && !channel.permissionsFor(interaction.user).has(PermissionFlagsBits.SendMessages))
@@ -51,13 +65,61 @@ async function subcommand_add(interaction) {
 		name, repeat, limit, raw_time: time
 	});
 
+	/* - - - - - { Send the Result } - - - - - */
+	let _options_f = [];
+
+	if (channel) _options_f.push(`> Channel: ${channel}`);
+	// prettier-ignore
+	if (repeat) _options_f.push(limit
+		? `> Repeat: ${limit} ${limit === 1 ? "time" : "times"}`
+		: "> Repeat: ✔️"
+	);
+
+	// Create the embed :: { REMINDER ADD }
+	let embed_reminderAdd = new BetterEmbed({
+		interaction,
+		title: "➕ Reminder",
+		description: 'You will be reminded about "$NAME" $DYNAMIC $ETA\n$OPTIONS'
+			.replace("$NAME", name)
+			.replace("$DYNAMIC", repeat ? "every" : "in")
+			.replace("$ETA", jt.eta(reminder.timestamp))
+			.replace("$OPTIONS", _options_f.length ? _options_f.join("\n") : "")
+	});
+
+	// Create a button to enable assist
+	let button_enableAssist = new ButtonBuilder()
+		.setCustomId("btn_enableAssist")
+		.setStyle(ButtonStyle.Primary)
+		.setLabel("Enable Assist");
+
+	// Create the action row
+	let actionRow = new ActionRowBuilder().setComponents(button_enableAssist);
+
+	// Send the embed with components
+	let message = await embed_reminderAdd.send({ components: actionRow });
+
+	// Start an interaction collector for the button
+	let filter = async i => {
+		await i.deferUpdate().catch(() => null);
+		return i.user.id === interaction.user.id && i.customId === "btn_enableAssist";
+	};
+
+	let collector = message
+		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: jt.parseTime("15s"), limit: 1 })
+		.then(async i => {})
+		.catch(async () => {
+			if (!message.editable) return;
+
+			// Remove the button
+			return await message.edit({ components: [] }).catch(() => null);
+		});
+
 	// Check if the user enabled assist
-	if (assist) {
-		// TODO: message collector stuff to check for ⏰ reactions
-	}
+	// Add an assist button to the embed
+	// TODO: message collector stuff to check for ⏰ reactions
 
 	// Check if the user provided a valid message ID
-	if (assistMessageID) {
+	/* if (assistMessageID) {
 		assistMessage = await interaction.channel.messages.fetch(assistMessageID).catch(() => null);
 
 		// prettier-ignore
@@ -83,12 +145,12 @@ async function subcommand_add(interaction) {
 			return await interaction.editReply({
 				content: "Repeat must be enabled to take advantage of the assist feature."
 			});
-	}
+	} */
 
 	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderAdd = new BetterEmbed({
+	let embed_reminderAdsssd = new BetterEmbed({
 		interaction,
-		title: "Added reminder",
+		title: "Reminder added",
 		description: `You will be reminded about \"${reminder.name}\" ${reminder.repeat ? "every" : "in"} ${jt.eta(
 			reminder.timestamp
 		)}.${
@@ -160,7 +222,7 @@ async function subcommand_addTrigger() {
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderTriggerAdd = new BetterEmbed({
 		interaction,
-		title: "Added reminder trigger",
+		title: "➕ Reminder Trigger",
 		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
 		footer: `id: ${reminderTrigger._id}`
 	});
@@ -302,8 +364,8 @@ module.exports = {
             .addIntegerOption(option => option.setName("limit")
 				.setDescription("How many times do you want the reminder to repeat? (optional)"))
 			
-			.addStringOption(option => option.setName("assist")
-                .setDescription("Reset the timer whenever you use a certain slash command. Requires the message ID of the command."))
+			/* .addStringOption(option => option.setName("assist")
+                .setDescription("Reset the timer whenever you use a certain slash command. Requires the message ID of the command.")) */
 		)
 
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
