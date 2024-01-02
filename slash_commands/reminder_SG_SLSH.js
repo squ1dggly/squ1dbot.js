@@ -328,7 +328,8 @@ async function subcommand_list(interaction) {
 				: null;
 
 			// prettier-ignore
-			let result = "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT"
+			let result = "`$ENABLED` `$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT"
+				.replace("$ENABLED", r.enabled ? "✅" : "⛔")
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)

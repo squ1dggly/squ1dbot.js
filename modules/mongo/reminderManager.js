@@ -50,7 +50,7 @@ class Reminder {
 		this.guild_id = data.guild_id;
 		this.channel_id = data?.channel_id || null;
 
-		this.enabled = data?.enabled || false;
+		this.enabled = data?.enabled === null ? true : data.enabled;
 
 		this.name = data.name;
 		this.repeat = data?.limit ? true : data?.repeat || false;
