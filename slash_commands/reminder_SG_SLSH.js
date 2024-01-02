@@ -259,17 +259,16 @@ async function subcommand_delete(interaction) {
 	if (id === "all") {
 		// Count existing reminders before deleting
 		reminderCount = await reminderManager.count(interaction.user.id, interaction.guild.id);
-
 		// prettier-ignore
-		if (!reminderCount) return await new BetterEmbed({
-			interaction, description: "You don't have any active reminders!"
-		}).send();
+		if (!reminderCount) return await interaction.editReply({
+			content: "You don't have any reminders!"
+		});
 
 		// prettier-ignore
 		// Await the user's confirmation
 		let confirmation = await awaitConfirm({
 			interaction,
-			messageContent: `Are you sure you want to delete \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}?`,
+			messageContent: `Are you sure you want to delete ${reminderCount} ${reminderCount === 1 ? "reminder" : "reminders"}?`,
 			dontEmbed: true
 		});
 
@@ -278,21 +277,31 @@ async function subcommand_delete(interaction) {
 		// Delete all reminders for the user in the current guild
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
+		// Split IDs by comma
+		id = jt.isArray(id.split(","));
+
+		// Check if the IDs exist
+		let id_exists = await Promise.all(id.map(id => ({ id, exists: reminderManager.exists(id, interaction.user.id) })));
+
+		// Filter out IDs that don't exist
+		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
+
 		// prettier-ignore
-		if (!await reminderManager.exists(id)) return await interaction.editReply({
-			content: `I couldn't find a reminder with the ID of \`${id}\`. Are you sure you got that right?`
-		});
+		// Let the user know if they gave invalid IDs
+		if (!id.length) return await interaction.editReply({
+			content: `I couldn't find ${id_exists.length > 1 ? `any reminders with those IDs` : `a reminder with the ID of \`${id}\``}.`
+		})
 
 		// Delete the reminder
 		await reminderManager.delete(id);
+		reminderCount = id.length;
 	}
 
 	// Send the result
 	return await interaction.editReply({
 		content: reminderCount
-			? `You deleted \`${reminderCount}\` ${reminderCount === 1 ? "reminder" : "reminders"}.`
+			? `You deleted ${reminderCount} ${reminderCount === 1 ? "reminder" : "reminders"}.`
 			: "Reminder deleted.",
-		embeds: [],
 		components: []
 	});
 }
@@ -357,7 +366,7 @@ async function subcommand_list(interaction) {
 }
 
 /** @param {CommandInteraction} interaction */
-async function subcommand_triggerAdd() {
+async function subcommand_triggerAdd(interaction) {
 	// Get interaction options
 	let message_trigger = interaction.options.getString("trigger").trim();
 	let name = interaction.options.getString("name").trim();
@@ -417,6 +426,67 @@ async function subcommand_triggerAdd() {
 	return await embed_reminderTriggerAdd.send();
 }
 
+/** @param {CommandInteraction} interaction */
+async function subcommand_triggerDelete(interaction) {
+	await interaction.deferReply().catch(() => null);
+
+	// Get interaction options
+	let id = interaction.options.getString("id").toLowerCase().trim();
+
+	let triggerCount = 0;
+
+	if (id === "all") {
+		// Count existing reminders before deleting
+		triggerCount = await reminderManager.trigger.count(interaction.user.id, interaction.guild.id);
+		// prettier-ignore
+		if (!triggerCount) return await interaction.editReply({
+			content: "You don't have any reminder triggers!"
+		});
+
+		// prettier-ignore
+		// Await the user's confirmation
+		let confirmation = await awaitConfirm({
+			interaction,
+			messageContent: `Are you sure you want to delete ${triggerCount} ${triggerCount === 1 ? "trigger" : "triggers"}?`,
+			dontEmbed: true
+		});
+
+		if (!confirmation) return;
+
+		// Delete all reminders for the user in the current guild
+		await reminderManager.trigger.deleteAll(interaction.user.id, interaction.guild.id);
+	} else {
+		// Split IDs by comma
+		id = jt.isArray(id.split(","));
+
+		// Check if the IDs exist
+		let id_exists = await Promise.all(
+			id.map(id => ({ id, exists: reminderManager.trigger.exists(id, interaction.user.id) }))
+		);
+
+		// Filter out IDs that don't exist
+		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
+
+		// prettier-ignore
+		// Let the user know if they gave invalid IDs
+		if (!id.length) return await interaction.editReply({
+			content: `I couldn't find ${id_exists.length > 1 ? `any triggers with those IDs` : `a trigger with the ID of \`${id}\``}.`
+		})
+
+		// Delete the reminder
+		await reminderManager.trigger.delete(id);
+		triggerCount = id.length;
+	}
+
+	// Send the result
+	return await interaction.editReply({
+		content: triggerCount
+			? `You deleted ${triggerCount} ${triggerCount === 1 ? "trigger" : "triggers"}.`
+			: "Trigger deleted.",
+		components: []
+	});
+}
+
 module.exports = {
 	options: { icon: "⏰", deferReply: false },
 
@@ -445,7 +515,7 @@ module.exports = {
 
         .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
             .addStringOption(option => option.setName("id")
-				.setDescription("The ID of the reminder you wish to delete. Use \"all\" to clear all reminders in the server.")
+				.setDescription("ID of the reminder to delete. Seperate multiple with a comma, or use \"all\".")
                 .setRequired(true))
         )
 
@@ -473,7 +543,7 @@ module.exports = {
 
 			.addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder trigger")
 				.addStringOption(option => option.setName("id")
-				.setDescription("The ID of the trigger you wish to delete. Use \"all\" to clear all triggers in the server.")
+				.setDescription("ID of the reminder to delete. Seperate multiple with a comma, or use \"all\".")
 				.setRequired(true))
 			)
 
@@ -490,8 +560,12 @@ module.exports = {
             case "delete": return await subcommand_delete(interaction);
 
 			case "list": return await subcommand_list(interaction);
-			
+
 			case "trigger add": return await subcommand_triggerAdd(interaction);
+
+			case "trigger delete": return await subcommand_triggerAdd(interaction);
+
+			case "trigger list": return await subcommand_triggerAdd(interaction);
 
             default: return;
         }

@@ -85,8 +85,8 @@ class ReminderTrigger {
 }
 
 /* - - - - - { Reminder } - - - - - */
-async function reminder_exists(id) {
-	return await models.reminder.exists({ _id: id });
+async function reminder_exists(id, user_id) {
+	return await models.reminder.exists({ _id: id, user_id });
 }
 
 async function reminder_count(user_id, guild_id) {
@@ -118,7 +118,7 @@ async function reminder_edit(id, query) {
 async function reminder_add(data) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
-		if (await reminder_exists(id)) return await createUniqueID();
+		if (await reminder_exists(id, data.user_id)) return await createUniqueID();
 		return id;
 	};
 
@@ -139,12 +139,13 @@ async function reminder_addFromTrigger(reminderTriggerData) {
 	return await reminder_add(reminderTriggerData.reminder_data);
 }
 
-async function reminder_delete(id) {
-	// Check if the document exists
-	if (!(await reminder_exists(id))) return logger.log(`Could not delete non-existent reminder '${id}'`);
+async function reminder_delete(ids) {
+	ids = jt.isArray(ids);
 
-	// Delete the document
-	await models.reminder.findByIdAndDelete(id).catch(err => logger.error("Could not delete reminder", `id: '${id}'`, err));
+	// Delete the documents
+	await models.reminder
+		.deleteMany({ _id: { $in: ids } })
+		.catch(err => logger.error("Could not delete reminder(s)", `id(s): '${ids.join(", ")}'`, err));
 }
 
 async function reminder_deleteAll(user_id, guild_id) {
@@ -160,8 +161,8 @@ async function reminder_deleteAll(user_id, guild_id) {
 }
 
 /* - - - - - { Reminder Trigger } - - - - - */
-async function trigger_exists(id) {
-	return await models.reminderTrigger.exists({ _id: id });
+async function trigger_exists(id, user_id) {
+	return await models.reminderTrigger.exists({ _id: id, user_id });
 }
 
 async function trigger_count(user_id, guild_id) {
@@ -180,7 +181,7 @@ async function trigger_fetchForUserInGuild(user_id, guild_id) {
 async function trigger_add(data) {
 	const createUniqueID = async () => {
 		let id = jt.numericString(7);
-		if (await trigger_exists(id)) return await createUniqueID();
+		if (await trigger_exists(id, data.user_id)) return await createUniqueID();
 		return id;
 	};
 
@@ -196,14 +197,13 @@ async function trigger_add(data) {
 	return reminderTrigger;
 }
 
-async function trigger_delete(id) {
-	// Check if the document exists
-	if (!(await trigger_exists(id))) return logger.log(`Could not delete non-existent reminder trigger '${id}'`);
+async function trigger_delete(ids) {
+	ids = jt.isArray(ids);
 
-	// Delete the document
-	await models.reminderTrigger
-		.findByIdAndDelete(id)
-		.catch(err => logger.error("Could not delete reminder trigger", `id: '${id}'`, err));
+	// Delete the documents
+	await models.reminder
+		.deleteMany({ _id: { $in: ids } })
+		.catch(err => logger.error("Could not delete reminder trigger(s)", `id(s): '${ids.join(", ")}'`, err));
 }
 
 async function trigger_deleteAll(user_id, guild_id = null) {
