@@ -219,7 +219,7 @@ async function subcommand_add(interaction) {
 	let embed_reminderAdd = new BetterEmbed({
 		interaction,
 		title: "Reminder Added",
-		description: 'You will be reminded about "$NAME" $DYNAMIC $ETA.\n$OPTIONS'
+		description: 'You will be reminded about "*$NAME*" $DYNAMIC $ETA.\n$OPTIONS'
 			.replace("$NAME", name)
 			.replace("$DYNAMIC", repeat ? "every" : "in")
 			.replace("$ETA", jt.eta(reminder.timestamp))
@@ -426,8 +426,12 @@ async function subcommand_triggerAdd(interaction) {
 	/* - - - - - { Send the Result } - - - - - */
 	let embed_reminderTriggerAdd = new BetterEmbed({
 		interaction,
-		title: "+ Reminder Trigger",
-		description: `I'll be sure to set a reminder about "${name}" whenever you say \`${message_trigger}\` in chat.`,
+		title: "Reminder Trigger Added",
+		description: 'I\'ll set a reminder for "*$NAME*" whenever you say **$TRIGGER**.$CHANNEL'
+			.replace("$NAME", name)
+			// .replace("$ETA", jt.eta(jt.parseTime(reminderTrigger.reminder_data.raw_time, { fromNow: true })))
+			.replace("$TRIGGER", reminderTrigger.message_trigger)
+			.replace("$CHANNEL", channel ? `\n> ${channel}` : ""),
 		footer: `id: ${reminderTrigger._id}`
 	});
 
@@ -516,12 +520,12 @@ async function subcommand_triggerList(interaction) {
 				: null;
 
 			// prettier-ignore
-			return "`$ID` **$TRIGGER** | *$NAME* | Time: $TIME$CHANNEL"
+			return "`$ID` **$TRIGGER** | \"*$NAME*\" | `$TIMER`$CHANNEL"
 				.replace("$ID", tr._id)
 				.replace("$TRIGGER", tr.message_trigger)
 				.replace("$NAME", tr.reminder_data.name)
-				.replace("$TIMESTAMP", jt.eta(jt.parseTime(tr.reminder_data.raw_time, { fromNow: true })))
-				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
+				.replace("$TIMER", jt.eta(jt.parseTime(tr.reminder_data.raw_time, { fromNow: true })))
+				.replace("$CHANNEL", _channel ? `\n> ${_channel}` : "");
 		})
 	);
 
