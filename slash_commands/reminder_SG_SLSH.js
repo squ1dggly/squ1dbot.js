@@ -212,7 +212,7 @@ async function subcommand_add(interaction) {
 	// prettier-ignore
 	if (repeat) _options_f.push(limit
 		? `> Repeat: ${limit} ${limit === 1 ? "time" : "times"}`
-		: "> Repeat: ✅"
+		: "> Repeat: `✅`"
 	);
 
 	// Create the embed :: { REMINDER ADD }
@@ -328,14 +328,22 @@ async function subcommand_list(interaction) {
 				: null;
 
 			// prettier-ignore
-			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
+			let result = "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT"
 				.replace("$ID", r._id)
 				.replace("$NAME", r.name)
 				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
-				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
-				.replace("$LIMIT", r.limit)
-				.replace("$CHANNEL", _channel ? `${_channel}` : "")
-				.replace("$ASSISTANCE", r.assisted_command_name ? `${_channel ? " | " : ""}Assist: \`/${r.assisted_command_name}\`` : "");
+				.replace("$REPEAT", r.repeat ? r.limit ? `\`${r.limit} ${r.limit === 1 ? "time" : "times"}\`` : "`✅`" : "`⛔`")
+				.replace("$LIMIT", r.limit);
+
+			// Extra reminder options
+			let _extra = [];
+			if (_channel) _extra.push(_channel);
+			if (r.sync_type) _extra.push(`Sync: \`${r.sync_command_name ? `/${r.sync_command_name}` : "✅"}\``);
+
+			// Append extra to the result string
+			if (_extra.length) result += `\n> ${_extra.join(" | ")}`;
+
+			return result;
 		})
 	);
 

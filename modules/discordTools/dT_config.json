@@ -1,6 +1,6 @@
 {
 	"INVIS_CHAR": "\u200b",
-	"EMBED_COLOR": ["#53917e"],
+	"EMBED_COLOR": ["#ff3864"],
 	"CONFIRMATION_TITLE": "⚠️ Please confirm this action",
 
 	"timeouts": {
