@@ -487,6 +487,65 @@ async function subcommand_triggerDelete(interaction) {
 	});
 }
 
+/** @param {CommandInteraction} interaction */
+async function subcommand_triggerList(interaction) {
+	await interaction.deferReply().catch(() => null);
+
+	let reminders = await reminderManager.fetchAll(interaction.user.id, interaction.guild.id);
+
+	// prettier-ignore
+	// Check if the user has any active reminders
+	if (!reminders.length) return await interaction.editReply({
+		content: "You don't have any reminders!"
+	});
+
+	/* - - - - - { Create the Pages } - - - - - */
+	let reminders_f = await Promise.all(
+		reminders.map(async r => {
+			// Fetch the notification channel from the guild
+			let _channel = r.channel_id
+				? interaction.guild.channels.cache.get(r.channel_id) ||
+				  (await interaction.guild.channels.fetch(r.channel_id))
+				: null;
+
+			// prettier-ignore
+			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
+				.replace("$ID", r._id)
+				.replace("$NAME", r.name)
+				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
+				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
+				.replace("$LIMIT", r.limit)
+				.replace("$CHANNEL", _channel ? `${_channel}` : "")
+				.replace("$ASSISTANCE", r.assisted_command_name ? `${_channel ? " | " : ""}Assist: \`/${r.assisted_command_name}\`` : "");
+		})
+	);
+
+	let reminders_f_chunk = jt.chunk(reminders_f, 5);
+	let embeds_reminderList = [];
+
+	for (let i = 0; i < reminders_f_chunk.length; i++) {
+		// Create the embed :: { REMINDER LIST }
+		let embed = new BetterEmbed({
+			interaction,
+			title: "Reminder List",
+			description: reminders_f_chunk[i].join("\n"),
+			footer: `Page ${i + 1} of ${reminders_f_chunk.length}`
+		});
+
+		// Push the embed to the array
+		embeds_reminderList.push(embed);
+	}
+
+	// Setup pagination
+	let pagination = new EmbedNavigator({
+		interaction,
+		embeds: [embeds_reminderList],
+		pagination: { type: "short" }
+	});
+
+	return await pagination.send();
+}
+
 module.exports = {
 	options: { icon: "⏰", deferReply: false },
 
@@ -563,9 +622,9 @@ module.exports = {
 
 			case "trigger add": return await subcommand_triggerAdd(interaction);
 
-			case "trigger delete": return await subcommand_triggerAdd(interaction);
+			case "trigger delete": return await subcommand_triggerDelete(interaction);
 
-			case "trigger list": return await subcommand_triggerAdd(interaction);
+			case "trigger list": return await subcommand_triggerList(interaction);
 
             default: return;
         }
