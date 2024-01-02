@@ -356,7 +356,7 @@ async function subcommand_list(interaction) {
 			interaction,
 			title: "Reminder List",
 			description: reminders_f_chunk[i].join("\n"),
-			footer: `Page ${i + 1} of ${reminders_f_chunk.length} • Total: ${reminders.length}`
+			footer: `Page ${i + 1} of ${reminders_f_chunk.length} | Total: ${reminders.length}`
 		});
 
 		// Push the embed to the array
@@ -538,7 +538,7 @@ async function subcommand_triggerList(interaction) {
 			interaction,
 			title: "Reminder Trigger List",
 			description: triggers_f_chunk[i].join("\n"),
-			footer: `Page ${i + 1} of ${triggers_f_chunk.length} • Total: ${triggers.length}`
+			footer: `Page ${i + 1} of ${triggers_f_chunk.length} | Total: ${triggers.length}`
 		});
 
 		// Push the embed to the array
