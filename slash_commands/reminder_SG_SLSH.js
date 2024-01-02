@@ -495,7 +495,7 @@ async function subcommand_triggerDelete(interaction) {
 	});
 }
 
-async function subcommand_list(interaction) {
+async function subcommand_triggerList(interaction) {
 	await interaction.deferReply().catch(() => null);
 
 	let triggers = await reminderManager.trigger.fetchAll(interaction.user.id, interaction.guild.id);
@@ -616,22 +616,32 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
-		// prettier-ignore
-		// Determine the operation
-		switch (interaction.options.getSubcommand()) {
-            case "add": return await subcommand_add(interaction);
+		switch (interaction.options.getSubcommandGroup()) {
+			// prettier-ignore
+			// Determine the operation
+			case null:
+				switch (interaction.options.getSubcommand()) {
+					case "add": return await subcommand_add(interaction);
 
-            case "delete": return await subcommand_delete(interaction);
+					case "delete": return await subcommand_delete(interaction);
 
-			case "list": return await subcommand_list(interaction);
+					case "list": return await subcommand_list(interaction);
 
-			case "trigger add": return await subcommand_triggerAdd(interaction);
+					default: return;
+				}
 
-			case "trigger delete": return await subcommand_triggerDelete(interaction);
+			// prettier-ignore
+			// Determine the operation
+			case "trigger":
+				switch (interaction.options.getSubcommand()) {
+					case "add": return await subcommand_triggerAdd(interaction);
 
-			case "trigger list": return await subcommand_triggerList(interaction);
+					case "delete": return await subcommand_triggerDelete(interaction);
 
-            default: return;
-        }
+					case "list": return await subcommand_triggerList(interaction);
+
+					default: return;
+				}
+		}
 	}
 };
