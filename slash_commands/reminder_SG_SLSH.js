@@ -495,59 +495,56 @@ async function subcommand_triggerDelete(interaction) {
 	});
 }
 
-/** @param {CommandInteraction} interaction */
-async function subcommand_triggerList(interaction) {
+async function subcommand_list(interaction) {
 	await interaction.deferReply().catch(() => null);
 
-	let reminders = await reminderManager.fetchAll(interaction.user.id, interaction.guild.id);
+	let triggers = await reminderManager.trigger.fetchAll(interaction.user.id, interaction.guild.id);
 
 	// prettier-ignore
 	// Check if the user has any active reminders
-	if (!reminders.length) return await interaction.editReply({
-		content: "You don't have any reminders!"
+	if (!triggers.length) return await interaction.editReply({
+		content: "You don't have any reminder triggers!"
 	});
 
 	/* - - - - - { Create the Pages } - - - - - */
-	let reminders_f = await Promise.all(
-		reminders.map(async r => {
+	let triggers_f = await Promise.all(
+		triggers.map(async tr => {
 			// Fetch the notification channel from the guild
-			let _channel = r.channel_id
-				? interaction.guild.channels.cache.get(r.channel_id) ||
-				  (await interaction.guild.channels.fetch(r.channel_id))
+			let _channel = tr.reminder_data.channel_id
+				? interaction.guild.channels.cache.get(tr.reminder_data.channel_id) ||
+				  (await interaction.guild.channels.fetch(tr.reminder_data.channel_id))
 				: null;
 
 			// prettier-ignore
-			return "`$ID` **$NAME** | $TIMESTAMP | Repeat: $REPEAT\n> $CHANNEL$ASSISTANCE"
-				.replace("$ID", r._id)
-				.replace("$NAME", r.name)
-				.replace("$TIMESTAMP", `<t:${jt.msToSec(r.timestamp)}:R>`)
-				.replace("$REPEAT", r.repeat ? "`✅`" : "`⛔`")
-				.replace("$LIMIT", r.limit)
-				.replace("$CHANNEL", _channel ? `${_channel}` : "")
-				.replace("$ASSISTANCE", r.assisted_command_name ? `${_channel ? " | " : ""}Assist: \`/${r.assisted_command_name}\`` : "");
+			return "`$ID` **$TRIGGER** | *$NAME* | Time: $TIME$CHANNEL"
+				.replace("$ID", tr._id)
+				.replace("$TRIGGER", tr.message_trigger)
+				.replace("$NAME", tr.reminder_data.name)
+				.replace("$TIMESTAMP", jt.eta(jt.parseTime(tr.reminder_data.raw_time, { fromNow: true })))
+				.replace("$CHANNEL", _channel ? ` | ${_channel}` : "");
 		})
 	);
 
-	let reminders_f_chunk = jt.chunk(reminders_f, 5);
-	let embeds_reminderList = [];
+	let triggers_f_chunk = jt.chunk(triggers_f, 5);
+	let embeds_triggerList = [];
 
-	for (let i = 0; i < reminders_f_chunk.length; i++) {
+	for (let i = 0; i < triggers_f_chunk.length; i++) {
 		// Create the embed :: { REMINDER LIST }
 		let embed = new BetterEmbed({
 			interaction,
-			title: "Reminder List",
-			description: reminders_f_chunk[i].join("\n"),
-			footer: `Page ${i + 1} of ${reminders_f_chunk.length}`
+			title: "Reminder Trigger List",
+			description: triggers_f_chunk[i].join("\n"),
+			footer: `Page ${i + 1} of ${triggers_f_chunk.length}`
 		});
 
 		// Push the embed to the array
-		embeds_reminderList.push(embed);
+		embeds_triggerList.push(embed);
 	}
 
 	// Setup pagination
 	let pagination = new EmbedNavigator({
 		interaction,
-		embeds: [embeds_reminderList],
+		embeds: [embeds_triggerList],
 		pagination: { type: "short" }
 	});
 
