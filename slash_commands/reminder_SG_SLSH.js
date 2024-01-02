@@ -577,9 +577,9 @@ module.exports = {
 				.setDescription("How many times do you want the reminder to repeat? (optional)"))
 		)
 
-        .addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder")
+        .addSubcommand(option => option.setName("delete").setDescription("Delete existing reminders")
             .addStringOption(option => option.setName("id")
-				.setDescription("ID of the reminder to delete. Seperate multiple with a comma, or use \"all\".")
+				.setDescription("ID of the reminder to delete. Separate multiple with a comma, or use \"all\".")
                 .setRequired(true))
         )
 
@@ -605,9 +605,9 @@ module.exports = {
 					.setDescription("What channel do you want to be pinged in? Leave blank to be DM'd. (optional)"))
 			)
 
-			.addSubcommand(option => option.setName("delete").setDescription("Delete an existing reminder trigger")
+			.addSubcommand(option => option.setName("delete").setDescription("Delete existing reminder triggers")
 				.addStringOption(option => option.setName("id")
-				.setDescription("ID of the reminder to delete. Seperate multiple with a comma, or use \"all\".")
+				.setDescription("ID of the reminder to delete. Separate multiple with a comma, or use \"all\".")
 				.setRequired(true))
 			)
 
