@@ -278,7 +278,7 @@ async function subcommand_delete(interaction) {
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(","));
+		id = jt.isArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(id.map(id => ({ id, exists: reminderManager.exists(id, interaction.user.id) })));
@@ -356,7 +356,7 @@ async function subcommand_list(interaction) {
 			interaction,
 			title: "Reminder List",
 			description: reminders_f_chunk[i].join("\n"),
-			footer: `Page ${i + 1} of ${reminders_f_chunk.length}`
+			footer: `Page ${i + 1} of ${reminders_f_chunk.length} • total: ${reminders.length}`
 		});
 
 		// Push the embed to the array
@@ -469,15 +469,15 @@ async function subcommand_triggerDelete(interaction) {
 		await reminderManager.trigger.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(","));
+		id = jt.isArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
-			id.map(id => ({ id, exists: reminderManager.trigger.exists(id, interaction.user.id) }))
+			id.map(async id => ({ id, exists: await reminderManager.trigger.exists(id, interaction.user.id) }))
 		);
 
 		// Filter out IDs that don't exist
-		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
+		id = id.filter(id => id_exists.find(i => i.id === id && i.exists));
 
 		// prettier-ignore
 		// Let the user know if they gave invalid IDs
@@ -538,7 +538,7 @@ async function subcommand_triggerList(interaction) {
 			interaction,
 			title: "Reminder Trigger List",
 			description: triggers_f_chunk[i].join("\n"),
-			footer: `Page ${i + 1} of ${triggers_f_chunk.length}`
+			footer: `Page ${i + 1} of ${triggers_f_chunk.length} • total: ${triggers.length}`
 		});
 
 		// Push the embed to the array

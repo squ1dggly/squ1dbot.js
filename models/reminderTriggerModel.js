@@ -8,6 +8,8 @@ const schema_reminder = new Schema(
 		user_id: { type: String, require: true },
 		guild_id: { type: String, require: true },
 
+		created: { type: Number, default: Date.now() },
+
 		reminder_data: {
 			user_id: { type: String, require: true },
 			guild_id: { type: String, require: true },
@@ -18,9 +20,7 @@ const schema_reminder = new Schema(
 			name: { type: String, require: true },
 			repeat: { type: Boolean, default: false },
 			limit: { type: Number, default: null },
-			raw_time: { type: String, default: null },
-
-			created: { type: Number, default: Date.now() }
+			raw_time: { type: String, default: null }
 		}
 	},
 	{ collection: "reminder_triggers" }
