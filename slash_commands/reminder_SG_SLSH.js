@@ -616,9 +616,9 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
+		// prettier-ignore
+		// Determine the operation
 		switch (interaction.options.getSubcommandGroup()) {
-			// prettier-ignore
-			// Determine the operation
 			case null:
 				switch (interaction.options.getSubcommand()) {
 					case "add": return await subcommand_add(interaction);
@@ -630,8 +630,6 @@ module.exports = {
 					default: return;
 				}
 
-			// prettier-ignore
-			// Determine the operation
 			case "trigger":
 				switch (interaction.options.getSubcommand()) {
 					case "add": return await subcommand_triggerAdd(interaction);
