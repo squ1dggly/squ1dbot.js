@@ -114,6 +114,18 @@ async function reminder_edit(id, query) {
 	await models.reminder.findByIdAndUpdate(id, query);
 }
 
+async function reminder_toggle(id, enabled) {
+	id = jt.isArray(id);
+
+	if (enabled !== null) await Promise.all(id.map(async id => reminder_edit(id, { enabled })));
+	else await Promise.all(id.map(async id => reminder_edit(id, { enabled: { $not: "$enabled" } })));
+}
+
+async function reminder_toggleAll(user_id, guild_id, enabled) {
+	if (enabled !== null) await models.reminder.updateMany({ user_id, guild_id }, { enabled });
+	else await models.reminder.updateMany({ user_id, guild_id }, { enabled: { $not: "$enabled" } });
+}
+
 /** @param {ReminderData} data */
 async function reminder_add(data) {
 	const createUniqueID = async () => {
@@ -227,11 +239,16 @@ module.exports = {
 
 	exists: reminder_exists,
 	count: reminder_count,
+
 	fetch: reminder_fetch,
 	fetchAll: reminder_fetchAll,
 	fetchAllActiveInGuild: reminder_fetchAllActiveInGuild,
 	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
+
 	edit: reminder_edit,
+	toggle: reminder_toggle,
+	toggleAll: reminder_toggleAll,
+
 	add: reminder_add,
 	addFromTrigger: reminder_addFromTrigger,
 	delete: reminder_delete,
@@ -240,9 +257,11 @@ module.exports = {
 	trigger: {
 		exists: trigger_exists,
 		count: trigger_count,
+
 		fetch: trigger_fetch,
 		fetchAll: trigger_fetchAll,
 		fetchForUserInGuild: trigger_fetchForUserInGuild,
+
 		add: trigger_add,
 		delete: trigger_delete,
 		deleteAll: trigger_deleteAll

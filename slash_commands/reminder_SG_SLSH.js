@@ -290,11 +290,11 @@ async function subcommand_delete(interaction) {
 		// Let the user know if they gave invalid IDs
 		if (!id.length) return await interaction.editReply({
 			content: `I couldn't find ${id_exists.length > 1 ? `any reminders with those IDs` : `a reminder with the ID of \`${id}\``}.`
-		})
+		});
 
 		// Delete the reminder
-		await reminderManager.delete(id);
 		reminderCount = id.length;
+		await reminderManager.delete(id);
 	}
 
 	// Send the result
@@ -302,6 +302,57 @@ async function subcommand_delete(interaction) {
 		content: reminderCount
 			? `You deleted ${reminderCount} ${reminderCount === 1 ? "reminder" : "reminders"}.`
 			: "Reminder deleted.",
+		components: []
+	});
+}
+
+/** @param {CommandInteraction} interaction */
+async function subcommand_toggle(interaction) {
+	await interaction.deferReply().catch(() => null);
+
+	// Get interaction options
+	let id = interaction.options.getString("id").toLowerCase().trim();
+	let enabled = interaction.options.getBoolean("enabled");
+
+	let reminderCount = 0;
+
+	if (id === "all") {
+		// Count existing reminders before deleting
+		reminderCount = await reminderManager.count(interaction.user.id, interaction.guild.id);
+		// prettier-ignore
+		if (!reminderCount) return await interaction.editReply({
+			content: "You don't have any reminders!"
+		});
+
+		// Delete all reminders for the user in the current guild
+		await reminderManager.toggleAll(interaction.user.id, interaction.guild.id, enabled);
+	} else {
+		// Split IDs by comma
+		id = jt.isArray(id.split(",")).map(str => str.trim());
+
+		// Check if the IDs exist
+		let id_exists = await Promise.all(id.map(id => ({ id, exists: reminderManager.exists(id, interaction.user.id) })));
+
+		// Filter out IDs that don't exist
+		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
+
+		// prettier-ignore
+		// Let the user know if they gave invalid IDs
+		if (!id.length) return await interaction.editReply({
+			content: `I couldn't find ${id_exists.length > 1 ? `any reminders with those IDs` : `a reminder with the ID of \`${id}\``}.`
+		});
+
+		// Delete the reminder
+		reminderCount = id.length;
+		await reminderManager.toggleAll(id);
+	}
+
+	// prettier-ignore
+	// Send the result
+	return await interaction.editReply({
+		content: reminderCount > 1
+			? `${reminderCount} reminders have been ${enabled !== null ? enabled ? "enabled" : "disabled" : "toggled"}.`
+			: `Reminder has been ${enabled !== null ? enabled ? "enabled" : "disabled" : "toggled"}.`,
 		components: []
 	});
 }
@@ -484,11 +535,11 @@ async function subcommand_triggerDelete(interaction) {
 		// Let the user know if they gave invalid IDs
 		if (!id.length) return await interaction.editReply({
 			content: `I couldn't find ${id_exists.length > 1 ? `any triggers with those IDs` : `a trigger with the ID of \`${id}\``}.`
-		})
+		});
 
 		// Delete the reminder
-		await reminderManager.trigger.delete(id);
 		triggerCount = id.length;
+		await reminderManager.trigger.delete(id);
 	}
 
 	// Send the result
@@ -587,6 +638,16 @@ module.exports = {
 				.setDescription("ID of the reminder to delete. Separate multiple with a comma, or use \"all\".")
                 .setRequired(true))
         )
+		
+		.addSubcommand(option => option.setName("toggle").setDescription("Toggle reminders on/off")
+            .addStringOption(option => option.setName("id")
+				.setDescription("ID of the reminder to toggle. Separate multiple with a comma, or use \"all\".")
+				.setRequired(true))
+			
+			.addBooleanOption(option => option.setName("enabled")
+				.setDescription("Enable or disable the reminder. Leave blank to toggle automatically. (optional)")	
+			)
+        )
 
 		.addSubcommand(option => option.setName("list").setDescription("View a list of your reminders"))
 
@@ -629,6 +690,8 @@ module.exports = {
 					case "add": return await subcommand_add(interaction);
 
 					case "delete": return await subcommand_delete(interaction);
+
+					case "toggle": return await subcommand_toggle(interaction);
 
 					case "list": return await subcommand_list(interaction);
 
