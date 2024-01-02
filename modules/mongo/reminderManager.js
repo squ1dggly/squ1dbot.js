@@ -117,13 +117,41 @@ async function reminder_edit(id, query) {
 async function reminder_toggle(id, enabled) {
 	id = jt.isArray(id);
 
-	if (enabled !== null) await Promise.all(id.map(async id => reminder_edit(id, { enabled })));
-	else await Promise.all(id.map(async id => reminder_edit(id, { enabled: { $not: "$enabled" } })));
+	await Promise.all(
+		id.map(async id => {
+			// Fetch the reminder
+			let reminder = await reminder_fetch(id);
+
+			// Check if the timestamp is past due
+			if (reminder.timestamp <= Date.now()) reminder.timestamp = jt.parseTime(reminder.raw_time, { fromNow: true });
+
+			// prettier-ignore
+			// Update the reminder
+			if (enabled !== null)
+				return await reminder_edit(reminder._id, { timestamp: reminder.timestamp, enabled });
+			else
+				return await reminder_edit(reminder._id, [{ $set: { timestamp: reminder.timestamp, enabled: { $not: "$enabled" } } }]);
+		})
+	);
 }
 
 async function reminder_toggleAll(user_id, guild_id, enabled) {
-	if (enabled !== null) await models.reminder.updateMany({ user_id, guild_id }, { enabled });
-	else await models.reminder.updateMany({ user_id, guild_id }, { enabled: { $not: "$enabled" } });
+	// Fetch all reminders
+	let reminders = await reminder_fetchAll(user_id, guild_id);
+
+	await Promise.all(
+		reminders.map(async reminder => {
+			// Check if the timestamp is past due
+			if (reminder.timestamp <= Date.now()) reminder.timestamp = jt.parseTime(reminder.raw_time, { fromNow: true });
+
+			// prettier-ignore
+			// Update the reminder
+			if (enabled !== null)
+				return await reminder_edit(reminder._id, { timestamp: reminder.timestamp, enabled });
+			else
+				return await reminder_edit(reminder._id, [{ $set: { timestamp: reminder.timestamp, enabled: { $not: "$enabled" } } }]);
+		})
+	);
 }
 
 /** @param {ReminderData} data */
