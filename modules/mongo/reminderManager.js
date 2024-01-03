@@ -254,7 +254,7 @@ async function trigger_delete(ids) {
 	ids = jt.isArray(ids);
 
 	// Delete the documents
-	await models.reminder
+	await models.reminderTrigger
 		.deleteMany({ _id: { $in: ids } })
 		.catch(err => logger.error("Could not delete reminder trigger(s)", `id(s): '${ids.join(", ")}'`, err));
 }
