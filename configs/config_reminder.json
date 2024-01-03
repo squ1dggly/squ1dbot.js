@@ -29,7 +29,7 @@
 		"It seems you might've forgotten about \"**$REMINDER**\". Let's not let that happen again.",
 
 		"**Stop right there criminal scum!**\nYou can't be stealing those kittens! You're supposed to \"**$REMINDER**\".",
-		"Oh, hey there $USERNAME, didn't you *$REMINDER_CUT_OFF*-\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
+		"Oh, hey there $USERNAME, didn't you **$REMINDER_CUT_OFF-**\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
 		"It's \"**$REMINDER**\"in' time!",
 		"Anotha one! \"**$REMINDER**\".",
 

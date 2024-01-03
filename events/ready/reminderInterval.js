@@ -59,9 +59,9 @@ module.exports = {
 					let embed_reminder = new BetterEmbed({
 						title: "⏰ Reminder",
 						description: jt.choice(config.reminder.FUN_STYLES)
-							.replace("$REMINDER", reminder.name)
-							.replace(/\$REMINDER_CUT_OFF/g, reminder.name.slice(0, 4).trim())
-							.replace("$USERNAME", guildMember.user.username),
+							.replace(/\$REMINDER\b/g, reminder.name)
+							.replace(/\$REMINDER_CUT_OFF\b/g, reminder.name.slice(0, 4).trim())
+							.replace(/\$USERNAME\b/g, guildMember.user.username),
 						footer: `ID: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• Repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• Repeat: ✅" : ""}`,
 						timestamp: true
 					});
