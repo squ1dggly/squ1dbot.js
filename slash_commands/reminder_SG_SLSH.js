@@ -334,10 +334,10 @@ async function subcommand_toggle(interaction) {
 		id = jt.isArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
-		let id_exists = await Promise.all(id.map(id => ({ id, exists: reminderManager.exists(id, interaction.user.id) })));
+		let id_exists = await Promise.all(id.map(async id => ({ id, exists: await reminderManager.exists(id, interaction.user.id) })));
 
 		// Filter out IDs that don't exist
-		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
+		id = id.filter(id => id_exists.find(i => i.id === id && i.exists));
 
 		// prettier-ignore
 		// Let the user know if they gave invalid IDs
