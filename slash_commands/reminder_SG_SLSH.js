@@ -1,14 +1,4 @@
-const {
-	Client,
-	CommandInteraction,
-	SlashCommandBuilder,
-	PermissionFlagsBits,
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ComponentType,
-	Message
-} = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits, Message } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
