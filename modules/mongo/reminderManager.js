@@ -62,7 +62,7 @@ class Reminder {
 		this.sync_bot_id = data?.sync_bot_id || null;
 		this.sync_command_name = data?.sync_command_name || null;
 		this.sync_message_content = data?.sync_message_content || null;
-		this.sync_message_content_includes_name = data?.sync_message_content_includes_name || false;
+		this.sync_message_content_includes_name = data?.sync_message_content_includes_name || null;
 
 		return { ...this };
 	}

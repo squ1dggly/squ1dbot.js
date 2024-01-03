@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits, Message } = require("discord.js");
+const { Client, CommandInteraction, Message, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
@@ -23,7 +23,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 	let sync_message_content_includes_name = null;
 
 	// prettier-ignore
-	if (sync_message_content) for (let content in sync_message_content) {
+	if (sync_message_content.length) for (let content of sync_message_content) {
 		let _match =
 			content.match(new RegExp(interaction.user.username.toLowerCase()), "g") ||
 			content.match(new RegExp(interaction.member.displayName.toLowerCase()), "g");
@@ -67,13 +67,13 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 	return await embed_syncEnabled.send({ sendMethod: "followUp" /* , ephemeral: true */ });
 }
 
-/** @param {CommandInteraction} interaction @param {Message} message @param {string} reminderID */
-async function awaitSyncMessage(interaction, message, reminderID) {
+/** @param {Client} client @param {CommandInteraction} interaction @param {string} reminderID */
+async function awaitSyncMessage(interaction, reminderID) {
 	// Create the message filter
 	/** @param {Message} msg */
 	let filter = async msg => {
 		let check_user = msg.author.id === interaction.user.id;
-		let check_mention = msg.mentions.members.first()?.id === interaction.guild.members.me.id;
+		let check_mention = msg.content === interaction.guild.members.me.toString();
 		if (!check_user && !check_mention) return;
 
 		// Fetch the reply
@@ -87,7 +87,7 @@ async function awaitSyncMessage(interaction, message, reminderID) {
 	};
 
 	// Await the user's message that contains a mention to the client
-	await message.channel
+	await interaction.channel
 		.awaitMessages({ filter, time: jt.parseTime(config.reminder.timeouts.AWAIT_SYNC_MESSAGE), max: 1 })
 		.then(async collection => {
 			let msg = collection.first();
@@ -180,14 +180,11 @@ async function subcommand_add(interaction) {
 			value: ">>> Reply to any bot message and ping me within the next 60 seconds to enable sync for it.\nIf it's a slash command, make sure it was used by you."
 		});
 
-		// Send the embed with components
-		let message = await embed_reminderAdd.send();
-
 		// Await components and reactions
-		awaitSyncMessage(interaction, message, reminder._id);
+		awaitSyncMessage(interaction, reminder._id);
+	}
 
-		return message;
-	} else return await embed_reminderAdd.send();
+	return await embed_reminderAdd.send();
 }
 
 /** @param {CommandInteraction} interaction */
