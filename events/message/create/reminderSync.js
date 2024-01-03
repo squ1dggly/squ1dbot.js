@@ -29,7 +29,16 @@ module.exports = {
 		// Iterate through the reminders
 		await Promise.all(reminders.map(async r => {
             // Check if the message is from the bot the user enabled sync for
-            if (args.message.author.id !== r.sync_bot_id) return;
+			if (args.message.author.id !== r.sync_bot_id) return;
+			
+			// Check if this reminder requires an interaction
+			if (r.sync_type === reminderManager.SyncType.SLASH_COMMAND) {
+				// Check if the message was a slash command
+				if (!args.message?.interaction) return;
+				
+				// Check if the required command was used
+				if (args.message.interaction.commandName !== r.sync_command_name) return;
+			}
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
             // Check if the first embed contains anything suggesting the user's still on cooldown
@@ -42,10 +51,18 @@ module.exports = {
                 if (embedContent.includes(new Regexp(regex))) return;
 
             // Check if the message matches what we're looking for
-            
-            
+			if (r.sync_type === reminderManager.SyncType.PREFIX_COMMAND) {
+				let _matchPoints = 0;
+
+				for (let strToMatch of r.sync_message_content)
+					if (embedContent.includes(strToMatch)) _matchPoints++;
+
+				// Return if not enough of the message matched
+				if (_matchPoints < Math.floor(embedContent.length / 2)) return;
+			}
+
             // Reset the timer for the reminder
-            await reminderManager.update(r._id, { timestamp: jt.parseTime(r.time, { fromNow: true }) });
+            await reminderManager.update(r._id, { timestamp: jt.parseTime(r.raw_time, { fromNow: true }) });
 
             // React to the message to let the user know we're here
             args.message.react("⏰").catch(() => null);
