@@ -20,7 +20,7 @@ const schema_reminder = new Schema(
 		sync_bot_id: { type: String, default: null },
 		sync_command_name: { type: String, default: null },
 		sync_message_content: { type: Array, default: [] },
-		sync_message_content_includes_name: { type: Boolean, default: false },
+		sync_message_content_includes_name: { type: String, default: null },
 
 		created: { type: Number, default: Date.now() }
 	},

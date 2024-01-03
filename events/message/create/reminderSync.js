@@ -38,6 +38,9 @@ module.exports = {
 				
 				// Check if the required command was used
 				if (args.message.interaction.commandName !== r.sync_command_name) return;
+
+				// Check if the command was used by the right user
+				if (args.message.interaction.user.id !== r.user_id) return;
 			}
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
@@ -52,6 +55,11 @@ module.exports = {
 
             // Check if the message matches what we're looking for
 			if (r.sync_type === reminderManager.SyncType.PREFIX_COMMAND) {
+				// Check if the message content includes the user's name, if set
+				if (r.sync_message_content_includes_name)
+					if (!embedContent.includes(new RegExp(`/${r.sync_message_content_includes_name}/g`)))
+						return;
+
 				let _matchPoints = 0;
 
 				for (let strToMatch of r.sync_message_content)

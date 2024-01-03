@@ -29,8 +29,9 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 	let sync_message_content = isSlashCommand ? [] : messageContentToArray(syncMessage, 1);
 
 	let sync_message_content_includes_name =
-		sync_message_content.includes(interaction.user.username.toLowerCase()) ||
-		sync_message_content.includes(interaction.member.displayName.toLowerCase());
+		sync_message_content.includes(new RegExp(`/${interaction.user.username.toLowerCase()}/g`)) ||
+		sync_message_content.includes(new RegExp(`/${interaction.member.displayName.toLowerCase()}/g`)) ||
+		null;
 
 	let prefixCommandReference = isSlashCommand ? null : (await syncMessage.fetchReference().catch(() => null)) || null;
 
