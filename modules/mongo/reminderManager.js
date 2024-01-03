@@ -97,17 +97,18 @@ async function reminder_fetch(id) {
 	return await models.reminder.findById(id).lean();
 }
 
-async function reminder_fetchAll(user_id, guild_id) {
-	return await models.reminder.find({ user_id, guild_id }).lean();
+async function reminder_fetchForUser(user_id) {
+	return await models.reminder.find({ user_id }).lean();
 }
 
-async function reminder_fetchAllActiveInGuild(guild_id) {
+async function reminder_fetchActiveInGuild(guild_id) {
 	let pipeline = [{ $match: { $and: [{ guild_id }, { enabled: true }, { timestamp: { $lte: Date.now() } }] } }];
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
-async function reminder_fetchAllAssistedInGuild(user_id, guild_id, assist_command_name) {
-	return await models.reminder.find({ user_id, guild_id, assist_command_name }).lean();
+async function reminder_fetchSyncForUserInGuild(user_id, guild_id) {
+	let pipeline = [{ $match: { $and: [{ user_id }, { guild_id }, { sync_type: { $gt: 0 } }] } }];
+	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
 async function reminder_edit(id, query) {
@@ -137,7 +138,7 @@ async function reminder_toggle(id, enabled) {
 
 async function reminder_toggleAll(user_id, guild_id, enabled) {
 	// Fetch all reminders
-	let reminders = await reminder_fetchAll(user_id, guild_id);
+	let reminders = await reminder_fetchForUser(user_id, guild_id);
 
 	await Promise.all(
 		reminders.map(async reminder => {
@@ -213,12 +214,12 @@ async function trigger_fetch(id) {
 	return await models.reminderTrigger.findById(id).lean();
 }
 
-async function trigger_fetchAll(user_id, guild_id) {
-	return await models.reminderTrigger.find({ user_id, guild_id }).lean();
+async function trigger_fetchForUser(user_id) {
+	return await models.reminderTrigger.find({ user_id }).lean();
 }
 
 async function trigger_fetchForUserInGuild(user_id, guild_id) {
-	return await models.reminderTrigger.findById({ user_id, guild_id }).lean();
+	return await models.reminderTrigger.find({ user_id, guild_id }).lean();
 }
 
 /** @param {ReminderTriggerData} data */
@@ -269,9 +270,9 @@ module.exports = {
 	count: reminder_count,
 
 	fetch: reminder_fetch,
-	fetchAll: reminder_fetchAll,
-	fetchAllActiveInGuild: reminder_fetchAllActiveInGuild,
-	fetchAllAssistedInGuild: reminder_fetchAllAssistedInGuild,
+	fetchForUser: reminder_fetchForUser,
+	fetchActiveInGuild: reminder_fetchActiveInGuild,
+	fetchSyncForUserInGuild: reminder_fetchSyncForUserInGuild,
 
 	edit: reminder_edit,
 	toggle: reminder_toggle,
@@ -287,7 +288,7 @@ module.exports = {
 		count: trigger_count,
 
 		fetch: trigger_fetch,
-		fetchAll: trigger_fetchAll,
+		fetchForUser: trigger_fetchForUser,
 		fetchForUserInGuild: trigger_fetchForUserInGuild,
 
 		add: trigger_add,

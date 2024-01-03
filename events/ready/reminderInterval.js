@@ -16,7 +16,7 @@ module.exports = {
 	execute: async client => {
 		const checkRemindersInGuild = async guild => {
 			// Fetch the active reminders in the guild
-			let reminders = await reminderManager.fetchAllActiveInGuild(guild.id);
+			let reminders = await reminderManager.fetchActiveInGuild(guild.id);
 			if (!reminders.length) return;
 
 			for (let reminder of reminders) {
