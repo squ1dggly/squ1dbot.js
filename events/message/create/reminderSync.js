@@ -18,7 +18,6 @@ module.exports = {
 
 		// Fetch sync reminders, if any
 		let reminders = await reminderManager.fetchSyncedInGuild(args.message.guild.id);
-		console.log(reminders);
 		if (!reminders.length) return;
 
 		// prettier-ignore
@@ -47,7 +46,7 @@ module.exports = {
                 if (embedContent.includes(keyword)) return;
             
             for (regex of config.reminder.COOLDOWN_REGEX)
-                if (embedContent.includes(new Regexp(regex))) return;
+                if (embedContent.includes(new RegExp(regex))) return;
 
             // Check if the message matches what we're looking for
 			if (r.sync_type === reminderManager.SyncType.PREFIX_COMMAND) {
@@ -66,7 +65,7 @@ module.exports = {
 			}
 
             // Reset the timer for the reminder
-            await reminderManager.update(r._id, { timestamp: jt.parseTime(r.raw_time, { fromNow: true }) });
+            await reminderManager.edit(r._id, { timestamp: jt.parseTime(r.raw_time, { fromNow: true }) });
 
             // React to the message to let the user know we're here
             args.message.react("⏰").catch(() => null);
