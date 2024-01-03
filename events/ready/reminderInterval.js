@@ -66,7 +66,7 @@ module.exports = {
 						timestamp: true
 					});
 
-					let messageContent = `${guildMember} you have a reminder for **${reminder.name}**!`;
+					// let messageContent = `${guildMember} you have a reminder for **${reminder.name}**!`;
 
 					if (!channel) {
 						let error = reminder.channel_id
@@ -87,7 +87,12 @@ module.exports = {
 
 					// Send the notification to the fetched channel
 					if (userHasPermission && clientHasPermission) {
-						return await channel.send({ content: messageContent, embeds: [embed_reminder] });
+						return await channel.send({
+							content: jt.choiceWeighted(config.reminder.PING_STYLES)
+								.replace("$USER", guildMember)
+								.replace("$REMINDER", reminder.name),
+							embeds: [embed_reminder]
+						});
 					} else {
 						let error = channel && !userHasPermission && !clientHasPermission
 							? `Either you or I don't have permission to send messages in ${channel}, so here's your reminder!`

@@ -1,13 +1,13 @@
 {
-	"INTERVAL_CHECK_ENABLED": true,
-	"ASSIST_CHECK_ENABLED": true,
+	"INTERVAL_CHECK_ENABLED": false,
+	"ASSIST_CHECK_ENABLED": false,
 
 	"INTERVAL": "5s",
 
 	"PING_STYLES": [
-		{ "text": "$USER you have a reminder for **$REMINDER**!", "chance": 100 },
-		{ "text": "Reminder, $USER. Chop chop! **$REMINDER**", "chance": 100 },
-		{ "text": "$USER Ho, ho, ho. Merry chr- Wait, it's January. Anyways, **$REMINDER**!", "chance": 10 }
+		{ "text": "$USER you have a reminder for **$REMINDER**!", "rarity": 100 },
+		{ "text": "Reminder, $USER. Chop chop! **$REMINDER**", "rarity": 100 },
+		{ "text": "$USER Ho, ho, ho. Merry chr- Wait, it's January. Anyways, **$REMINDER**!", "rarity": 5 }
 	],
 
 	"FUN_STYLES": [
