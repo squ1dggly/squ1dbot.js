@@ -222,6 +222,10 @@ async function trigger_fetchForUser(user_id) {
 	return await models.reminderTrigger.find({ user_id }).lean();
 }
 
+async function trigger_fetchForUserByTriggerInGuild(user_id, guild_id, trigger) {
+	return await models.reminderTrigger.find({ user_id, guild_id, message_trigger: trigger }).lean();
+}
+
 async function trigger_fetchForUserInGuild(user_id, guild_id) {
 	return await models.reminderTrigger.find({ user_id, guild_id }).lean();
 }
@@ -294,6 +298,7 @@ module.exports = {
 
 		fetch: trigger_fetch,
 		fetchForUser: trigger_fetchForUser,
+		fetchForUserByTriggerInGuild: trigger_fetchForUserByTriggerInGuild,
 		fetchForUserInGuild: trigger_fetchForUserInGuild,
 
 		add: trigger_add,

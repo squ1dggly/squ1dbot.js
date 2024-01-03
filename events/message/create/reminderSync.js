@@ -1,5 +1,3 @@
-/** @file An example of an event function */
-
 const { Client, Message } = require("discord.js");
 const { messageContentToArray } = require("../../../modules/discordTools");
 const { reminderManager } = require("../../../modules/mongo");
@@ -8,12 +6,14 @@ const jt = require("../../../modules/jsTools");
 const config = { reminder: require("../../../configs/config_reminder.json") };
 
 module.exports = {
-	name: "assistedReminders",
+	name: "reminderSync",
 	event: "message_create",
 
 	/** @param {Client} client @param {{message:Message}} args */
 	execute: async (client, args) => {
-		// Filter out non-guild, and non-user messages, and non-command messages
+		if (!config.reminder.SYNC_CHECK_ENABLED) return;
+
+		// Filter out non-guild, non-user messages, and non-command messages
 		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot) return;
 
 		// Fetch sync reminders, if any

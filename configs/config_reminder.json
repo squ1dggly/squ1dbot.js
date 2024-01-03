@@ -1,6 +1,7 @@
 {
 	"INTERVAL_CHECK_ENABLED": true,
-	"ASSIST_CHECK_ENABLED": true,
+	"SYNC_CHECK_ENABLED": true,
+	"TRIGGERS_ENABLED": true,
 
 	"INTERVAL": "5s",
 

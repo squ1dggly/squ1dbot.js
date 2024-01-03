@@ -431,7 +431,7 @@ async function subcommand_list(interaction) {
 /** @param {CommandInteraction} interaction */
 async function subcommand_triggerAdd(interaction) {
 	// Get interaction options
-	let message_trigger = interaction.options.getString("trigger").trim();
+	let message_trigger = interaction.options.getString("trigger").trim().toLowerCase();
 	let name = interaction.options.getString("name").trim();
 	let time = interaction.options.getString("time").trim();
 	let channel = interaction.options.getChannel("channel") || null;
