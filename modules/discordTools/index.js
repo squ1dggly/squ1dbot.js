@@ -56,7 +56,7 @@ function messageContentToArray(message, embedDepth = null) {
 	}
 
 	// Parse and return content
-	return content.map(str => str.trim().toLowerCase());
+	return content.map(str => str.trim().toLowerCase()).filter(str => str);
 }
 
 module.exports = {
