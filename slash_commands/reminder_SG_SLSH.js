@@ -167,8 +167,8 @@ async function subcommand_add(interaction) {
 	if (repeat) {
 		// Add a new field to the embed with instructions about sync
 		embed_reminderAdd.addFields({
-			name: "Enable Reminder Sync",
-			value: "Reply to any message sent by a bot and ping me within the next 60 seconds, to enable sync for it.\nIf it's a slash command, make sure it was used by you."
+			name: "How 2 Enable Sync:",
+			value: ">>> Reply to any bot message and ping me within the next 60 seconds to enable sync for it.\nIf it's a slash command, make sure it was used by you."
 		});
 
 		// Send the embed with components
