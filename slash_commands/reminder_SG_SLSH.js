@@ -1,18 +1,10 @@
-const {
-	Client,
-	CommandInteraction,
-	SlashCommandBuilder,
-	PermissionFlagsBits,
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ComponentType,
-	Message
-} = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, PermissionFlagsBits, Message } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
+
+const config = { reminder: require("../configs/config_reminder.json") };
 
 /** @param {CommandInteraction} interaction @param {string} reminderID @param {Message} syncMessage */
 async function enableReminderSync(interaction, reminderID, syncMessage) {
@@ -68,89 +60,33 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 
 /** @param {CommandInteraction} interaction @param {Message} message @param {string} reminderID */
 async function awaitSyncMessage(interaction, message, reminderID) {
-	let timeouts = {
-		syncButton: jt.parseTime("30s"),
-		reactionCollect: jt.parseTime("1m")
+	// Create the message filter
+	/** @param {Message} msg */
+	let filter = async msg => {
+		let check_user = msg.author.id === interaction.user.id;
+		let check_mention = msg.mentions.members.first()?.id === interaction.guild.members.me.id;
+		if (!check_user && !check_mention) return;
+
+		// Fetch the reply
+		let reply = await msg.fetchReference().catch(() => null);
+		if (!reply) return false;
+
+		// Check to make sure they didn't jack someone else's slash command
+		if (reply?.interaction && reply.interaction.user.id !== interaction.user.id) return false;
+
+		return true;
 	};
 
-	let syncMessage = null;
+	// Await the user's message that contains a mention to the client
+	await message.channel
+		.awaitMessages({ filter, time: jt.parseTime(config.reminder.timeouts.AWAIT_SYNC_MESSAGE), max: 1 })
+		.then(async collection => {
+			let msg = collection.first();
 
-	let filter = async i => {
-		await i.deferUpdate().catch(() => null);
-		return i.user.id === interaction.user.id && i.customId === "btn_enableSync";
-	};
-
-	await message
-		.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: timeouts.syncButton })
-		.then(async i => {
-			// Remove the button
-			if (message.editable) message.edit({ components: [] }).catch(() => null);
-
-			// prettier-ignore
-			// Let the user know what they have to do
-			await i.followUp({
-				content: "## Instructions:\nReact with ⏰ to any ***new*** message sent by a bot within the next 60 seconds.\nIf it's a slash command, make sure that it was used by you.",
-				ephemeral: true
-			});
-
-			// prettier-ignore
-			// Create a message collector in the current channel
-			let filter_channel = m => m.author.bot;
-			let collector_channel = message.channel.createMessageCollector({
-				filter: filter_channel,
-				time: jt.parseTime("45s")
-			});
-
-			let _reactionCollectors = [];
-
-			collector_channel.on("collect", async _message => {
-				let filter_reaction = (reaction, user) =>
-					!user.bot &&
-					reaction.message.author.bot &&
-					user.id === interaction.user.id &&
-					reaction.emoji.name === "⏰";
-
-				// Add a reaction collector to the message
-				let collector_reaction = _message
-					.awaitReactions({ filter: filter_reaction, time: timeouts.reactionCollect, max: 1, errors: ["time"] })
-					.then(async collected => {
-						let _collectedReaction = collected.first();
-
-						// prettier-ignore
-						// Check if the message is a slash command that was used by the user
-						if (_collectedReaction.message?.interaction && _collectedReaction.message.interaction.user.id !== interaction.user.id)
-							return await _collectedReaction.message.reply({
-								content: `${interaction.user} you can't just jack someone else's command, bro. I'm only syncing slash commands used by you.`
-							}).catch(() => null);
-
-						// Set the assist message to this one
-						syncMessage = _collectedReaction.message;
-
-						// Enable syncing for the selected message
-						enableReminderSync(interaction, reminderID, syncMessage);
-
-						// Stop the channel collector
-						collector_channel.stop();
-					})
-					.catch(() => null);
-
-				// Push the newly made reaction collector to the list
-				_reactionCollectors.push(collector_reaction);
-			});
-
-			// Stop all reaction collectors
-			collector_channel.on("end", () => {
-				try {
-					_reactionCollectors.forEach(c => c.stop());
-				} catch {}
-			});
+			// Enable syncing for the selected message
+			return await enableReminderSync(interaction, reminderID, await msg.fetchReference());
 		})
-		.catch(async () => {
-			if (!message.editable) return;
-
-			// Remove the button
-			return await message.edit({ components: [] }).catch(() => null);
-		});
+		.catch(() => null);
 }
 
 /** @param {CommandInteraction} interaction */
@@ -229,17 +165,14 @@ async function subcommand_add(interaction) {
 	});
 
 	if (repeat) {
-		// Create a button to enable sync
-		let button_enableSync = new ButtonBuilder()
-			.setCustomId("btn_enableSync")
-			.setStyle(ButtonStyle.Primary)
-			.setLabel("Enable Sync");
-
-		// Create the action row
-		let actionRow = new ActionRowBuilder().setComponents(button_enableSync);
+		// Add a new field to the embed with instructions about sync
+		embed_reminderAdd.addFields({
+			name: "How 2 Enable Sync:",
+			value: ">>> Reply to any bot message and ping me within the next 60 seconds to enable sync for it.\nIf it's a slash command, make sure it was used by you."
+		});
 
 		// Send the embed with components
-		let message = await embed_reminderAdd.send({ components: actionRow });
+		let message = await embed_reminderAdd.send();
 
 		// Await components and reactions
 		awaitSyncMessage(interaction, message, reminder._id);
@@ -334,7 +267,9 @@ async function subcommand_toggle(interaction) {
 		id = jt.isArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
-		let id_exists = await Promise.all(id.map(async id => ({ id, exists: await reminderManager.exists(id, interaction.user.id) })));
+		let id_exists = await Promise.all(
+			id.map(async id => ({ id, exists: await reminderManager.exists(id, interaction.user.id) }))
+		);
 
 		// Filter out IDs that don't exist
 		id = id.filter(id => id_exists.find(i => i.id === id && i.exists));
