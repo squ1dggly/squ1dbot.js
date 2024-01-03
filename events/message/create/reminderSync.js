@@ -19,7 +19,7 @@ module.exports = {
 
 		// Fetch sync reminders, if any
 		let reminders = await reminderManager.fetchSyncForUserInGuild(
-			args.message.interaction.user.id,
+			args.message?.interaction?.user?.id || args.message?.author?.id,
 			args.message.guild.id
 		);
 

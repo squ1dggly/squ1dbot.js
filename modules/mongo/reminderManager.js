@@ -101,6 +101,10 @@ async function reminder_fetchForUser(user_id) {
 	return await models.reminder.find({ user_id }).lean();
 }
 
+async function reminder_fetchForUserInGuild(user_id, guild_id) {
+	return await models.reminder.find({ user_id, guild_id }).lean();
+}
+
 async function reminder_fetchActiveInGuild(guild_id) {
 	let pipeline = [{ $match: { $and: [{ guild_id }, { enabled: true }, { timestamp: { $lte: Date.now() } }] } }];
 	return (await models.reminder.aggregate(pipeline)) || [];
@@ -271,6 +275,7 @@ module.exports = {
 
 	fetch: reminder_fetch,
 	fetchForUser: reminder_fetchForUser,
+	fetchForUserInGuild: reminder_fetchForUserInGuild,
 	fetchActiveInGuild: reminder_fetchActiveInGuild,
 	fetchSyncForUserInGuild: reminder_fetchSyncForUserInGuild,
 

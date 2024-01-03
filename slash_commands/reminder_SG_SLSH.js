@@ -282,7 +282,9 @@ async function subcommand_delete(interaction) {
 		id = jt.isArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
-		let id_exists = await Promise.all(id.map(id => ({ id, exists: reminderManager.exists(id, interaction.user.id) })));
+		let id_exists = await Promise.all(
+			id.map(async id => ({ id, exists: (await reminderManager.exists(id, interaction.user.id)) ? true : false }))
+		);
 
 		// Filter out IDs that don't exist
 		id = id.filter(id => id_exists.find(i => i.id === id && i.exists === true));
@@ -362,7 +364,7 @@ async function subcommand_toggle(interaction) {
 async function subcommand_list(interaction) {
 	await interaction.deferReply().catch(() => null);
 
-	let reminders = await reminderManager.fetchAll(interaction.user.id, interaction.guild.id);
+	let reminders = await reminderManager.fetchForUserInGuild(interaction.user.id, interaction.guild.id);
 
 	// prettier-ignore
 	// Check if the user has any active reminders
