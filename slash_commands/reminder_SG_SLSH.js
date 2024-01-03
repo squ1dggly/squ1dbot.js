@@ -283,7 +283,7 @@ async function subcommand_delete(interaction) {
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
-			id.map(async id => ({ id, exists: (await reminderManager.exists(id, interaction.user.id)) ? true : false }))
+			id.map(async id => ({ id, exists: await reminderManager.exists(id, interaction.user.id) }))
 		);
 
 		// Filter out IDs that don't exist
@@ -557,7 +557,7 @@ async function subcommand_triggerDelete(interaction) {
 async function subcommand_triggerList(interaction) {
 	await interaction.deferReply().catch(() => null);
 
-	let triggers = await reminderManager.trigger.fetchAll(interaction.user.id, interaction.guild.id);
+	let triggers = await reminderManager.trigger.fetchForUserInGuild(interaction.user.id, interaction.guild.id);
 
 	// prettier-ignore
 	// Check if the user has any active reminders

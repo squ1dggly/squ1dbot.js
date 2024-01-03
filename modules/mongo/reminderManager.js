@@ -86,7 +86,7 @@ class ReminderTrigger {
 
 /* - - - - - { Reminder } - - - - - */
 async function reminder_exists(id, user_id) {
-	return await models.reminder.exists({ _id: id, user_id });
+	return await models.reminder.exists({ _id: id, user_id }) ? true : false;
 }
 
 async function reminder_count(user_id, guild_id) {
@@ -207,7 +207,7 @@ async function reminder_deleteAll(user_id, guild_id) {
 
 /* - - - - - { Reminder Trigger } - - - - - */
 async function trigger_exists(id, user_id) {
-	return await models.reminderTrigger.exists({ _id: id, user_id });
+	return await models.reminderTrigger.exists({ _id: id, user_id }) ? true : false;
 }
 
 async function trigger_count(user_id, guild_id) {
