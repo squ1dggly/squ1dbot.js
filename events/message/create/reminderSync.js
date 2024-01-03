@@ -49,6 +49,14 @@ module.exports = {
 
             // Check if the message matches what we're looking for
 			if (r.sync_type === reminderManager.SyncType.PREFIX_COMMAND) {
+				// Check if we can further verify by seeing if the bot replied to the user
+				if (args.message.reference) {
+					// Fetch the reply
+					let reply = await args.message.fetchReference().catch(() => null);
+					// Check if the reply's author is the same one that set up the reminder
+					if (reply && reply.author.id !== r.user_id) return;
+				}
+
 				// Check if the message content includes the user's name, if set
 				if (r.sync_message_content_includes_name)
 					for (str of embedContent)
