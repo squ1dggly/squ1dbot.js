@@ -225,7 +225,7 @@ async function subcommand_add(interaction) {
 			.replace("$DYNAMIC", repeat ? "every" : "in")
 			.replace("$ETA", jt.eta(reminder.timestamp))
 			.replace("$OPTIONS", _options_f.length ? _options_f.join("\n") : ""),
-		footer: `id: ${reminder._id}`
+		footer: `ID: ${reminder._id}`
 	});
 
 	if (repeat) {
@@ -487,7 +487,7 @@ async function subcommand_triggerAdd(interaction) {
 			// .replace("$ETA", jt.eta(jt.parseTime(reminderTrigger.reminder_data.raw_time, { fromNow: true })))
 			.replace("$TRIGGER", reminderTrigger.message_trigger)
 			.replace("$CHANNEL", channel ? `\n> ${channel}` : ""),
-		footer: `id: ${reminderTrigger._id}`
+		footer: `ID: ${reminderTrigger._id}`
 	});
 
 	return await embed_reminderTriggerAdd.send();
