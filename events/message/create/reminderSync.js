@@ -40,20 +40,20 @@ module.exports = {
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
             // Check if the first embed contains anything suggesting the user's still on cooldown
-            let embedContent = messageContentToArray(args.message, 1);
+			let embedContent = messageContentToArray(args.message, 1);
 
-            for (keyword of config.reminder.COOLDOWN_KEYWORDS)
-                if (embedContent.includes(keyword)) return;
-            
-            for (regex of config.reminder.COOLDOWN_REGEX)
-                if (embedContent.includes(new RegExp(regex))) return;
+			for (regex of config.reminder.COOLDOWN_REGEX)
+				for (str of embedContent)
+					if (new RegExp(regex, "g").test(str))
+						return;
 
             // Check if the message matches what we're looking for
 			if (r.sync_type === reminderManager.SyncType.PREFIX_COMMAND) {
 				// Check if the message content includes the user's name, if set
 				if (r.sync_message_content_includes_name)
-					if (!embedContent.includes(new RegExp(`/${r.sync_message_content_includes_name}/g`)))
-						return;
+					for (str of embedContent)
+						if (new RegExp(r.sync_message_content_includes_name, "g").test(str))
+							return;
 
 				let _matchPoints = 0;
 

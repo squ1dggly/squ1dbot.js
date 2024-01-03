@@ -5,8 +5,12 @@
 
 	"INTERVAL": "5s",
 
-	"COOLDOWN_KEYWORDS": ["cooldown", "cool down"],
-	"COOLDOWN_REGEX": ["/wait [0-9]+ (sec|min|hour|day|week)/g", "/in [0-9]+ (sec|min|hour|day|week)/g"],
+	"COOLDOWN_REGEX": [
+		"cooldown",
+		"cool down",
+		"wait [0-9]+ (sec|min|hour|day|week)",
+		"in [0-9]+ (sec|min|hour|day|week)"
+	],
 
 	"PING_STYLES": [
 		{ "text": "$USER you have a reminder for **$REMINDER**!", "rarity": 100 },
