@@ -6,14 +6,7 @@ const { reminderManager } = require("../../modules/mongo");
 const logger = require("../../modules/logger");
 const jt = require("../../modules/jsTools");
 
-const greetings = [
-	'Why hello there! Don\'t forget about "$REMINDER"!',
-	'Hey there! I heard you wanted to be reminded of "$REMINDER"!',
-	'I think it\'s time for "$REMINDER". If you know what I mean. 😎',
-	'Yo! I heard it\'s time for "$REMINDER"!',
-	'I believe some time ago you requested to be notified of "$REMINDER". So, here you go I guess.',
-	'Once upon a time... "$REMINDER"! 🌠'
-];
+const config = { reminder: require("../../configs/config_reminder.json") };
 
 module.exports = {
 	name: "reminderInterval",
@@ -48,7 +41,7 @@ module.exports = {
 						else return reminderManager.delete(reminder._id);
 
 					// Increment the timestamp
-					reminderManager.update(reminder._id, { timestamp: jt.parseTime(reminder.time, { fromNow: true }) });
+					reminderManager.update(reminder._id, { timestamp: jt.parseTime(reminder.raw_time, { fromNow: true }) });
 				}
 				// Delete the reminder (since it's not set to repeat)
 				else reminderManager.delete(reminder._id);
@@ -65,9 +58,11 @@ module.exports = {
 					// Create the embed :: { REMINDER }
 					let embed_reminder = new BetterEmbed({
 						title: `⏰ Reminder: ${reminder.name}`,
-						// description: `Hey there! I heard you wanted to be reminded of "${reminder.name}"!`,
-						description: jt.choice(greetings).replace("$REMINDER", reminder.name),
-						footer: `id: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: ✅" : ""}`,
+						description: jt.choice(config.reminder.FUN_STYLES)
+							.replace("$REMINDER", reminder.name)
+							.replace("$REMINDER_CUT_OFF", reminder.name.slice(0, 4).trim())
+							.replace("$USERNAME", guildMember.user.username),
+						footer: `ID: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• Repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• repeat: `✅`" : ""}`,
 						timestamp: true
 					});
 
@@ -107,14 +102,15 @@ module.exports = {
 			}
 		};
 
-		// Set an interval for checking reminders every 5 seconds
-		setInterval(async () => {
-			// Fetch every guild the client's currently in
-			let oAuth2Guilds = await client.guilds.fetch();
-			let guilds = await Promise.all(oAuth2Guilds.map(o => client.guilds.fetch(o.id)));
+		// Set an interval for checking reminders
+		if (config.reminder.INTERVAL_CHECK_ENABLED)
+			setInterval(async () => {
+				// Fetch every guild the client's currently in
+				let oAuth2Guilds = await client.guilds.fetch();
+				let guilds = await Promise.all(oAuth2Guilds.map(o => client.guilds.fetch(o.id)));
 
-			// Check for reminders in all of them
-			for (let guild of guilds) checkRemindersInGuild(guild);
-		}, 5000);
+				// Check for user reminders in all of them
+				for (let guild of guilds) checkRemindersInGuild(guild);
+			}, jt.parseTime(config.reminder.INTERVAL));
 	}
 };

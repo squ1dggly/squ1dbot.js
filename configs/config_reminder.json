@@ -4,30 +4,39 @@
 
 	"INTERVAL": "5s",
 
+	"PING_STYLES": [
+		"$USER you have a reminder for **$REMINDER**!",
+		"Reminder, $USER. Chop chop! **$REMINDER**",
+		"$USER Ho, ho, ho. Merry chr- Wait, it's January. Anyways, **$REMINDER**!",
+		"$USER Oh to wish upon a star... "
+	],
+
 	"FUN_STYLES": [
 		"## Hey!\nOh- Sorry for screaming. Still learning how this new-fangled markdown works.\nRemember to \"*$REMINDER*\" while I figure this out.",
 		"Hey there! I heard you wanted to be reminded of \"*$REMINDER*\"!",
 		"Why hello there! Don't forget about \"*$REMINDER*\"!",
 		"Yo! I heard it's time for \"*$REMINDER*\"!",
-
+		
 		"I believe some time ago you requested to be notified of \"*$REMINDER*\". So, here you go I guess.",
 		"Reminding you about \"*$REMINDER*\" is getting pretty boring. Can't you just remind yourself?",
 		"It's somewhere on my clipboard... Ah, yes! You wanted to be reminded about \"*$REMINDER*\"!",
 		"It seems you might've forgotten about \"*$REMINDER*\". Let's not let that happen again.",
-
+		
 		"**Stop right there criminal scum!**\nYou can't be stealing those kittens! You're supposed to \"*$REMINDER*\".",
 		"Oh, hey there $USERNAME, didn't you *$REMINDER_CUT_OFF*-\nWait, what was my line again? Oh yeah. \"*$REMINDER*\"!",
 		"It's \"*$REMINDER*\"in' time!",
+		"Anotha one! \"*$REMINDER*\".",
 
 		"\"*$REMINDER*\". There you go, that it. Where's my payment? I only take cash btw.",
 		"This is my last time reminding you about \"*$REMINDER*\". I can't take it anymore.",
 		"Don't forget about \"*$REMINDER*\"! (***or else***)",
 		"Don't forget about \"*$REMINDER*\"!",
-
+		
+		"✨ Oh to wish upon a star... Do you know what I'd wish for, $USER? I'd wish you'd remember \"*$REMINDER*\" youself!",
 		"To recieve your reminder, please insert another 🪙. No? Alright, fine. Remember to \"*$REMINDER*\".",
-		"Why hello there. <:pikammm:1154305234965889044>\nIt's time to \"*$REMINDER*\".",
 		"🌠 Once upon a time... There was a \"*$REMINDER*\" that had to be done!",
 		"I think it's time for \"*$REMINDER*\". If you know what I mean... 😎",
+		"It's time for a little \"*$REMINDER*\". <:pikammm:1154305234965889044>",
 		"🍷 \"*$REMINDER*\", anyone?"
 	]
 }

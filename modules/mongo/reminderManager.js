@@ -102,7 +102,7 @@ async function reminder_fetchAll(user_id, guild_id) {
 }
 
 async function reminder_fetchAllActiveInGuild(guild_id) {
-	let pipeline = [{ $match: { $and: [{ guild_id }, { timestamp: { $lte: Date.now() } }] } }];
+	let pipeline = [{ $match: { $and: [{ guild_id }, { enabled: true }, { timestamp: { $lte: Date.now() } }] } }];
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
