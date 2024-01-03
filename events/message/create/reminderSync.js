@@ -13,16 +13,12 @@ module.exports = {
 
 	/** @param {Client} client @param {{message:Message}} args */
 	execute: async (client, args) => {
-		// prettier-ignore
 		// Filter out non-guild, and non-user messages, and non-command messages
 		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot) return;
 
 		// Fetch sync reminders, if any
-		let reminders = await reminderManager.fetchSyncForUserInGuild(
-			args.message?.interaction?.user?.id || args.message?.author?.id,
-			args.message.guild.id
-		);
-
+		let reminders = await reminderManager.fetchSyncedInGuild(args.message.guild.id);
+		console.log(reminders);
 		if (!reminders.length) return;
 
 		// prettier-ignore

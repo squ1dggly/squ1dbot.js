@@ -110,8 +110,8 @@ async function reminder_fetchActiveInGuild(guild_id) {
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
-async function reminder_fetchSyncForUserInGuild(user_id, guild_id) {
-	let pipeline = [{ $match: { $and: [{ user_id }, { guild_id }, { sync_type: { $gt: 0 } }] } }];
+async function reminder_fetchSyncedInGuild(guild_id) {
+	let pipeline = [{ $match: { $and: [{ guild_id }, { sync_type: { $gt: 0 } }] } }];
 	return (await models.reminder.aggregate(pipeline)) || [];
 }
 
@@ -277,7 +277,7 @@ module.exports = {
 	fetchForUser: reminder_fetchForUser,
 	fetchForUserInGuild: reminder_fetchForUserInGuild,
 	fetchActiveInGuild: reminder_fetchActiveInGuild,
-	fetchSyncForUserInGuild: reminder_fetchSyncForUserInGuild,
+	fetchSyncedInGuild: reminder_fetchSyncedInGuild,
 
 	edit: reminder_edit,
 	toggle: reminder_toggle,
