@@ -20,10 +20,19 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 
 	let sync_message_content = isSlashCommand ? [] : messageContentToArray(syncMessage, 1);
 
-	let sync_message_content_includes_name =
-		sync_message_content.includes(new RegExp(`/${interaction.user.username.toLowerCase()}/g`)) ||
-		sync_message_content.includes(new RegExp(`/${interaction.member.displayName.toLowerCase()}/g`)) ||
-		null;
+	let sync_message_content_includes_name = null;
+
+	// prettier-ignore
+	if (sync_message_content) for (let content in sync_message_content) {
+		let _match =
+			content.match(new RegExp(interaction.user.username.toLowerCase()), "g") ||
+			content.match(new RegExp(interaction.member.displayName.toLowerCase()), "g");
+
+		if (_match[0]) {
+			sync_message_content_includes_name = _match[0];
+			break;
+		}
+	}
 
 	let prefixCommandReference = isSlashCommand ? null : (await syncMessage.fetchReference().catch(() => null)) || null;
 
