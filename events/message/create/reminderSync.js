@@ -17,7 +17,7 @@ module.exports = {
 		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot) return;
 
 		// Fetch sync reminders, if any
-		let reminders = await reminderManager.fetchSyncedInGuild(args.message.guild.id);
+		let reminders = (await reminderManager.fetchSyncedInGuild(args.message.guild.id)).filter(r => r?.enabled);
 		if (!reminders.length) return;
 
 		// prettier-ignore
