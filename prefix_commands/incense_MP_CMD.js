@@ -33,7 +33,7 @@ module.exports = {
 			return await embed_incense.reply(message, {
 				title: "⛔ Missing Permissions",
                 description: "I need the **`Manage Channels`** permission to do that.",
-                footer: "i have less than 9 million power :(",
+                footer: "i oonly have 8.9 million power :(",
 				allowedMentions: { repliedUser: false }
 			});
 
