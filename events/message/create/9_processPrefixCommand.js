@@ -1,6 +1,14 @@
 /** @file Execute commands requested by a user message @author xsqu1znt */
 
-const { Client, PermissionsBitField, Message, userMention } = require("discord.js");
+const {
+	Client,
+	PermissionsBitField,
+	Message,
+	userMention,
+	ButtonBuilder,
+	ButtonStyle,
+	ActionRowBuilder
+} = require("discord.js");
 const logger = require("../../../modules/logger");
 
 const config = { client: require("../../../configs/config_client.json") };
@@ -88,9 +96,27 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
+			// Create a button :: { SUPPORT SERVER }
+			let btn_supportServer = new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(config.bot.support.server.URL)
+				.setLabel("Support Server");
+
+			// Create an action row :: { SUPPORT SERVER }
+			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+
+			// prettier-ignore
+			// Let the user know an error occurred
+			args.message.reply({
+				content: `❌ **Ruh-roh raggy!** An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere, but frankly, I'd rather you didn't.`,
+				components: [aR_supportServer],
+				allowedMentions: { repliedUser: false }
+			}).catch(() => null);
+
+			// Log the error
 			return logger.error(
-				"Failed to execute command",
-				`PRFX_CMD: ${prefix}${commandName} | guildID: ${args.message.guildId} | userID: ${args.message.author.id}`,
+				"Could not execute command",
+				`PRFX_CMD: ${prefix}${commandName} | guildID: ${args.message.guild.id} | userID: ${args.message.author.id}`,
 				err
 			);
 		}
