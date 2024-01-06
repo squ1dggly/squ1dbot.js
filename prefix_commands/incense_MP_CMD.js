@@ -6,18 +6,36 @@
 const { Client, PermissionFlagsBits, Message } = require("discord.js");
 
 const { BetterEmbed } = require("../modules/discordTools");
-const jt = require("../modules/jsTools");
 
 module.exports = {
 	name: "incense",
 	aliases: [],
 	description: "Pause or resume an ongoing Pokétwo incense",
-	options: { icon: "🌽", guildAdminOnly: true },
+	options: { icon: "🕯️", guildAdminOnly: true },
 
 	/** @param {Client} client @param {Message} message @param {extra} extra */
 	execute: async (client, message, { cleanContent, cmdName, prefix }) => {
 		// Create the embed :: { INCENSE }
 		let embed_incense = new BetterEmbed();
+
+		/* - - - - - { Error Checking } - - - - - */
+		// Fetch the poketwo bot
+		let user_poketwo = await message.guild.members.fetch("716390085896962058");
+		// prettier-ignore
+		if (!user_poketwo) return await embed_incense.reply(message, {
+            title: "⛔ Pokétwo not found",
+            description: "How am I supposed to toggle an incense if Pokétwo's not even in the server, punk?",
+            allowedMentions: { repliedUser: false }
+        });
+
+		// Check if we have permission to manage channels
+		if (!message.channel.permissionsFor(message.guild.members.me).has(PermissionFlagsBits.ManageChannels))
+			return await embed_incense.reply(message, {
+				title: "⛔ Missing Permissions",
+                description: "I need the **`Manage Channels`** permission to do that.",
+                footer: "i have less than 9 million power :(",
+				allowedMentions: { repliedUser: false }
+			});
 
 		let subCommand = cleanContent.split(" ")[0];
 		// prettier-ignore
@@ -28,20 +46,11 @@ module.exports = {
             allowedMentions: { repliedUser: false }
         });
 
-        // Fetch the poketwo bot
-        let user_poketwo = await message.guild.members.fetch("716390085896962058");
-        // prettier-ignore
-        if (!user_poketwo) return await embed_incense.reply(message, {
-            title: "⛔ Pokétwo not found",
-            description: "How am I supposed to toggle an incense if Pokétwo's not even in the server, punk?",
-            allowedMentions: { repliedUser: false }
-        });
-
 		switch (subCommand) {
 			case "s":
 			case "start":
 				// prettier-ignore
-                await message.channel.parent.permissionOverwrites.edit(user_poketwo, {
+				await message.channel.parent.permissionOverwrites.edit(user_poketwo, {
                     SendMessages: true,
                     SendMessagesInThreads: true
                 });
