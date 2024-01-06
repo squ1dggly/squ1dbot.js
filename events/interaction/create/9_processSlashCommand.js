@@ -1,9 +1,13 @@
 /** @file Execute commands requested by a command interaction @author xsqu1znt */
 
 const { Client, PermissionsBitField, BaseInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { BetterEmbed } = require("../../../modules/discordTools");
 const logger = require("../../../modules/logger");
 
-const config = { client: require("../../../configs/config_client.json") };
+const config = {
+	client: require("../../../configs/config_client.json"),
+	bot: require("../../../configs/config_bot.json")
+};
 
 function userIsBotAdminOrBypass(interaction) {
 	return [
@@ -75,25 +79,22 @@ module.exports = {
 			// Create a button :: { SUPPORT SERVER }
 			let btn_supportServer = new ButtonBuilder()
 				.setStyle(ButtonStyle.Link)
-				.setURL(config.bot.support.server.URL)
+				.setURL(config.bot.support.server.INVITE)
 				.setLabel("Support Server");
 
 			// Create an action row :: { SUPPORT SERVER }
 			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
 
-			// Create the message data object
-			let _msgData = {
-				content: `❌ **Ruh-roh raggy!** An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere, but frankly, I'd rather you didn't.`,
-				components: [aR_supportServer],
-				embeds: []
-			};
+			// Create the embed :: { FATAL ERROR }
+			let embed_fatalError = new BetterEmbed({
+				interaction: args.interaction,
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while using the **/\`${args.interaction.commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere!`,
+				footer: "but frankly, I'd rather you didn't"
+			});
 
-			// prettier-ignore
-			// Check if the interaction was deferred
-			if (args.interaction.deferred)
-				await args.interaction.editReply(_msgData).catch(() => null);
-			else
-				await args.interaction.reply(_msgData).catch(() => null);
+			// Let the user know an error occurred
+			embed_fatalError.send({ components: aR_supportServer, ephemeral: true }).catch(() => null);
 
 			// Log the error
 			return logger.error(

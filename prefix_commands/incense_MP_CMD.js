@@ -30,6 +30,8 @@ module.exports = {
             allowedMentions: { repliedUser: false }
         });
 
+		throw new Error("hah, gotcha!");
+
 		switch (subCommand) {
 			case "s":
 			case "start":

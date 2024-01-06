@@ -9,9 +9,13 @@ const {
 	ButtonStyle,
 	ActionRowBuilder
 } = require("discord.js");
+const { BetterEmbed } = require("../../../modules/discordTools");
 const logger = require("../../../modules/logger");
 
-const config = { client: require("../../../configs/config_client.json") };
+const config = {
+	client: require("../../../configs/config_client.json"),
+	bot: require("../../../configs/config_bot.json")
+};
 
 function userIsBotAdminOrBypass(message, commandName) {
 	return [
@@ -99,19 +103,23 @@ module.exports = {
 			// Create a button :: { SUPPORT SERVER }
 			let btn_supportServer = new ButtonBuilder()
 				.setStyle(ButtonStyle.Link)
-				.setURL(config.bot.support.server.URL)
+				.setURL(config.bot.support.server.INVITE)
 				.setLabel("Support Server");
 
 			// Create an action row :: { SUPPORT SERVER }
 			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
 
-			// prettier-ignore
+			// Create the embed :: { FATAL ERROR }
+			let embed_fatalError = new BetterEmbed({
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere!`,
+				footer: "but frankly, I'd rather you didn't"
+			});
+
 			// Let the user know an error occurred
-			await args.message.reply({
-				content: `❌ **Ruh-roh raggy!** An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere, but frankly, I'd rather you didn't.`,
-				components: [aR_supportServer],
-				allowedMentions: { repliedUser: false }
-			}).catch(() => null);
+			embed_fatalError
+				.reply(args.message, { components: aR_supportServer, allowedMentions: { repliedUser: false } })
+				.catch(() => null);
 
 			// Log the error
 			return logger.error(
