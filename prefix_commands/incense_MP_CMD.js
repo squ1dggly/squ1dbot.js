@@ -30,39 +30,30 @@ module.exports = {
             allowedMentions: { repliedUser: false }
         });
 
-		try {
-			switch (subCommand) {
-				case "s":
-				case "start":
-					// prettier-ignore
-					await message.channel.parent.permissionOverwrites.set([
-						{ id: poketwoRoleID, allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.SendMessagesInThreads] }
-					]);
+		switch (subCommand) {
+			case "s":
+			case "start":
+				// prettier-ignore
+				await message.channel.parent.permissionOverwrites.set([
+                    { id: poketwoRoleID, allow: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.SendMessagesInThreads] }
+                ]);
 
-					// prettier-ignore
-					return await embed_incense.reply(message, {
-						description: "`✅` incense resumed", allowedMentions: { repliedUser: false }
-					});
+				// prettier-ignore
+				return await embed_incense.reply(message, {
+                    description: "`✅` incense resumed", allowedMentions: { repliedUser: false }
+                });
 
-				case "p":
-				case "pause":
-					// prettier-ignore
-					await message.channel.parent.permissionOverwrites.set([
-						{ id: poketwoRoleID, deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.SendMessagesInThreads] }
-					]);
+			case "p":
+			case "pause":
+				// prettier-ignore
+				await message.channel.parent.permissionOverwrites.set([
+                    { id: poketwoRoleID, deny: [PermissionFlagsBits.SendMessages, PermissionFlagsBits.SendMessagesInThreads] }
+                ]);
 
-					// prettier-ignore
-					return await embed_incense.reply(message, {
-						description: "`❌` incense paused", allowedMentions: { repliedUser: false }
-					});
-			}
-		} catch (err) {
-			console.error(err);
-
-			return await message.reply({
-				content: "Something's broken, other than my spirit.",
-				allowedMentions: { repliedUser: false }
-			});
+				// prettier-ignore
+				return await embed_incense.reply(message, {
+                    description: "`❌` incense paused", allowedMentions: { repliedUser: false }
+                });
 		}
 	}
 };

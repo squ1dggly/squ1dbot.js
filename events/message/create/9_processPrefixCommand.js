@@ -107,7 +107,7 @@ module.exports = {
 
 			// prettier-ignore
 			// Let the user know an error occurred
-			args.message.reply({
+			await args.message.reply({
 				content: `❌ **Ruh-roh raggy!** An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere, but frankly, I'd rather you didn't.`,
 				components: [aR_supportServer],
 				allowedMentions: { repliedUser: false }
