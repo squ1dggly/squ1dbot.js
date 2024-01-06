@@ -1,9 +1,13 @@
 /** @file Execute commands requested by a command interaction @author xsqu1znt */
 
-const { Client, PermissionsBitField, BaseInteraction } = require("discord.js");
+const { Client, PermissionsBitField, BaseInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { BetterEmbed } = require("../../../modules/discordTools");
 const logger = require("../../../modules/logger");
 
-const config = { client: require("../../../configs/config_client.json") };
+const config = {
+	client: require("../../../configs/config_client.json"),
+	bot: require("../../../configs/config_bot.json")
+};
 
 function userIsBotAdminOrBypass(interaction) {
 	return [
@@ -29,7 +33,7 @@ module.exports = {
 		// prettier-ignore
 		// Filter out DM interactions
 		if (!args.interaction.guildId) return args.interaction.reply({
-			content: "Commands cannot be used in DMs.", ephemeral: true
+			content: "Commands can't be used in DMs.", ephemeral: true
 		});
 
 		// Filter out non-guild and non-command interactions
@@ -72,8 +76,29 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
+			// Create a button :: { SUPPORT SERVER }
+			let btn_supportServer = new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(config.bot.support.server.INVITE)
+				.setLabel("Support Server");
+
+			// Create an action row :: { SUPPORT SERVER }
+			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+
+			// Create the embed :: { FATAL ERROR }
+			let embed_fatalError = new BetterEmbed({
+				interaction: args.interaction,
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while using the **/\`${args.interaction.commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere!`,
+				footer: "but frankly, I'd rather you didn't"
+			});
+
+			// Let the user know an error occurred
+			embed_fatalError.send({ components: aR_supportServer, ephemeral: true }).catch(() => null);
+
+			// Log the error
 			return logger.error(
-				"Failed to execute command",
+				"Could not execute command",
 				`SLSH_CMD: /${args.interaction.commandName} | guildID: ${args.interaction.guild.id} | userID: ${args.interaction.user.id}`,
 				err
 			);

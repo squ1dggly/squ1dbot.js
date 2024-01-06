@@ -1,9 +1,21 @@
 /** @file Execute commands requested by a user message @author xsqu1znt */
 
-const { Client, PermissionsBitField, Message, userMention } = require("discord.js");
+const {
+	Client,
+	PermissionsBitField,
+	Message,
+	userMention,
+	ButtonBuilder,
+	ButtonStyle,
+	ActionRowBuilder
+} = require("discord.js");
+const { BetterEmbed } = require("../../../modules/discordTools");
 const logger = require("../../../modules/logger");
 
-const config = { client: require("../../../configs/config_client.json") };
+const config = {
+	client: require("../../../configs/config_client.json"),
+	bot: require("../../../configs/config_bot.json")
+};
 
 function userIsBotAdminOrBypass(message, commandName) {
 	return [
@@ -27,7 +39,7 @@ module.exports = {
 	/** @param {Client} client @param {{message:Message}} args */
 	execute: async (client, args) => {
 		// Filter out non-guild, non-user, and non-command messages
-		if (!args.message?.guild || !args.message?.author || !args.message?.author?.bot || !args.message?.content) return;
+		if (!args.message?.guild || !args.message?.author || args.message?.author?.bot || !args.message?.content) return;
 
 		// prettier-ignore
 		// Check if we have permission to send messages in this channel
@@ -88,9 +100,31 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
+			// Create a button :: { SUPPORT SERVER }
+			let btn_supportServer = new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(config.bot.support.server.INVITE)
+				.setLabel("Support Server");
+
+			// Create an action row :: { SUPPORT SERVER }
+			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+
+			// Create the embed :: { FATAL ERROR }
+			let embed_fatalError = new BetterEmbed({
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while running the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere!`,
+				footer: "but frankly, I'd rather you didn't"
+			});
+
+			// Let the user know an error occurred
+			embed_fatalError
+				.reply(args.message, { components: aR_supportServer, allowedMentions: { repliedUser: false } })
+				.catch(() => null);
+
+			// Log the error
 			return logger.error(
-				"Failed to execute command",
-				`PRFX_CMD: ${prefix}${commandName} | guildID: ${args.message.guildId} | userID: ${args.message.author.id}`,
+				"Could not execute command",
+				`PRFX_CMD: ${prefix}${commandName} | guildID: ${args.message.guild.id} | userID: ${args.message.author.id}`,
 				err
 			);
 		}
