@@ -30,6 +30,12 @@ module.exports = {
 
         // Fetch the poketwo bot
         let user_poketwo = await message.guild.members.fetch("716390085896962058");
+        // prettier-ignore
+        if (!user_poketwo) return await embed_incense.reply(message, {
+            title: "⛔ Pokétwo not found",
+            description: "How am I supposed to toggle an incense if Pokétwo's not even in the server, punk?",
+            allowedMentions: { repliedUser: false }
+        });
 
 		switch (subCommand) {
 			case "s":
