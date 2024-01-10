@@ -27,6 +27,9 @@ module.exports = {
 				case "competing": _data.TYPE = ActivityType.Competing; break;
 			}
 
+			// Formatting
+			_data.NAME = _data.NAME.replace("$GUILD_COUNT", client.guilds.cache.size);
+
 			// Set the status
 			// checking if the new status is different to avoid rate limiting
 			if (_data.STATUS !== lastActivity?.STATUS) client.user.setStatus(_data.STATUS);
