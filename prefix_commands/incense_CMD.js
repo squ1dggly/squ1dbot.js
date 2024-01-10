@@ -8,6 +8,7 @@ module.exports = {
 	aliases: ["inc"],
 	description: "Pause or resume an ongoing Pokétwo incense",
 	usage: "<start/s | pause/p>",
+	category: "Poketwo",
 	options: { icon: "🕯️", guildAdminOnly: true },
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */

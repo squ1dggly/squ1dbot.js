@@ -22,7 +22,7 @@ module.exports = {
 
 		// Get the available categories
 		let command_categories = jt.unique(
-			commands.map(cmd => ({ name: cmd.category, icon: cmd.categoryIcon || null })),
+			commands.map(cmd => ({ name: cmd.category || "Misc.", icon: cmd.categoryIcon || null })),
 			"name"
 		);
 

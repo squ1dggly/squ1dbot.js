@@ -9,6 +9,8 @@
  * @property {string[]} aliases different ways this command can be called
  * @property {string} description description of the command
  * @property {string} usage how the command can be used
+ * @property {string} category category of the command
+ * @property {string} categoryIcon icon of the command category
  * @property {CommandOptions} options extra options for the command
  * @property {Function} execute executed when the command is used */
 
