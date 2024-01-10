@@ -9,9 +9,9 @@ const { BetterEmbed } = require("../modules/discordTools");
 
 module.exports = {
 	name: "incense",
-	aliases: [],
+	aliases: ["inc"],
 	description: "Pause or resume an ongoing Pokétwo incense",
-	usage: ["start/s", "pause/p"],
+	usage: "<start/s | pause/p>",
 	options: { icon: "🕯️", guildAdminOnly: true },
 
 	/** @param {Client} client @param {Message} message @param {extra} extra */
@@ -33,8 +33,8 @@ module.exports = {
 		if (!message.channel.permissionsFor(message.guild.members.me).has(PermissionFlagsBits.ManageChannels))
 			return await embed_incense.reply(message, {
 				title: "⛔ Missing Permissions",
-                description: "I need the **`Manage Channels`** permission to do that.",
-                footer: "i oonly have 8.9 million power :(",
+				description: "I need the **`Manage Channels`** permission to do that.",
+				footer: "i oonly have 8.9 million power :(",
 				allowedMentions: { repliedUser: false }
 			});
 
