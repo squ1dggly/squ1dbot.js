@@ -29,5 +29,16 @@ module.exports = {
 
 		// Log the error if the connection failed
 		logger.error("Failed to connect to MongoDB", null, connection);
+	},
+
+	/** Ping MongoDB */
+	ping: async () => {
+		if (!mongoose.connection) return "n/a";
+
+		let before = Date.now();
+		await mongoose.connection.db.admin().ping();
+		let after = Date.now();
+
+		return after - before;
 	}
 };

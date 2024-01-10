@@ -1,5 +1,5 @@
 const { Client, Message } = require("discord.js");
-const { BetterEmbed } = require("../modules/discordTools");
+const { ping } = require("../modules/mongo");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
@@ -7,11 +7,14 @@ module.exports = {
 	description: "Check my ping",
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
-    execute: async (client, message) => {
-        // Create the embed :: { PING }
-		let embed_ping = new BetterEmbed({ description: `${client.ws.ping}ms` });
+	execute: async (client, message) => {
+		let responsePing = Date.now() - message.createdTimestamp;
+		let databasePing = await ping();
 
-        // Send the embed
-		return await embed_ping.reply(message, { allowedMentions: { repliedUser: false } });
+		// Send the client's ping
+		return await message.reply({
+			content: `Client: **${client.ws.ping}ms**, Response: **${responsePing}ms**, Database: **${databasePing}ms**`,
+			allowedMentions: { repliedUser: false }
+		});
 	}
 };

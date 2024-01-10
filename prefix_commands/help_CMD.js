@@ -26,6 +26,9 @@ module.exports = {
 			"name"
 		);
 
+		// Sort the categories alphabetically
+		command_categories.sort((a, b) => a.name - b.name);
+
 		// Parse prefix commands into a readable format
 		let commands_f = [];
 
