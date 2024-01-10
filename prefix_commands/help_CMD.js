@@ -1,18 +1,14 @@
-/** @typedef extra
- * @property {string} cleanContent message content without the command name
- * @property {string} cmdName command name
- * @property {string} prefix prefix used */
-
 const { Client, Message } = require("discord.js");
 
 const { BetterEmbed, EmbedNavigator } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
+/** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
 	name: "help",
 	description: "View a list of my commands",
 
-	/** @param {Client} client @param {Message} message @param {extra} extra */
+	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { prefix }) => {
 		// Get the current prefix commands and filter out ones that are set to be hidden
 		let commands = [...client.prefixCommands.values()].filter(cmd => !cmd?.options?.hidden);
@@ -41,22 +37,22 @@ module.exports = {
 			let _extra = [];
 
 			// prettier-ignore
-			if (cmd?.options?.alias?.length)
-				_extra.push(` - aliases: ${cmd.options.aliases.map(a => `**${a}**`).join(", ")}`);
+			if (cmd?.aliases?.length)
+				_extra.push(` - aliases: ${cmd.aliases.map(a => `**${a}**`).join(", ")}`);
 
 			// prettier-ignore
-			if (cmd?.options?.usage)
-				_extra.push(` - usage: ${cmd.options.usage}`);
+			if (cmd?.usage)
+				_extra.push(` - usage: ${cmd.usage}`);
 
 			// prettier-ignore
-			if (cmd?.options?.description)
-				_extra.push(` - *${cmd.options.description}*`);
+			if (cmd?.description)
+				_extra.push(` - *${cmd.description}*`);
 
 			// Append the extra options to the main line
 			if (_extra.length) _f += `\n${_extra.join("\n")}`;
 
 			// Push the formatted command to the main array
-			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || null });
+			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || "Misc" });
 		}
 
 		// Create an array to store each group of embeds for each command category
@@ -66,6 +62,11 @@ module.exports = {
 		for (let category of command_categories) {
 			// Get all the commands for the current category
 			let _cmds = commands_f.filter(cmd => cmd.category === category.name);
+			// Skip empty categories
+			if (!_cmds.length) continue;
+
+			// Sort commands by alphabetical order
+			_cmds.sort((a, b) => a.name - b.name);
 
 			// Make it a max of 10 command per page
 			let _cmds_split = jt.chunk(_cmds, 10);
@@ -80,8 +81,8 @@ module.exports = {
 				// Create the embed :: { COMMANDS (PAGE) }
 				let _embed = new BetterEmbed({
 					title: "Help",
-					description: group.join("\n"),
-					footer: `Page ${i + 1} of ${_cmds_split.length}`
+					description: group.map(g => g.str).join("\n"),
+					footer: `Page ${i + 1} of ${_cmds_split.length} • Total: ${_cmds.length}`
 				});
 
 				// Push the embed to the array
@@ -101,9 +102,9 @@ module.exports = {
 		});
 
 		// Configure select menu options
-		embedNav.addSelectMenuOptions(command_categories.map(cat => ({ emoji: cat.icon, label: cat.name })));
+		embedNav.addSelectMenuOptions(...command_categories.map(cat => ({ emoji: cat.icon, label: cat.name })));
 
 		// Send the navigator
-		return await embedNav.send();
+		return await embedNav.send({ sendMethod: "channel" });
 	}
 };
