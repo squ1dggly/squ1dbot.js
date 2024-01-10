@@ -112,6 +112,6 @@ module.exports = {
 		embedNav.addSelectMenuOptions(...command_categories.map(cat => ({ emoji: cat.icon, label: cat.name })));
 
 		// Send the navigator
-		return await embedNav.send({ sendMethod: "channel" });
+		return await embedNav.reply(message, { allowedMentions: { repliedUser: false } });
 	}
 };

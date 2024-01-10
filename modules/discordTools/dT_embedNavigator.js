@@ -7,6 +7,7 @@
 
 /** @typedef eN_options
  * @property {CommandInteraction} interaction
+ * @property {Message} message
  * @property {TextChannel} channel
  * @property {GuildMember|User|Array<GuildMember|User>} users extra users that are allowed to use the navigator
  * @property {EmbedBuilder|BetterEmbed} embeds can be an array/contain nested arrays
@@ -23,6 +24,11 @@
 
 /** @typedef eN_sendOptions
  * @property {import("./dT_dynaSend").SendMethod} sendMethod if `reply` fails, `editReply` will be used **|** `reply` is default
+ * @property {import("discord.js").MessageMentionOptions} allowedMentions
+ * @property {boolean} deleteAfter
+ * @property {boolean} ephemeral */
+
+/** @typedef eN_replyOptions
  * @property {import("discord.js").MessageMentionOptions} allowedMentions
  * @property {boolean} deleteAfter
  * @property {boolean} ephemeral */
@@ -555,14 +561,14 @@ class EmbedNavigator {
 		await this.refresh(); return;
 	}
 
-	/** @param {PaginationType} type */
 	// prettier-ignore
+	/** @param {PaginationType} type */
 	async setPaginationType(type) {
 		this.options.pagination.type = type;
 		await this.refresh(); return;
 	}
 
-	/** @param {eN_sendOptions} options  */
+	/** @param {eN_sendOptions} options */
 	async send(options) {
 		/// Update the configuration
 		this.#_updatePage();
@@ -574,6 +580,39 @@ class EmbedNavigator {
 		this.data.message = await dynaSend({
 			interaction: this.options.interaction, channel: this.options.channel,
 			components: this.data.messageComponents, embeds: [this.data.pages.current],
+			...options
+		});
+
+		// Check if the send failed
+		if (!this.data.message) return null;
+
+		// Add reactions for pagination if enabled
+		// NOTE: this is not awaited since we want to be able to use the reactions while they're being added
+		if (this.data.pagination.required && this.options.pagination.useReactions) this.#_paginationReactions_add();
+
+		/// Start collectors if needed
+		// Collect message reactions
+		if (this.data.pagination.reactions.length) this.#_collect_reactions();
+		// Collect message component interactions
+		if (this.data.messageComponents.length) this.#_collect_components();
+
+		// Return the message
+		return this.data.message;
+	}
+
+	/** @param {Message} message @param {eN_replyOptions} options */
+	async reply(message, options) {
+		/// Update the configuration
+		this.#_updatePage();
+		this.#_configureMessageComponents();
+		this.#_configurePagination();
+
+		// Send the message
+		this.data.message = await dynaSend({
+			message,
+			components: this.data.messageComponents,
+			embeds: [this.data.pages.current],
+			sendMethod: "replyTo",
 			...options
 		});
 
