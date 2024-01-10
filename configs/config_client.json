@@ -12,8 +12,8 @@
 		"host": {
 			"STATUS": "dnd",
 			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
+				"TYPE": "CUSTOM",
+				"NAME": "/help 📌 @squ1dbot help",
 				"STREAM_URL": ""
 			}
 		},
@@ -21,8 +21,8 @@
 		"production": {
 			"STATUS": "dnd",
 			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
+				"TYPE": "CUSTOM",
+				"NAME": "/help 📌 @squ1dbot help",
 				"STREAM_URL": ""
 			}
 		},
@@ -30,8 +30,8 @@
 		"dev": {
 			"STATUS": "dnd",
 			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
+				"TYPE": "CUSTOM",
+				"NAME": "🧨 playing with unstable substances...",
 				"STREAM_URL": ""
 			}
 		}
