@@ -7,11 +7,16 @@ const jt = require("../modules/jsTools");
 module.exports = {
 	name: "help",
 	description: "View a list of my commands",
+	options: { hidden: true },
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { prefix }) => {
 		// Get the current prefix commands and filter out ones that are set to be hidden
-		let commands = [...client.prefixCommands.values()].filter(cmd => !cmd?.options?.hidden);
+		// also filters out un-unique commands to prevent double when commands have aliases
+		let commands = jt.unique(
+			[...client.prefixCommands.values()].filter(cmd => !cmd?.options?.hidden),
+			"name"
+		);
 
 		// Check if there's available commands
 		if (!commands.length) return await new BetterEmbed({ title: "There aren't any commands available." }).reply(message);
@@ -28,31 +33,32 @@ module.exports = {
 		// Iterate through each prefix command
 		for (let cmd of commands) {
 			// the main line
-			let _f = "- $ICON**$PREFIX$COMMAND**"
+			let _f = "- $ICON**$PREFIX$COMMAND** - *$DESCRIPTION*"
 				.replace("$ICON", cmd?.options?.icon ? `${cmd.options.icon} | ` : "")
 				.replace("$PREFIX", prefix)
-				.replace("$COMMAND", cmd.name);
+				.replace("$COMMAND", cmd.name)
+				.replace("$DESCRIPTION", cmd.description);
 
 			/* - - - - - { Extra Command Options } - - - - - */
 			let _extra = [];
 
 			// prettier-ignore
 			if (cmd?.aliases?.length)
-				_extra.push(` - aliases: ${cmd.aliases.map(a => `**${a}**`).join(", ")}`);
+				_extra.push(` - aliases: ${cmd.aliases.map(a => `\`${a}\``).join(", ")}`);
 
 			// prettier-ignore
 			if (cmd?.usage)
-				_extra.push(` - usage: ${cmd.usage}`);
+				_extra.push(` - usage: \`${cmd.usage}\``);
 
 			// prettier-ignore
-			if (cmd?.description)
-				_extra.push(` - *${cmd.description}*`);
+			/* if (cmd?.description)
+				_extra.push(` - *${cmd.description}*`); */
 
 			// Append the extra options to the main line
 			if (_extra.length) _f += `\n${_extra.join("\n")}`;
 
 			// Push the formatted command to the main array
-			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || "Misc" });
+			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || "Misc." });
 		}
 
 		// Create an array to store each group of embeds for each command category
@@ -80,7 +86,7 @@ module.exports = {
 
 				// Create the embed :: { COMMANDS (PAGE) }
 				let _embed = new BetterEmbed({
-					title: "Help",
+					title: `Help | #${category.name}`,
 					description: group.map(g => g.str).join("\n"),
 					footer: `Page ${i + 1} of ${_cmds_split.length} • Total: ${_cmds.length}`
 				});
