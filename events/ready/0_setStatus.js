@@ -28,7 +28,7 @@ module.exports = {
 			}
 
 			// Formatting
-			_data.NAME = _data.NAME.replace("$GUILD_COUNT", client.guilds.cache.size);
+			_data.NAME = _data.NAME.replace("$GUILD_COUNT", jt.format(client.guilds.cache.size));
 
 			// Set the status
 			// checking if the new status is different to avoid rate limiting

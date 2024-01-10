@@ -25,13 +25,13 @@
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Need any /help?" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Got any questions? @squ1dbot help" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "/help 📌 @squ1dbot help" },
-				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "over $GUILD_COUNT servers 💖" },
+				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "$GUILD_COUNT servers 💖" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Almost as good as sliced bread!" },
-				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Created by ©️ xsqu1znt 2069!" },
-				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Commands totally work!" },
+				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Created by ©️ xsqu1znt 2069" },
+				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Every command totally works!" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Verified when senpai? UwU" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "✨ #Sponsor me!" },
-				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "you through your window!" },
+				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "through your window!" },
 				{ "STATUS": "dnd", "TYPE": "PLAYING", "NAME": "with your mom!" }
 			]
 		},
