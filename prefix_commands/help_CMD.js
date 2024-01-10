@@ -5,7 +5,7 @@
 
 const { Client, Message } = require("discord.js");
 
-const { BetterEmbed } = require("../modules/discordTools");
+const { BetterEmbed, EmbedNavigator } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
 module.exports = {
@@ -18,8 +18,7 @@ module.exports = {
 		let commands = [...client.prefixCommands.values()].filter(cmd => !cmd?.options?.hidden);
 
 		// Check if there's available commands
-		if (!commands.length)
-			return await new BetterEmbed({ title: "❌ There aren't any commands available." }).reply(message);
+		if (!commands.length) return await new BetterEmbed({ title: "There aren't any commands available." }).reply(message);
 
 		// Get the available categories
 		let command_categories = jt.unique(
@@ -94,25 +93,17 @@ module.exports = {
 		}
 
 		// Setup page navigation
-
-		// Create the embed :: { HELP }
-		let embed_help = new BetterEmbed({
-			title: "Help",
-			description: commands_f.join("\n"),
-			footer: `${commands.length} commands available`
+		let embedNav = new EmbedNavigator({
+			channel: message.channel,
+			embeds: embeds_categories,
+			pagination: { type: "short", dynamic: false },
+			selectMenuEnabled: true
 		});
 
-		// prettier-ignore
-		// Send the embed with the command list, if available
-		if (embed_help_description.length) return await embed_help.reply(message, {
-			description: embed_help_description.join("\n"),
-            allowedMentions: { repliedUser: false }
-		});
+		// Configure select menu options
+		embedNav.addSelectMenuOptions(command_categories.map(cat => ({ emoji: cat.icon, label: cat.name })));
 
-		// Send the embed with an error
-		return await embed_help.reply(message, {
-			description: "**There aren't any commands available**",
-			allowedMentions: { repliedUser: false }
-		});
+		// Send the navigator
+		return await embedNav.send();
 	}
 };
