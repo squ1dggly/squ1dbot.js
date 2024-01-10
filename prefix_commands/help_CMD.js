@@ -24,10 +24,11 @@ module.exports = {
 		// prettier-ignore
 		// Iterate through each slash command and append it to a string
 		for (let _cmd of prefixCommands) embed_help_description.push(
-			`- $CMD_ICON | **$PREFIX$CMD_NAME**\n - *$DESCRIPTION*`
+			`- $CMD_ICON | **$PREFIX$NAME**$USAGE\n - *$DESCRIPTION*`
 				.replace("$CMD_ICON", _cmd.options.icon)
 				.replace("$PREFIX", prefix)
-				.replace("$CMD_NAME", _cmd.name)
+				.replace("$NAME", _cmd.name)
+				.replace("$USAGE", _cmd?.usage ? ` <${_cmd.usage.join(" | ")}>` : "")
 				.replace("$DESCRIPTION", _cmd.description)
 		);
 
