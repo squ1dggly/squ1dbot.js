@@ -19,7 +19,7 @@ module.exports = {
 
 			// Let the user know the result
 			return await message.reply({
-				content: `My prefix is \`${prefix}\`!`,
+				content: `My prefix is \`${prefix}\``,
 				allowedMentions: { repliedUsers: false }
 			});
 		}
@@ -29,7 +29,7 @@ module.exports = {
 
 		// Let the user know the result
 		return await message.reply({
-			content: `Prefix changed to \`${cleanContent}\`.`,
+			content: `Prefix changed to \`${cleanContent}\``,
 			allowedMentions: { repliedUsers: false }
 		});
 	}
