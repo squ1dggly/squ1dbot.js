@@ -8,6 +8,7 @@ module.exports = {
 	name: "cookie",
 	description: "Get a cookie or a glass of milk",
 	category: "Fun",
+
 	options: { icon: "🍪" },
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */

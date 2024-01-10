@@ -7,7 +7,7 @@ const jt = require("../modules/jsTools");
 module.exports = {
 	name: "help",
 	description: "View a list of my commands",
-	options: { hidden: true },
+	usage: "<cmd?>",
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { prefix }) => {
@@ -23,7 +23,7 @@ module.exports = {
 
 		// Get the available categories
 		let command_categories = jt.unique(
-			commands.map(cmd => ({ name: cmd.category || "Misc.", icon: cmd.categoryIcon || null })),
+			commands.map(cmd => ({ name: cmd.category || "Miscellaneous", icon: cmd.categoryIcon || null })),
 			"name"
 		);
 
@@ -58,7 +58,7 @@ module.exports = {
 			if (_extra.length) _f += `\n${_extra.join("\n")}`;
 
 			// Push the formatted command to the main array
-			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || "Misc." });
+			commands_f.push({ str: _f, name: cmd.name, category: cmd.category || "Miscellaneous" });
 		}
 
 		// Create an array to store each group of embeds for each command category
