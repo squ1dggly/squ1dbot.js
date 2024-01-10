@@ -11,35 +11,49 @@ module.exports = {
 
 	/** @param {Client} client  */
 	execute: async client => {
+		let lastActivity = null;
+
 		const setStatus = data => {
+			let _data = structuredClone(data);
+
 			// prettier-ignore
 			// Replace data.activity.TYPE with the proper ActivityType enum
-			switch (data.activity.TYPE.toLowerCase()) {
-				case "playing": clientStatus.activity.TYPE = ActivityType.Playing; break;
-				case "streaming": clientStatus.activity.TYPE = ActivityType.Streaming; break;
-				case "listening": clientStatus.activity.TYPE = ActivityType.Listening; break;
-				case "watching": clientStatus.activity.TYPE = ActivityType.Watching; break;
-				case "custom": clientStatus.activity.TYPE = ActivityType.Custom; break;
-				case "competing": clientStatus.activity.TYPE = ActivityType.Competing; break;
+			switch (_data.TYPE.toLowerCase()) {
+				case "playing": _data.TYPE = ActivityType.Playing; break;
+				case "streaming": _data.TYPE = ActivityType.Streaming; break;
+				case "listening": _data.TYPE = ActivityType.Listening; break;
+				case "watching": _data.TYPE = ActivityType.Watching; break;
+				case "custom": _data.TYPE = ActivityType.Custom; break;
+				case "competing": _data.TYPE = ActivityType.Competing; break;
 			}
 
 			// Set the status
-			client.user.setStatus(data.STATUS);
+			// checking if the new status is different to avoid rate limiting
+			if (_data.STATUS !== lastActivity?.STATUS) client.user.setStatus(_data.STATUS);
 			// Set the activity
-			client.user.setActivity({ type: data.TYPE, name: data.NAME, url: data?.STREAM_URL || undefined });
+			client.user.setActivity({ type: _data.TYPE, name: _data.NAME, url: _data?.STREAM_URL || undefined });
+
+			// Cache the activity
+			lastActivity = _data;
 		};
 
 		let clientStatus = config.client.client_status[config.client.MODE.toLowerCase()];
 
 		// Randomize status
 		if (clientStatus?.INTERVAL) {
-			// Create an interval to change the client's status
+			// Apply the status ASAP
+			setStatus(jt.choice(clientStatus.ACTIVITY));
+
+			// Create an interval to change the client's status every interval
 			setInterval(() => {
 				// Pick a random activity
 				let _activity = jt.choice(clientStatus.ACTIVITY);
 				// Apply the status
 				setStatus(_activity);
 			}, jt.parseTime(clientStatus.INTERVAL));
+		} else {
+			// Apply the status
+			setStatus(clientStatus.ACTIVITY);
 		}
 	}
 };
