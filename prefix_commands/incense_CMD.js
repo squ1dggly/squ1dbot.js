@@ -1,20 +1,17 @@
-/** @typedef extra
- * @property {string} cleanContent message content without the command name
- * @property {string} cmdName command name
- * @property {string} prefix prefix used */
-
 const { Client, PermissionFlagsBits, Message } = require("discord.js");
-
 const { BetterEmbed } = require("../modules/discordTools");
 
+/** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
 	name: "incense",
-	aliases: [],
 	description: "Pause or resume an ongoing Pokétwo incense",
-	usage: ["start/s", "pause/p"],
+	category: "Poketwo",
+	
+	aliases: ["inc"],
+	usage: "<start/s | pause/p>",
 	options: { icon: "🕯️", guildAdminOnly: true },
 
-	/** @param {Client} client @param {Message} message @param {extra} extra */
+	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { cleanContent, cmdName, prefix }) => {
 		// Create the embed :: { INCENSE }
 		let embed_incense = new BetterEmbed();
@@ -33,8 +30,8 @@ module.exports = {
 		if (!message.channel.permissionsFor(message.guild.members.me).has(PermissionFlagsBits.ManageChannels))
 			return await embed_incense.reply(message, {
 				title: "⛔ Missing Permissions",
-                description: "I need the **`Manage Channels`** permission to do that.",
-                footer: "i oonly have 8.9 million power :(",
+				description: "I need the **`Manage Channels`** permission to do that.",
+				footer: "i oonly have 8.9 million power :(",
 				allowedMentions: { repliedUser: false }
 			});
 

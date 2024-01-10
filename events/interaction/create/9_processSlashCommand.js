@@ -90,7 +90,8 @@ module.exports = {
 				interaction: args.interaction,
 				title: "⛔ Ruh-roh raggy!",
 				description: `An error occurred while using the **/\`${args.interaction.commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere!`,
-				footer: "but frankly, I'd rather you didn't"
+				footer: "but frankly, I'd rather you didn't",
+				color: "#ff3864"
 			});
 
 			// Let the user know an error occurred
