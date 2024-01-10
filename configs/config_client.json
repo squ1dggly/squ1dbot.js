@@ -1,7 +1,7 @@
 {
 	"TOKEN": "",
 	"MONGO_URI": "",
-	"MODE": "PROD",
+	"MODE": "PRODUCTION",
 	"PREFIX": ";",
 
 	"OWNER_ID": "842555247145779211",
