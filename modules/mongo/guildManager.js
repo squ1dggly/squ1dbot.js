@@ -17,8 +17,10 @@ async function fetch(guild_id, query = {}, upsert = false) {
 	return (await models.guild.findById(guild_id, query).lean()) || null;
 }
 
-/** @param {string} guild_id @param {{}} query */
-async function update(guild_id, query) {
+/** @param {string} guild_id @param {{}} query @param {boolean} upsert */
+async function update(guild_id, query, upsert = false) {
+	if (!(await exists(guild_id)) && upsert) await insert(guild_id);
+
 	return await models.guild.findByIdAndUpdate(guild_id, query);
 }
 
@@ -37,7 +39,7 @@ async function fetchPrefix(guild_id) {
 
 /** @param {string} guild_id @param {string} prefix */
 async function setPrefix(guild_id, prefix) {
-	await update(guild_id, { prefix });
+	await update(guild_id, { prefix }, true);
 }
 
 module.exports = {

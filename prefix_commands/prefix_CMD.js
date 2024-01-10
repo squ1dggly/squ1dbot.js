@@ -1,9 +1,6 @@
 const { Client, Message } = require("discord.js");
-const { BetterEmbed } = require("../modules/discordTools");
 const { guildManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
-
-const config = { client: require("../configs/config_client.json") };
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
@@ -18,7 +15,7 @@ module.exports = {
 	execute: async (client, message, { cleanContent }) => {
 		if (!cleanContent) {
 			// Fetch the current prefix for the guild
-			let prefix = (await guildManager.fetchPrefix(message.guild.id)) || config.client.PREFIX;
+			let prefix = await guildManager.fetchPrefix(message.guild.id);
 
 			// Let the user know the result
 			return await message.reply({

@@ -10,6 +10,7 @@ const {
 	ActionRowBuilder
 } = require("discord.js");
 const { BetterEmbed } = require("../../../modules/discordTools");
+const { guildManager } = require("../../../modules/mongo");
 const logger = require("../../../modules/logger");
 
 const config = {
@@ -46,7 +47,7 @@ module.exports = {
 		if (!args.message.guild.members.me.permissionsIn(args.message.channel).has(PermissionsBitField.Flags.SendMessages)) return;
 
 		/* - - - - - { Check for Prefix } - - - - - */
-		let prefix = config.client.PREFIX.toLowerCase() || null;
+		let prefix = (await guildManager.fetchPrefix(args.message.guild.id)) || null;
 
 		// Check if the message started with the prefix
 		let prefixWasUsed = args.message.content.toLowerCase().startsWith(prefix);
