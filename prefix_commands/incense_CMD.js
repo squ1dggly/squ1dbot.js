@@ -1,5 +1,4 @@
 const { Client, PermissionFlagsBits, Message } = require("discord.js");
-
 const { BetterEmbed } = require("../modules/discordTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
