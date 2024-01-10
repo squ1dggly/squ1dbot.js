@@ -8,32 +8,43 @@
 	"ADMIN_IDS": [""],
 	"admin_bypass_ids": {},
 
-	"client_presence": {
+	"client_status": {
 		"host": {
-			"STATUS": "dnd",
-			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
+			"ACTIVITY": {
+				"STATUS": "dnd",
+				"TYPE": "CUSTOM",
+				"NAME": "🧨 playing with unstable substances...",
 				"STREAM_URL": ""
 			}
 		},
 
 		"production": {
-			"STATUS": "dnd",
-			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
-				"STREAM_URL": ""
-			}
+			"INTERVAL": "1m",
+
+			"ACTIVITY": [
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Need any /help?" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Got any questions? @squ1dbot help" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "/help 📌 @squ1dbot help" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Watching over $GUILD_COUNT servers 💖" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Almost as good as sliced bread!" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Created by ©️ xsqu1znt 2069!" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Commands totally work!" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "Verified when senpai? UwU" },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "✨ #Sponsor me!" },
+				{ "STATUS": "dnd", "TYPE": "PLAYING", "NAME": "with your mom!" },
+				{ "STATUS": "dnd", "TYPE": "WATCHING", "NAME": "you through your window!" }
+			]
 		},
 
 		"dev": {
-			"STATUS": "dnd",
-			"activity": {
-				"TYPE": "PLAYING",
-				"NAME": "with unstable substances",
-				"STREAM_URL": ""
-			}
+			"INTERVAL": "25s",
+
+			"ACTIVITY": [
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "🧨 playing with unstable substances..." },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "💣 messing around with explosives..." },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "👨‍💻 hacking into the mainframe..." },
+				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "🐤 learning how to walk..." }
+			]
 		}
 	}
 }
