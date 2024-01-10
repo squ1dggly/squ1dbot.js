@@ -33,7 +33,7 @@ module.exports = {
 		// Iterate through each prefix command
 		for (let cmd of commands) {
 			// the main line
-			let _f = "- $ICON**$PREFIX$COMMAND** - *$DESCRIPTION*"
+			let _f = "- $ICON**$PREFIX$COMMAND**"
 				.replace("$ICON", cmd?.options?.icon ? `${cmd.options.icon} | ` : "")
 				.replace("$PREFIX", prefix)
 				.replace("$COMMAND", cmd.name)
@@ -43,16 +43,16 @@ module.exports = {
 			let _extra = [];
 
 			// prettier-ignore
+			if (cmd?.description)
+				_extra.push(` - *${cmd.description}*`);
+
+			// prettier-ignore
 			if (cmd?.aliases?.length)
 				_extra.push(` - aliases: ${cmd.aliases.map(a => `\`${a}\``).join(", ")}`);
 
 			// prettier-ignore
 			if (cmd?.usage)
 				_extra.push(` - usage: \`${cmd.usage}\``);
-
-			// prettier-ignore
-			/* if (cmd?.description)
-				_extra.push(` - *${cmd.description}*`); */
 
 			// Append the extra options to the main line
 			if (_extra.length) _f += `\n${_extra.join("\n")}`;
@@ -86,9 +86,10 @@ module.exports = {
 
 				// Create the embed :: { COMMANDS (PAGE) }
 				let _embed = new BetterEmbed({
-					title: `Help | #${category.name}`,
+					title: `Help - ${category.name} #${_cmds.length}`,
 					description: group.map(g => g.str).join("\n"),
-					footer: `Page ${i + 1} of ${_cmds_split.length} • Total: ${_cmds.length}`
+					footer: `Page ${i + 1} of ${_cmds_split.length}`,
+					timestamp: true
 				});
 
 				// Push the embed to the array
