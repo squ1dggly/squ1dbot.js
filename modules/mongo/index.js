@@ -12,6 +12,7 @@ const MONGO_URI = process.env.MONGO_URI || require("../../configs/config_client.
 module.exports = {
 	models,
 
+	guildManager: require("./guildManager"),
 	reminderManager: require("./reminderManager"),
 
 	/** Connect to MongoDB */
