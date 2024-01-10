@@ -9,12 +9,27 @@ module.exports = {
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
 		let responsePing = Date.now() - message.createdTimestamp;
-		let databasePing = await ping();
 
 		// Send the client's ping
-		return await message.reply({
-			content: `Client: **${client.ws.ping}ms**, Response: **${responsePing}ms**, Database: **${databasePing}ms**`,
+		let msg = await message.reply({
+			content: `Client: **${client.ws.ping}ms**, Response: **${responsePing}ms**`,
 			allowedMentions: { repliedUser: false }
 		});
+
+		// prettier-ignore
+		// Get the database connection ping and add it to the message
+		// this is done separately so the response time isn't affected by this query
+		ping().then(async databasePing => {
+			if (!msg.editable) return;
+
+			// Edit the message
+			msg.edit({
+				content: `${msg.content}, Database: **${databasePing}ms**`,
+				allowedMentions: { repliedUser: false }
+			});
+		}).catch(() => null);
+
+		// Return the message
+		return msg;
 	}
 };
