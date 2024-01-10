@@ -11,6 +11,7 @@ module.exports = {
 	name: "incense",
 	aliases: [],
 	description: "Pause or resume an ongoing Pokétwo incense",
+	usage: ["start/s", "pause/p"],
 	options: { icon: "🕯️", guildAdminOnly: true },
 
 	/** @param {Client} client @param {Message} message @param {extra} extra */
