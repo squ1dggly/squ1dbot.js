@@ -1,7 +1,7 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 
-const { BetterEmbed } = require("../modules/discordTools/_dsT");
-const _jsT = require("../modules/jsTools/_jsT");
+const { BetterEmbed } = require("../modules/discordTools");
+const jt = require("../modules/jsTools");
 
 const config = { escape: require("../configs/config_escape.json") };
 
@@ -16,15 +16,15 @@ module.exports = {
 	execute: async (client, interaction) => {
 		// prettier-ignore
 		if (interaction.user.id !== "396906362916831233") return await interaction.reply({
-			content: _jsT.choice(config.escape.ERROR), ephemeral: true
+			content: jt.choice(config.escape.ERROR)
 		});
 
 		let embed_escape = new BetterEmbed({
 			interaction,
 			title: "Medaka's Escape",
-			description: _jsT.chance(69) ? _jsT.choice(config.escape.BAD) : _jsT.choice(config.escape.GOOD)
+			description: jt.chance(69) ? jt.choice(config.escape.BAD) : jt.choice(config.escape.GOOD)
 		});
 
-		return await embed_escape.send({ ephemeral: true });
+		return await embed_escape.send();
 	}
 };
