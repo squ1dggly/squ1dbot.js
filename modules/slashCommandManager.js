@@ -17,10 +17,15 @@
 const { Client, SlashCommandBuilder, REST, Routes } = require("discord.js");
 const logger = require("./logger");
 
-const TOKEN = process.env.TOKEN || require("../configs/config_client.json").TOKEN;
+const config = { client: require("../configs/config_client.json") };
+
+const TOKEN = process.env.TOKEN || config.client.TOKEN;
+const TOKEN_DEV = process.env.TOKEN_DEV || config.client.TOKEN_DEV;
+
+const DEVMODE = process.env.MODE || config.client.MODE === "DEV";
 
 // Create an instance of the REST api
-const rest = new REST().setToken(TOKEN);
+const rest = new REST().setToken(DEVMODE ? TOKEN_DEV : TOKEN);
 
 module.exports = {
 	/** Push slash commands to one or more guilds

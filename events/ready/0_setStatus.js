@@ -51,6 +51,12 @@ module.exports = {
 			setInterval(() => {
 				// Pick a random activity
 				let _activity = jt.choice(clientStatus.ACTIVITY);
+
+				// prettier-ignore
+				// Avoid duplicates
+				if (lastActivity) while (_activity.NAME === lastActivity?.NAME)
+					_activity = jt.choice(clientStatus.ACTIVITY);
+
 				// Apply the status
 				setStatus(_activity);
 			}, jt.parseTime(clientStatus.INTERVAL));

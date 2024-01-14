@@ -1,10 +1,12 @@
-/*** @file Connects us to our Mongo database so we can save and retrieve data. */
+/*** @file Connects us to our Mongo database so we can save and retrieve data */
 
 const mongoose = require("mongoose");
 const logger = require("../logger");
 
 const models = {
-	reminder: require("../../models/reminderModel").model
+	guild: require("../../models/guildModel").model,
+	reminder: require("../../models/reminderModel").model,
+	reminderTrigger: require("../../models/reminderTriggerModel").model
 };
 
 const MONGO_URI = process.env.MONGO_URI || require("../../configs/config_client.json").MONGO_URI;
