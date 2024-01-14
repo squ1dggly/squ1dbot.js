@@ -65,8 +65,3 @@ client.login(DEVMODE ? TOKEN_DEV : TOKEN).then(async () => {
 
 	await mongo.connect(DEVMODE ? MONGO_URI_DEV : MONGO_URI);
 });
-
-// Quick & dirty extra error handling
-client.on("error", err => {
-	return logger.error("Client error caught", "", err);
-});
