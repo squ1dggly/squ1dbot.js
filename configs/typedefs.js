@@ -6,6 +6,7 @@
 
 /** @typedef SlashCommandExports
  * @property {string} category category of the command
+ * @property {string} categoryIcon icon of the command category
  * @property {CommandOptions} options extra options for the command
  * @property {SlashCommandBuilder} builder slash command builder
  * @property {Function} execute executed when the command is used */
