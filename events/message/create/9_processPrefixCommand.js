@@ -42,7 +42,7 @@ function hasSpecialPermissions(member, permissions) {
 
 	for (let permission of permissions) {
 		if (member.permissions.has(permission)) has.push(permission);
-		else missing.push(markdown.permissionFlagName(permission));
+		else missing.push(markdown.permissionFlagName(`\`${permission}\``));
 	}
 
 	return { has, missing, passed: has.length === permissions.length };
@@ -112,12 +112,24 @@ module.exports = {
 				});
 
 				// Check if the user has the required permissions
-				let _userPermissions = hasSpecialPermissions(args.message.member, userPermissions);
-				// prettier-ignore
-				if (userPermissions && !_userPermissions.passed) return await args.message.reply({
-					content: `You're missing the required permissions to use this command:\n$PERMISSIONS`
-						.replace("$PERMISSIONS", _userPermissions.missing.join(", "))
-				});
+				if (userPermissions) {
+					let _userPermissions = hasSpecialPermissions(args.message.member, userPermissions);
+					// prettier-ignore
+					if (!_userPermissions.passed) return await args.message.reply({
+						content: `You're missing the required permissions to use this command:\n$PERMISSIONS`
+							.replace("$PERMISSIONS", _userPermissions.missing.join(", "))
+					});
+				}
+
+				// Check if the bot has the required permissions
+				if (botPermissions) {
+					let _botPermissions = hasSpecialPermissions(args.message.guild.members.me, botPermissions);
+					// prettier-ignore
+					if (!_botPermissions.passed) return await args.message.reply({
+						content: `You're missing the required permissions to use this command:\n$PERMISSIONS`
+							.replace("$PERMISSIONS", _botPermissions.missing.join(", "))
+					});
+				}
 			}
 
 			/* - - - - - { Execute } - - - - - */
