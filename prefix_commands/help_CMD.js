@@ -38,8 +38,7 @@ module.exports = {
 			let _f = "- $ICON**$PREFIX$COMMAND**"
 				.replace("$ICON", cmd?.options?.icon ? `${cmd.options.icon} | ` : "")
 				.replace("$PREFIX", prefix)
-				.replace("$COMMAND", cmd.name)
-				.replace("$DESCRIPTION", cmd.description);
+				.replace("$COMMAND", cmd.name);
 
 			/* - - - - - { Extra Command Options } - - - - - */
 			let _extra = [];

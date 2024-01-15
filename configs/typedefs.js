@@ -5,6 +5,7 @@
  * @property {boolean} hidden hide this command from the help command list */
 
 /** @typedef SlashCommandExports
+ * @property {string} category category of the command
  * @property {CommandOptions} options extra options for the command
  * @property {SlashCommandBuilder} builder slash command builder
  * @property {Function} execute executed when the command is used */
