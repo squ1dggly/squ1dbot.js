@@ -78,10 +78,9 @@ module.exports = {
 
 				// Create the embed :: { COMMANDS (PAGE) }
 				let _embed = new BetterEmbed({
-					title: `Help - ${category.name} #${_cmds.length}`,
+					title: `Help | ${category.icon ? `${category.icon} ` : ""}${category.name}`,
 					description: group.map(g => g.str).join("\n"),
-					footer: `Page ${i + 1} of ${_cmds_split.length}`,
-					timestamp: true
+					footer: `Page ${i + 1} of ${_cmds_split.length} | Total: ${_cmds.length}`
 				});
 
 				// Push the embed to the array

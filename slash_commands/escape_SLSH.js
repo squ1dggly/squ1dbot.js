@@ -5,7 +5,7 @@ const jt = require("../modules/jsTools");
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Fun",
-	options: { icon: "🌴" },
+	options: { icon: "🌴", hidden: true },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("escape")
