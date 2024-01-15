@@ -7,6 +7,9 @@ module.exports = {
 	name: "help",
 	description: "View a list of my commands",
 	usage: "<cmd?>",
+	category: "Utility",
+
+	options: { icon: "🏓" },
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { prefix }) => {

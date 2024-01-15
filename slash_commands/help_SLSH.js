@@ -1,10 +1,11 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbed } = require("../modules/discordTools");
+const { BetterEmbed, EmbedNavigator } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
-	category: "Miscellaneous",
+	category: "Utility",
+	options: { icon: "❓" },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("help")
@@ -42,7 +43,7 @@ module.exports = {
 			let _extra = [];
 
 			// prettier-ignore
-			if (cmd?.description)
+			if (cmd.builder?.description)
 				_extra.push(` - *${cmd.builder.description}*`);
 
 			// Append the extra options to the main line

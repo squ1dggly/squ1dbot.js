@@ -1,5 +1,6 @@
 const { Client, Message } = require("discord.js");
 const { ping } = require("../modules/mongo");
+const jt = require("../modules/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
@@ -12,7 +13,7 @@ module.exports = {
 
 		// Send the client's ping
 		let msg = await message.reply({
-			content: `Client: **${client.ws.ping}ms**, Response: **${responsePing}ms**`,
+			content: `Client: **${jt.format(client.ws.ping)}ms**, Response: **${responsePing}ms**`,
 			allowedMentions: { repliedUser: false }
 		});
 
