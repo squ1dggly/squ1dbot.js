@@ -1,23 +1,18 @@
 /** @file Execute commands requested by a user message @author xsqu1znt */
 
-const {
-	Client,
-	PermissionsBitField,
-	Message,
-	userMention,
-	ButtonBuilder,
-	ButtonStyle,
-	ActionRowBuilder
-} = require("discord.js");
-const { BetterEmbed } = require("../../../modules/discordTools");
+// prettier-ignore
+const { Client, PermissionsBitField, GuildMember, Message, userMention, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { BetterEmbed, markdown } = require("../../../modules/discordTools");
 const { guildManager } = require("../../../modules/mongo");
 const logger = require("../../../modules/logger");
+const jt = require("../../../modules/jsTools");
 
 const config = {
 	client: require("../../../configs/config_client.json"),
 	bot: require("../../../configs/config_bot.json")
 };
 
+/** @param {Message} message @param {string} commandName */
 function userIsBotAdminOrBypass(message, commandName) {
 	return [
 		config.client.OWNER_ID,
@@ -26,11 +21,25 @@ function userIsBotAdminOrBypass(message, commandName) {
 	].includes(message.author.id);
 }
 
+/** @param {Message} message @param {string} commandName */
 function userIsGuildAdminOrBypass(message, commandName) {
 	let isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
 	let canBypass = userIsBotAdminOrBypass(message, commandName);
 
 	return isAdmin || canBypass;
+}
+
+/** @param {GuildMember} guildMember @param {PermissionsBitField[]} permissions */
+function hasSpecialPermissions(guildMember, permissions) {
+	let has = [];
+	let missing = [];
+
+	for (let permission of permissions) {
+		if (guildMember.permissions.has(permission)) has.push(permission);
+		else missing.push(`\`${markdown.permissionFlagName(permission)}\``);
+	}
+
+	return { has, missing, passed: has.length === permissions.length };
 }
 
 module.exports = {
@@ -77,20 +86,62 @@ module.exports = {
 		try {
 			// Check for command options
 			if (prefixCommand?.options) {
-				let _botAdminOnly = prefixCommand.options?.botAdminOnly;
-				let _guildAdminOnly = prefixCommand.options?.guildAdminOnly;
+				let botAdminOnly = prefixCommand.options?.botAdminOnly || null;
+				let guildAdminOnly = prefixCommand.options?.guildAdminOnly || null;
+				let specialUserPerms = prefixCommand.options?.specialUserPerms || null;
+				let specialBotPerms = prefixCommand.options?.specialBotPerms || null;
+				specialUserPerms &&= jt.isArray(specialUserPerms);
+				specialBotPerms &&= jt.isArray(specialBotPerms);
 
 				// prettier-ignore
 				// Check if the command requires the user to be an admin for the bot
-				if (_botAdminOnly && !userIsBotAdminOrBypass(args.message, commandName)) return await args.message.reply({
-					content: "Only admins of this bot can use that command."
-				});
+				if (botAdminOnly && !userIsBotAdminOrBypass(args.message, commandName)) return await new BetterEmbed({
+					color: "Red",
+					description: `Only the developers of ${client.user} can use that command.`
+				}).reply(args.message, { allowedMentions: { repliedUser: false } });
 
 				// prettier-ignore
 				// Check if the command requires the user to have admin permission in the current guild
-				if (_guildAdminOnly && !userIsGuildAdminOrBypass(args.message, commandName)) return await args.message.reply({
-					content: "You need admin to use that command."
-				});
+				if (guildAdminOnly && !userIsGuildAdminOrBypass(args.message, commandName)) return await new BetterEmbed({
+					color: "Red",
+					description: "You need admin to use that command."
+				}).reply(args.message, { allowedMentions: { repliedUser: false } });
+
+				// Check if the user has the required permissions
+				if (specialUserPerms) {
+					let _specialUserPerms = hasSpecialPermissions(args.message.member, specialUserPerms);
+
+					if (!_specialUserPerms.passed) {
+						// prettier-ignore
+						// Create the embed :: { MISSING PERMS USER }
+						let embed_missingPerms = new BetterEmbed({
+							color: "Red",
+							title: `User Missing ${_specialUserPerms.missing.length === 1 ? "Permission" : "Permissions"}`,
+							description:  _specialUserPerms.missing.join(", ")
+						});
+
+						// Reply to the user with the embed
+						return await embed_missingPerms.reply(args.message, { allowedMentions: { repliedUser: false } });
+					}
+				}
+
+				// Check if the bot has the required permissions
+				if (specialBotPerms) {
+					let _specialBotPerms = hasSpecialPermissions(args.message.guild.members.me, specialBotPerms);
+
+					if (!_specialBotPerms.passed) {
+						// prettier-ignore
+						// Create the embed :: { MISSING PERMS BOT }
+						let embed_missingPerms = new BetterEmbed({
+							color: "Red",
+							title: `Missing ${_specialBotPerms.missing.length === 1 ? "Permission" : "Permissions"}`,
+							description: _specialBotPerms.missing.join(", ")
+						});
+
+						// Reply to the user with the embed
+						return await embed_missingPerms.reply(args.message, { allowedMentions: { repliedUser: false } });
+					}
+				}
 			}
 
 			/* - - - - - { Execute } - - - - - */

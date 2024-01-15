@@ -1,5 +1,4 @@
 const { Client, CommandInteraction, Message, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-
 const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
 const { reminderManager } = require("../modules/mongo");
 const jt = require("../modules/jsTools");
@@ -551,8 +550,10 @@ async function subcommand_triggerList(interaction) {
 	return await pagination.send();
 }
 
+/** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
-	options: { icon: "⏰", deferReply: false },
+	category: "Utility",
+	options: { icon: "⏰" },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("reminder")

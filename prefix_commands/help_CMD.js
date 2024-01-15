@@ -7,6 +7,9 @@ module.exports = {
 	name: "help",
 	description: "View a list of my commands",
 	usage: "<cmd?>",
+	category: "Utility",
+
+	options: { icon: "❓" },
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message, { prefix }) => {
@@ -38,8 +41,7 @@ module.exports = {
 			let _f = "- $ICON**$PREFIX$COMMAND**"
 				.replace("$ICON", cmd?.options?.icon ? `${cmd.options.icon} | ` : "")
 				.replace("$PREFIX", prefix)
-				.replace("$COMMAND", cmd.name)
-				.replace("$DESCRIPTION", cmd.description);
+				.replace("$COMMAND", cmd.name);
 
 			/* - - - - - { Extra Command Options } - - - - - */
 			let _extra = [];
@@ -88,10 +90,9 @@ module.exports = {
 
 				// Create the embed :: { COMMANDS (PAGE) }
 				let _embed = new BetterEmbed({
-					title: `Help - ${category.name} #${_cmds.length}`,
+					title: `Help | ${category.icon ? `${category.icon} ` : ""}${category.name}`,
 					description: group.map(g => g.str).join("\n"),
-					footer: `Page ${i + 1} of ${_cmds_split.length}`,
-					timestamp: true
+					footer: `Page ${i + 1} of ${_cmds_split.length} | Total: ${_cmds.length}`
 				});
 
 				// Push the embed to the array

@@ -1,12 +1,13 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-
 const { BetterEmbed } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
 const config = { escape: require("../configs/config_escape.json") };
 
+/** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
-	options: { icon: "🌴", deferReply: false },
+	category: "Fun",
+	options: { icon: "🌴", hidden: true },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("escape")
