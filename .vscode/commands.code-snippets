@@ -41,13 +41,13 @@
 		"scope": "javascript",
 		"prefix": "slash",
 		"body": [
-			"const { Client, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");\n",
-
+			"const { Client, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
 			"const { BetterEmbed } = require(\"../modules/discordTools\");",
 			"const jt = require(\"../modules/jsTools\");\n",
 
+			"/** @type {import(\"../configs/typedefs\").SlashCommandExports} */",
 			"module.exports = {",
-			"    options: { icon: \"🍪\", deferReply: false, botAdminOnly: false, guildAdminOnly: false },\n",
+			"    options: { icon: \"🍪\" },\n",
 
 			"    // prettier-ignore",
 			"    builder: new SlashCommandBuilder().setName(\"${1:cookie}\")",
@@ -55,18 +55,20 @@
 
 			"    /** @param {Client} client @param {CommandInteraction} interaction */",
 			"    execute: async (client, interaction) => {",
-			"        // prettier-ignore",
+			"        // Create an array of responses",
 			"        let choices = [",
 			"            \"What's up, **\\$USERNAME**! Have a cookie! :cookie:\",",
-			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\",",
+			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\"",
 			"        ];\n",
 
-			"        // prettier-ignore",
-			"        let embed_cookie = new BetterEmbed({",
-			"            interaction, description: jt.choice(choices)",
+			"        // Create the embed :: { COOKIE }",
+			"        let embed_${1:cookie} = new BetterEmbed({",
+			"            interaction,",
+			"            description: jt.choice(choices)",
 			"        });\n",
 
-			"        return await embed_cookie.send();$0",
+			"        // Reply to the interaction with the embed",
+			"        return await embed_${1:cookie}.send();$0",
 			"    }",
 			"};",
 			""

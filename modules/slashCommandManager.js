@@ -1,4 +1,4 @@
-/** Push, remove, or refresh slash commands to/from/in a guild. */
+/** @file Push, remove, or refresh slash commands to/from/in a guild */
 
 /** @typedef push_options
  * @property {SlashCommandBuilder|SlashCommandBuilder[]} slashCommands specific slash commands to push
