@@ -42,7 +42,7 @@ function hasSpecialPermissions(member, permissions) {
 
 	for (let permission of permissions) {
 		if (member.permissions.has(permission)) has.push(permission);
-		else missing.push(markdown.permissionFlagName(`\`${permission}\``));
+		else missing.push(`\`${markdown.permissionFlagName(permission)}\``);
 	}
 
 	return { has, missing, passed: has.length === permissions.length };
@@ -101,34 +101,52 @@ module.exports = {
 
 				// prettier-ignore
 				// Check if the command requires the user to be an admin for the bot
-				if (_botAdminOnly && !userIsBotAdminOrBypass(args.message, commandName)) return await args.message.reply({
-					content: `Only the developers of ${client.user} can use that command.`
-				});
+				if (_botAdminOnly && !userIsBotAdminOrBypass(args.message, commandName)) return await new BetterEmbed({
+					color: "Red",
+					description: `Only the developers of ${client.user} can use that command.`
+				}).reply(args.message, { allowedMentions: { repliedUser: false } });
 
 				// prettier-ignore
 				// Check if the command requires the user to have admin permission in the current guild
-				if (_guildAdminOnly && !userIsGuildAdminOrBypass(args.message, commandName)) return await args.message.reply({
-					content: "You need admin to use that command."
-				});
+				if (_guildAdminOnly && !userIsGuildAdminOrBypass(args.message, commandName)) return await new BetterEmbed({
+					color: "Red",
+					description: "You need admin to use that command."
+				}).reply(args.message, { allowedMentions: { repliedUser: false } });
 
 				// Check if the user has the required permissions
 				if (userPermissions) {
 					let _userPermissions = hasSpecialPermissions(args.message.member, userPermissions);
-					// prettier-ignore
-					if (!_userPermissions.passed) return await args.message.reply({
-						content: `You're missing the required permissions to use this command:\n$PERMISSIONS`
-							.replace("$PERMISSIONS", _userPermissions.missing.join(", "))
-					});
+
+					if (!_userPermissions.passed) {
+						// prettier-ignore
+						// Create the embed :: { MISSING PERMS USER }
+						let embed_missingPerms = new BetterEmbed({
+							color: "Red",
+							title: `User Missing ${_userPermissions.missing.length === 1 ? "Permission" : "Permissions"}`,
+							description:  _userPermissions.missing.join(", ")
+						});
+
+						// Reply to the user with the embed
+						return await embed_missingPerms.reply(args.message, { allowedMentions: { repliedUser: false } });
+					}
 				}
 
 				// Check if the bot has the required permissions
 				if (botPermissions) {
 					let _botPermissions = hasSpecialPermissions(args.message.guild.members.me, botPermissions);
-					// prettier-ignore
-					if (!_botPermissions.passed) return await args.message.reply({
-						content: `You're missing the required permissions to use this command:\n$PERMISSIONS`
-							.replace("$PERMISSIONS", _botPermissions.missing.join(", "))
-					});
+
+					if (!_botPermissions.passed) {
+						// prettier-ignore
+						// Create the embed :: { MISSING PERMS BOT }
+						let embed_missingPerms = new BetterEmbed({
+							color: "Red",
+							title: `Missing ${_botPermissions.missing.length === 1 ? "Permission" : "Permissions"}`,
+							description: _botPermissions.missing.join(", ")
+						});
+
+						// Reply to the user with the embed
+						return await embed_missingPerms.reply(args.message, { allowedMentions: { repliedUser: false } });
+					}
 				}
 			}
 
