@@ -4,20 +4,32 @@ const jt = require("../modules/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
-	name: "test",
-	description: "A command for testing",
+	name: "poison",
+	description: "Poison a member (timeout)",
+    category: "Moderation",
+    usage: "<user id>",
 
-	options: { botPermissions: [PermissionFlagsBits.Connect, PermissionFlagsBits.CreateInstantInvite] },
+	options: {
+		icon: "☠️",
+		specialUserPerms: [PermissionFlagsBits.ModerateMembers],
+		specialBotPerms: [PermissionFlagsBits.ModerateMembers]
+	},
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
+		// Create an array of responses
+		let choices = [
+			"What's up, **$USERNAME**! Have a cookie! :cookie:",
+			"Hey, **$USERNAME**! Have a glass of milk! :milk:"
+		];
+
 		// Create the embed :: { COOKIE }
-		let embed_test = new BetterEmbed({
+		let embed_cookie = new BetterEmbed({
 			author: { user: message.author },
-			description: "test as been tested"
+			description: jt.choice(choices)
 		});
 
 		// Reply to the user with the embed
-		return await embed_test.reply(message, { allowedMentions: { repliedUser: false } });
+		return await embed_cookie.reply(message, { allowedMentions: { repliedUser: false } });
 	}
 };

@@ -2,8 +2,8 @@
  * @property {string} icon icon to show in the help command list
  * @property {boolean} botAdminOnly only allow bot staff to use this command
  * @property {boolean} guildAdminOnly only allow guild admins to use this command
- * @property {PermissionFlagsBits|PermissionFlagsBits[]} botPermissions require the bot to have special permissions
- * @property {PermissionFlagsBits|PermissionFlagsBits[]} userPermissions require the user to have special permissions
+ * @property {PermissionFlagsBits|PermissionFlagsBits[]} specialUserPerms require the user to have special permissions
+ * @property {PermissionFlagsBits|PermissionFlagsBits[]} specialBotPerms require the bot to have special permissions
  * @property {boolean} hidden hide this command from the help command list */
 
 /** @typedef SlashCommandExports
