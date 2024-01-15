@@ -1,15 +1,7 @@
 /** @file Execute commands requested by a user message @author xsqu1znt */
 
-const {
-	Client,
-	PermissionsBitField,
-	Message,
-	userMention,
-	ButtonBuilder,
-	ButtonStyle,
-	ActionRowBuilder,
-	GuildMember
-} = require("discord.js");
+// prettier-ignore
+const { Client, PermissionsBitField, GuildMember, Message, userMention, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { BetterEmbed, markdown } = require("../../../modules/discordTools");
 const { guildManager } = require("../../../modules/mongo");
 const logger = require("../../../modules/logger");
@@ -20,6 +12,7 @@ const config = {
 	bot: require("../../../configs/config_bot.json")
 };
 
+/** @param {Message} message @param {string} commandName */
 function userIsBotAdminOrBypass(message, commandName) {
 	return [
 		config.client.OWNER_ID,
@@ -28,6 +21,7 @@ function userIsBotAdminOrBypass(message, commandName) {
 	].includes(message.author.id);
 }
 
+/** @param {Message} message @param {string} commandName */
 function userIsGuildAdminOrBypass(message, commandName) {
 	let isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
 	let canBypass = userIsBotAdminOrBypass(message, commandName);
@@ -35,13 +29,13 @@ function userIsGuildAdminOrBypass(message, commandName) {
 	return isAdmin || canBypass;
 }
 
-/** @param {GuildMember} member */
-function hasSpecialPermissions(member, permissions) {
+/** @param {GuildMember} guildMember @param {PermissionsBitField[]} permissions */
+function hasSpecialPermissions(guildMember, permissions) {
 	let has = [];
 	let missing = [];
 
 	for (let permission of permissions) {
-		if (member.permissions.has(permission)) has.push(permission);
+		if (guildMember.permissions.has(permission)) has.push(permission);
 		else missing.push(`\`${markdown.permissionFlagName(permission)}\``);
 	}
 
