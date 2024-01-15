@@ -2,6 +2,8 @@ const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js"
 const { BetterEmbed } = require("../modules/discordTools");
 const jt = require("../modules/jsTools");
 
+const config = { escape: require("../configs/config_escape.json") };
+
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Fun",
