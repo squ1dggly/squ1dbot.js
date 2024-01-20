@@ -31,8 +31,7 @@
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Every command totally works!" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Verified when senpai? UwU" },
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "✨ #Sponsor me!" },
-				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "through your window!" },
-				{ "STATUS": "dnd", "TYPE": "PLAYING", "NAME": "with your mom!" }
+				{ "STATUS": "idle", "TYPE": "WATCHING", "NAME": "through your window!" }
 			]
 		},
 
