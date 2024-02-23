@@ -10,7 +10,7 @@ const config = { reminder: require("../../configs/config_reminder.json") };
 
 module.exports = {
 	name: "reminderInterval",
-	event: Events.clientReady,
+	event: Events.ClientReady,
 
 	/** @param {Client} client  */
 	execute: async client => {
