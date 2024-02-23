@@ -1,13 +1,13 @@
-/** @file Executed as soon as the bot's connected to Discord @author xsqu1znt */
-
-const { Client, ActivityType } = require("discord.js");
-const jt = require("../../modules/jsTools");
+const { Client, Events, ActivityType } = require("discord.js");
+const jt = require("../../utils/jsTools");
 
 const config = { client: require("../../configs/config_client.json") };
+const DEV_MODE = process.env.DEV_MODE || config.client.DEV_MODE || false;
 
+/** @type {import("../../configs/typedefs.js").EventExports} */
 module.exports = {
-	name: "SET_PRESENCE",
-	event: "ready",
+	name: "setClientActivity",
+	eventType: Events.ClientReady,
 
 	/** @param {Client} client  */
 	execute: async client => {
@@ -40,7 +40,7 @@ module.exports = {
 			lastActivity = _data;
 		};
 
-		let clientStatus = config.client.client_status[config.client.MODE.toLowerCase()];
+		let clientStatus = DEV_MODE ? config.client.client_status.dev : config.client.client_status.default;
 
 		// Randomize status
 		if (clientStatus?.INTERVAL) {

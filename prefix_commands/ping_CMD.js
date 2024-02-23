@@ -1,11 +1,11 @@
 const { Client, Message } = require("discord.js");
-const { ping } = require("../modules/mongo");
-const jt = require("../modules/jsTools");
+const { ping } = require("../utils/mongo");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
 	name: "ping",
 	description: "Check my ping",
+	category: "Miscellaneous",
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
@@ -13,7 +13,7 @@ module.exports = {
 
 		// Send the client's ping
 		let msg = await message.reply({
-			content: `Client: **${jt.format(client.ws.ping)}ms**, Response: **${responsePing}ms**`,
+			content: `Client: **${client.ws.ping}ms**, Response: **${responsePing}ms**`,
 			allowedMentions: { repliedUser: false }
 		});
 

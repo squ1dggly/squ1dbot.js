@@ -3,20 +3,26 @@
 require("dotenv").config();
 
 const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
-const slashCommandManager = require("./modules/slashCommandManager");
-const logger = require("./modules/logger");
-const mongo = require("./modules/mongo");
-const jt = require("./modules/jsTools");
+const slashCommandManager = require("./utils/slashCommandManager");
+const logger = require("./utils/logger");
+const mongo = require("./utils/mongo");
+const jt = require("./utils/jsTools");
 
 const config = { client: require("./configs/config_client.json") };
 
 const TOKEN = process.env.TOKEN || config.client.TOKEN;
 const TOKEN_DEV = process.env.TOKEN_DEV || config.client.TOKEN_DEV;
+const DEV_MODE = process.env.DEV_MODE === "true" ? true : false || config.client.DEV_MODE || false;
 
-const MONGO_URI = process.env.MONGO_URI || config.client.MONGO_URI;
-const MONGO_URI_DEV = process.env.MONGO_URI_DEV || config.client.MONGO_URI_DEV;
+/* - - - - - { Check for TOKEN } - - - - - */
+if (DEV_MODE && !TOKEN_DEV) return logger.error("TOKEN Missing", "DEV_MODE is enabled, but TOKEN_DEV is not set");
+if (!TOKEN && !TOKEN_DEV) return logger.error("TOKEN Missing", "TOKEN is not set");
 
-const DEVMODE = process.env.MODE || config.client.MODE === "DEV";
+// prettier-ignore
+// Let the user know if the bot's in dev mode
+if (DEV_MODE) logger.debug(
+	"DEV_MODE is enabled. You can change this by setting DEV_MODE to false in either .env or config_client.json"
+);
 
 logger.log("initializing...");
 
@@ -39,18 +45,18 @@ client.slashCommands = new Collection();
 client.prefixCommands = new Collection();
 
 // Run importers
-let importers_dir = jt.readDir("./modules/importers").filter(fn => fn.startsWith("import_") && fn.endsWith(".js"));
+let importers_dir = jt.readDir("./utils/importers").filter(fn => fn.startsWith("import_") && fn.endsWith(".js"));
 
 // prettier-ignore
 importers_dir.forEach(fn => {
-	try { require(`./modules/importers/${fn}`).init(client); }
-	catch (err) { logger.error("Importer failed to load", `\"${fn}\" could not initialize`, err); }
+	try { require(`./utils/importers/${fn}`)(client); }
+	catch (err) { logger.error("Importer failed to load", `\'${fn}\' could not initialize`, err); }
 });
 
 // Connect the client to discord
 logger.log("connecting to Discord...");
 // prettier-ignore
-client.login(DEVMODE ? TOKEN_DEV : TOKEN).then(async () => {
+client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 	// Register slash commands to a specific server :: { LOCAL }
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
@@ -58,10 +64,10 @@ client.login(DEVMODE ? TOKEN_DEV : TOKEN).then(async () => {
 	// await slashCommandManager.push(client, { global: true });
 
 	// Remove commands (does nothing if commands were registered globally) :: { LOCAL }
-	// await slashCommandManager.remove(client, { ids: "1052726201086656612" });
+	// await slashCommandManager.remove(client, { ids: "your_server_id" });
 
 	// Remove commands (does nothing if commands were registered locally) :: { GLOBAL }
 	// await slashCommandManager.remove(client, { global: true });
 
-	await mongo.connect(DEVMODE ? MONGO_URI_DEV : MONGO_URI);
+	await mongo.connect();
 });
