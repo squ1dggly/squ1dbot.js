@@ -1,4 +1,5 @@
-const { Client, Events, PermissionFlagsBits, GuildMember, Message, userMention } = require("discord.js");
+// prettier-ignore
+const { Client, Events, PermissionFlagsBits, GuildMember, Message, userMention, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { BetterEmbed, markdown } = require("../../utils/discordTools/index.js");
 const { guildManager } = require("../../utils/mongo");
 const logger = require("../../utils/logger");
@@ -51,7 +52,7 @@ module.exports = {
 		if (!message.guild.members.me.permissionsIn(message.channel).has(PermissionFlagsBits.SendMessages)) return;
 
 		/* - - - - - { Check for Prefix } - - - - - */
-		let prefix = (await guildManager.fetchPrefix(message.guild.id)) || null;
+		let prefix = await guildManager.fetchPrefix(message.guild.id);
 
 		// Check if the message started with the prefix
 		let prefixWasUsed = message.content.toLowerCase().startsWith(prefix);
@@ -135,14 +136,31 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
+			// Create a button :: { SUPPORT SERVER }
+			let btn_supportServer = new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(config.client.support_server.INVITE_URL)
+				.setLabel("Support Server");
+
+			// Create an action row :: { SUPPORT SERVER }
+			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+
 			// Create the embed :: { FATAL ERROR }
 			let embed_fatalError = new BetterEmbed({
-				title: "⛔ Oh no!",
-				description: `An error occurred while running the **\`${commandName}\`** command.`
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while using the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere.`,
+				footer: "but frankly, I'd rather you didn't",
+				color: "#ff3864"
 			});
 
 			// Let the user know an error occurred
-			embed_fatalError.reply(message, { allowedMentions: { repliedUser: false } }).catch(() => null);
+			embed_fatalError
+				.reply(message, {
+					components: message.guild.id !== config.client.support_server.GUILD_ID ? aR_supportServer : [],
+					allowedMentions: { repliedUser: false },
+					ephemeral: true
+				})
+				.catch(() => null);
 
 			// Log the error
 			return logger.error(

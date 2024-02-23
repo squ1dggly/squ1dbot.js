@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 const logger = require("../logger");
 
 const models = {
-	guild: require("../../models/guildModel").model
+	guild: require("../../models/guildModel").model,
+	reminder: require("../../models/reminderModel").model,
+	reminderTrigger: require("../../models/reminderTriggerModel").model
 };
 
 const config = { client: require("../../configs/config_client.json") };
@@ -17,6 +19,7 @@ module.exports = {
 	models,
 
 	guildManager: require("./guildManager"),
+	reminderManager: require("./reminderManager"),
 
 	/** Connect to MongoDB */
 	connect: async (uri = DEV_MODE ? MONGO_URI_DEV : MONGO_URI) => {

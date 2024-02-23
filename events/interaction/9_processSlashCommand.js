@@ -1,4 +1,5 @@
-const { Client, Events, PermissionFlagsBits, GuildMember, BaseInteraction } = require("discord.js");
+// prettier-ignore
+const { Client, Events, PermissionFlagsBits, GuildMember, BaseInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { BetterEmbed, markdown } = require("../../utils/discordTools/index.js");
 const logger = require("../../utils/logger.js");
 const jt = require("../../utils/jsTools");
@@ -122,15 +123,31 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
+			// Create a button :: { SUPPORT SERVER }
+			let btn_supportServer = new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(config.client.support_server.INVITE_URL)
+				.setLabel("Support Server");
+
+			// Create an action row :: { SUPPORT SERVER }
+			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+
 			// Create the embed :: { FATAL ERROR }
 			let embed_fatalError = new BetterEmbed({
-				interaction: interaction,
-				title: "⛔ Oh no!",
-				description: `An error occurred while using the **/\`${interaction.commandName}\`** command.`
+				interaction,
+				title: "⛔ Ruh-roh raggy!",
+				description: `An error occurred while using the **/\`${interaction.commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere.`,
+				footer: "but frankly, I'd rather you didn't",
+				color: "#ff3864"
 			});
 
 			// Let the user know an error occurred
-			embed_fatalError.send({ ephemeral: true }).catch(() => null);
+			embed_fatalError
+				.send({
+					components: interaction.guild.id !== config.client.support_server.GUILD_ID ? aR_supportServer : [],
+					ephemeral: true
+				})
+				.catch(() => null);
 
 			// Log the error
 			return logger.error(
