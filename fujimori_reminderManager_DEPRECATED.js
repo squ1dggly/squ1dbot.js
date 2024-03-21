@@ -13,9 +13,7 @@
 const logger = require("../logger");
 const jt = require("../jsTools");
 
-const models = {
-	reminder: require("../../models/reminderModel").model
-};
+const models = { reminder: require("../../models/reminderModel").model };
 
 /* - - - - - { Classes } - - - - - */
 class Reminder {

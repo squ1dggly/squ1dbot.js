@@ -7,11 +7,13 @@ const schema_reminder = new Schema(
 		type: { type: String, require: true },
 		user_id: { type: String, require: false },
 		guild_id: { type: String, require: false },
+		channel_id: { type: String, require: false },
+
+		mode: { type: String, default: "DM" },
 
 		enabled: { type: Boolean, default: true },
 
 		timestamp: { type: Number, require: true }
-
 	},
 	{ collection: "reminders" }
 );
