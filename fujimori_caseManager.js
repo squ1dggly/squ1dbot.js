@@ -40,6 +40,7 @@ async function _update(filter, query, upsert = false) {
 }
 
 /* - - - - - { Utilites } - - - - - */
+/** @param {string} requester_user_id @param {string} ticket_guild_id @param {string} ticket_channel_id */
 async function create(requester_user_id, ticket_guild_id, ticket_channel_id) {
 	const createUniqueID = async () => {
 		// format: 123-456-789
@@ -51,14 +52,22 @@ async function create(requester_user_id, ticket_guild_id, ticket_channel_id) {
 		return id;
 	};
 
+	// Create an ID for the new case
+	let id = await createUniqueID();
+
 	// Insert a new case into the database
-	await _insert(await createUniqueID(), { requester_user_id, ticket_guild_id, ticket_channel_id });
+	await _insert(id, { requester_user_id, ticket_guild_id, ticket_channel_id });
+
+	// Fetch the newly created case
+	return await _fetch(id);
 }
 
+/** @param {string} id */
 async function remove(id) {
-	return await models.case.deleteOne({ _id: id });
+	await models.case.deleteOne({ _id: id });
 }
 
+/** @param {string} id @param {string} message */
 async function saveReply(id, message) {
 	if (!(await _exists(id))) throw new Error(`'${id}' is not an existing case ID`);
 
@@ -69,9 +78,10 @@ async function saveReply(id, message) {
 		timestamp: message.createdTimestamp
 	};
 
-	return await _update(id, { $push: { message_history: replyData } });
+	await _update(id, { $push: { message_history: replyData } });
 }
 
+/** @param {string} id @param {string} message */
 async function saveStaffReply(id, message) {
 	if (!(await _exists(id))) throw new Error(`'${id}' is not an existing case ID`);
 
@@ -79,11 +89,11 @@ async function saveStaffReply(id, message) {
 		id: message.id,
 		user_id: message.author.id,
 		content: message.content,
-		is_staff: true,
+		from_staff: true,
 		timestamp: message.createdTimestamp
 	};
 
-	return await _update(id, { $push: { message_history: replyData } });
+	await _update(id, { $push: { message_history: replyData } });
 }
 
 module.exports = {
@@ -91,10 +101,10 @@ module.exports = {
 	_exists,
 	_insert,
 	_fetch,
-    _update,
-    
-    create,
-    remove,
-    saveReply,
-    saveStaffReply
+	_update,
+
+	create,
+	remove,
+	saveReply,
+	saveStaffReply
 };
