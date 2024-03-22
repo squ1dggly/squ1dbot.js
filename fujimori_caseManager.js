@@ -93,7 +93,7 @@ async function saveStaffReply(id, message) {
 		timestamp: message.createdTimestamp
 	};
 
-	await _update(id, { $push: { message_history: replyData } });
+	await _update(id, { $set: { staff_replied: true }, $push: { message_history: replyData } });
 }
 
 module.exports = {
