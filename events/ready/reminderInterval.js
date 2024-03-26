@@ -1,10 +1,10 @@
 /** @file Executed as soon as the bot's connected to Discord @author xsqu1znt */
 
 const { Client, PermissionFlagsBits, Events } = require("discord.js");
-const { BetterEmbed } = require("../../../modules/discordTools");
-const { reminderManager } = require("../../../modules/mongo");
-const logger = require("../../../modules/logger");
-const jt = require("../../../modules/jsTools");
+const { BetterEmbed } = require("../../utils/discordTools");
+const { reminderManager } = require("../../utils/mongo");
+const logger = require("../../utils/logger");
+const jt = require("../../utils/jsTools");
 
 const config = { reminder: require("../../configs/config_reminder.json") };
 
