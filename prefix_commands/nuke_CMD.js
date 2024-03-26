@@ -1,6 +1,5 @@
 const { Client, PermissionFlagsBits, Message } = require("discord.js");
 const { BetterEmbed, awaitConfirm } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
 module.exports = {
@@ -27,6 +26,13 @@ module.exports = {
 
 		if (!confirmation) return;
 
+		let progressEmoji = "⏳";
+
+		// Send a progress message
+		let msg_progress = await message.channel.send({
+			content: `${progressEmoji} Nuking channel... This might take a minute you cunt.`
+		});
+
 		/* - - - - - { Nuke Channel } - - - - - */
 		let messageTotal = 0;
 
@@ -36,21 +42,39 @@ module.exports = {
 			_messages = message.channel.messages.fetch({ limit: 1000 });
 			if (!_messages.size) return;
 
+			// Filter out the progress message
+			_messages = _messages.filter(m => m.id !== msg_progress.id);
+
 			messageTotal += _messages.size;
 
 			// Delete
 			await Promise.all(_messages.map(async m => m.delete().catch(() => null)));
 
+			/// Update the progress message
+			if (progressEmoji === "⏳") progressEmoji = "⌛";
+			else progressEmoji = "⏳";
+
+			// prettier-ignore
+			if (msg_progress.editable) msg_progress.edit({
+                content: `${progressEmoji} Nuking channel... This might take a minute you cunt.\n${messageTotal} has been deleted so far.`
+            });
+
+			// Run it back
 			return await nuke(_messages);
 		};
 
+        // Nuke the channel
 		await nuke();
 
+        // Delete the progress message
+		if (msg_progress.deletable) await msg_progress.delete().catch(() => null);
+
+        // prettier-ignore
 		// Let the user know the result
 		let embed_nuke = new BetterEmbed({
 			channel: message.channel,
 			title: "Nuke",
-			description: `${messageTotal} messages have been deleted from ${message.channel}!`
+			description: `${messageTotal} ${messageTotal === 1 ? "Message has" : "Messages have"} been deleted from ${message.channel}!`
 		});
 
 		return await embed_nuke.send({ deleteAfter: "5s" });
