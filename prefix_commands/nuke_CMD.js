@@ -18,6 +18,7 @@ module.exports = {
 		let confirmation = await awaitConfirm({
 			color: "Red",
 			channel: message.channel,
+			user: message.author,
 			title: "Are you sure you want to do this?",
 			description: `You are about to delete everything in ${message.channel}...`,
 			deleteOnCancel: true,
@@ -39,7 +40,7 @@ module.exports = {
 		const nuke = async _messages => {
 			if (_messages && !_messages.size) return;
 
-			_messages = message.channel.messages.fetch({ limit: 1000 });
+			_messages = await message.channel.messages.fetch({ limit: 100 });
 			if (!_messages.size) return;
 
 			// Filter out the progress message
@@ -48,7 +49,7 @@ module.exports = {
 			messageTotal += _messages.size;
 
 			// Delete
-			await Promise.all(_messages.map(async m => m.delete().catch(() => null)));
+			await Promise.all(_messages.map(m => m.delete().catch(() => null)));
 
 			/// Update the progress message
 			if (progressEmoji === "⏳") progressEmoji = "⌛";
@@ -63,13 +64,13 @@ module.exports = {
 			return await nuke(_messages);
 		};
 
-        // Nuke the channel
+		// Nuke the channel
 		await nuke();
 
-        // Delete the progress message
+		// Delete the progress message
 		if (msg_progress.deletable) await msg_progress.delete().catch(() => null);
 
-        // prettier-ignore
+		// prettier-ignore
 		// Let the user know the result
 		let embed_nuke = new BetterEmbed({
 			channel: message.channel,
