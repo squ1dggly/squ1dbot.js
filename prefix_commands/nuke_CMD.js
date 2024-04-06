@@ -49,7 +49,8 @@ module.exports = {
 			messageTotal += _messages.size;
 
 			// Delete
-			await Promise.all(_messages.map(m => m.delete().catch(() => null)));
+			// await Promise.all(_messages.map(m => m.delete().catch(() => null)));
+			await message.channel.bulkDelete(_messages);
 
 			/// Update the progress message
 			if (progressEmoji === "⏳") progressEmoji = "⌛";
