@@ -1,6 +1,6 @@
 {
 	"name": "squ1dbot",
-	"version": "0.0.6a",
+	"version": "0.0.7a",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,7 +13,7 @@
 		"chalk": "^4.1.2",
 		"discord.js": "^14.14.1",
 		"dotenv": "^16.4.5",
-		"mongoose": "^7.6.8",
+		"mongoose": "^7.6.10",
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {

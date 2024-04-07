@@ -23,6 +23,7 @@
 	"client_status": {
 		"default": {
 			"INTERVAL": "1m",
+			"RANDOM_ACTIVITY": true,
 
 			"ACTIVITY": [
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Need any /help?" },
