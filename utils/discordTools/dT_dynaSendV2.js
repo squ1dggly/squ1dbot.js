@@ -10,12 +10,12 @@
  * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
  * @property {SendMethod} sendMethod The method to send the message.
  *
- * Default is "reply". If "reply" fails, "editReply" will be used.
+ * Default is "reply". If "reply" fails, "editReply" is used.
  * @property {boolean} ephemeral If the message should be ephemeral. This only works for the "reply" `SendMethod`.
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message.
  *
  * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example.
- * @property {boolean} fetchReply Whether to return the `Message` object after sending. */
+ * @property {boolean} fetchReply Whether to return the `Message` object after sending. `true` by default. */
 
 const { CommandInteraction, TextChannel, Message, EmbedBuilder, ActionRowBuilder } = require("discord.js");
 const deleteMessageAfter = require("./dT_deleteMessageAfter");

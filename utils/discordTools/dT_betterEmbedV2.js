@@ -47,18 +47,18 @@
  * @property {string} content The text content to send with the embed.
  *
  * @property {bE_author} author Preforms a non-mutative change to the `Embed`'s AUTHOR.
- * @property {string|{text:string, linkURL:string}} title Preforms a non-mutative change to the `Embed`'s TITLE.
+ * @property {bE_title} title Preforms a non-mutative change to the `Embed`'s TITLE.
  * @property {string} thumbnailURL Preforms a non-mutative change to the `Embed`'s THUMBNAIL.
  * @property {string} description Preforms a non-mutative change to the `Embed`'s DESCRIPTION.
  * @property {string} imageURL Preforms a non-mutative change to the `Embed`'s IMAGE.
- * @property {string|{text:string, iconURL:string}} footer Preforms a non-mutative change to the `Embed`'s FOOTER.
+ * @property {bE_footer} footer Preforms a non-mutative change to the `Embed`'s FOOTER.
  * @property {string|string[]} color Preforms a non-mutative change to the `Embed`'s COLOR.
  * 
  * @property {ActionRowBuilder|ActionRowBuilder[]} components The components to send with the embed
  * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
- * @property {import("./dT_dynaSend").SendMethod} sendMethod The method to send the embed.
+ * @property {import("./dT_dynaSendV2").SendMethod} sendMethod The method to send the embed.
  *
- * **1.** By default, "reply" is used if a `CommandInteraction` is provided as the handler. If "reply" fails, "editReply" will be used.
+ * **1.** By default, "reply" is used if a `CommandInteraction` is provided as the handler. If "reply" fails, "editReply" is used.
  * 
  * **2.** By default, "sendToChannel" is used if a `Channel` is provided as the handler.
  * 
@@ -67,10 +67,12 @@
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message.
  *
  * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example.
- * @property {boolean} fetchReply Whether to return the `Message` object after sending. */
+ * @property {boolean} fetchReply Whether to return the `Message` object after sending. `true` by default. */
 
-// * @property {import("./dT_dynaSend").SendMethod} sendMethod if `reply` fails, `editReply` will be used **|** `reply` is default
 // prettier-ignore
 const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder } = require("discord.js");
+const dynaSend = require("./dT_dynaSendV2");
+const logger = require("../logger");
+const jt = require("../jsTools");
 
 const config = require("./dT_config.json");
