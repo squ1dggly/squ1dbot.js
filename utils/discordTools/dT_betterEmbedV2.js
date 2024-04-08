@@ -17,7 +17,7 @@
 
 /** @typedef bE_title
  * @property {string|null} text The text to be displayed.
- * @property {string|null} linkURL If provided, will turn the `Embed`'s TITLE text into a hyperlink. */
+ * @property {string|null} hyperlink If provided, will turn the `Embed`'s TITLE text into a hyperlink. */
 /** @typedef {bE_title|string|null} bE_title */
 
 /** @typedef bE_footer
@@ -25,22 +25,18 @@
  * @property {string|null} iconURL The icon to be displayed on the bottom left of the `Embed`. */
 /** @typedef {bE_footer|string|null} bE_footer */
 
-/** @typedef {string|null} bE_thumbnailURL The thumbnail to be displayed on the top right of the `Embed`. */
-/** @typedef {string|null} bE_description The text to be displayed inside of the `Embed`. */
-/** @typedef {string|null} bE_imageURL The image to be displayed inside of the `Embed`. */
-/** @typedef {string|string[]|null} bE_color The color of the `Embed`. */
-/** @typedef {number|boolean|Date|null} bE_timestamp The timestamp to be displayed to the right of the `Embed`'s footer. */
-
 /** @typedef bE_options
  * @property {{interaction:CommandInteraction, channel:TextChannel, message:Message}} context Can be provided for automated context formatting.
  * @property {bE_author} author The AUTHOR of the `Embed`.
  * @property {bE_title} title The TITLE of the `Embed`.
- * @property {bE_thumbnailURL} thumbnailURL The THUMBNAIL of the `Embed`.
- * @property {bE_description} description The DESCRIPTION of the `Embed`.
- * @property {bE_imageURL} imageURL The IMAGE of the `Embed`.
- * @property {bE_footer} footer The FOOTER of the `Embed`.
- * @property {bE_color} color The COLOR of the `Embed`.
- * @property {bE_timestamp} timestamp The TIMESTAMP of the `Embed`.
+ * @property {string|null} thumbnailURL The thumbnail to be displayed on the top right of the `Embed`.
+ * @property {string|null} description The text to be displayed inside of the `Embed`.
+ * @property {string|null} imageURL The image to be displayed inside of the `Embed`.
+ * @property {bE_footer} footer The footer to be displayed at the bottom of the `Embed`.
+ * @property {string|string[]|null} color The color of the `Embed`.
+ * @property {bE_timestamp} timestamp The timestamp to be displayed to the right of the `Embed`'s footer.
+ * 
+ * If set to `true`, will use the current time.
  * @property {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fields The FIELDS of the `Embed`.
  * @property {boolean} disableAutomaticContext If `true`, will disable automatic context formatting for this `Embed`. */
 
@@ -90,11 +86,11 @@ const config = require("./dT_config.json");
 class BetterEmbed {
 	#init = {
 		context: { interaction: null, channel: null, message: null },
-		author: { user: null, text: null, iconURL: null, linkURL: null },
-		title: { text: null, linkURL: null },
+		author: { user: null, text: null, icon: null, hyperlink: null },
+		title: { text: null, hyperlink: null },
 		thumbnailURL: null,
-		description: null,
 		imageURL: null,
+		description: null,
 		footer: { text: null, iconURL: null },
 		color: config.EMBED_COLOR || null,
 		timestamp: null,
