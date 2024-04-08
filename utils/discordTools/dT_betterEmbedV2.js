@@ -1,8 +1,18 @@
 /** @typedef bE_author
- * @property {GuildMember|User|null} user The `User` or `GuildMember` that will be used for contextual information.
+ * @property {GuildMember|User|null} context The `GuildMember` or `User` that will be used for automatic context formatting.
+ *
+ * *NOTE:* There is no reason to provide this unless:
+ *
+ * **1.** Context was not provided during initialization.
+ *
+ * **2.** The provided context was a `Channel`.
+ *
+ * **3.** The author of the provided context is different from the author of the `Embed`.
  * @property {string|null} text The text to be displayed.
- * @property {string|boolean|null} iconURL The icon to be displayed on the top left of the `Embed`.
- * @property {string|null} linkURL If provided, will turn the `Embed`'s AUTHOR text into a hyperlink. */
+ * @property {string|boolean|null} icon The icon to be displayed on the top left of the `Embed`.
+ *
+ * If set to `true`, will use the provided `context` user's avatar.
+ * @property {string|null} hyperlink If provided, will turn the `Embed`'s AUTHOR text into a hyperlink. */
 /** @typedef {bE_author|string|null} bE_author */
 
 /** @typedef bE_title
@@ -22,17 +32,17 @@
 /** @typedef {number|boolean|Date|null} bE_timestamp The timestamp to be displayed to the right of the `Embed`'s footer. */
 
 /** @typedef bE_options
- * @property {CommandInteraction} interaction Must be provided if using `Interaction` based `SendMethods`.
+ * @property {{interaction:CommandInteraction, channel:TextChannel, message:Message}} context Can be provided for automated context formatting.
  * @property {bE_author} author The AUTHOR of the `Embed`.
  * @property {bE_title} title The TITLE of the `Embed`.
  * @property {bE_thumbnailURL} thumbnailURL The THUMBNAIL of the `Embed`.
  * @property {bE_description} description The DESCRIPTION of the `Embed`.
- * @property {string} imageURL The IMAGE of the `Embed`.
+ * @property {bE_imageURL} imageURL The IMAGE of the `Embed`.
  * @property {bE_footer} footer The FOOTER of the `Embed`.
  * @property {bE_color} color The COLOR of the `Embed`.
  * @property {bE_timestamp} timestamp The TIMESTAMP of the `Embed`.
  * @property {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fields The FIELDS of the `Embed`.
- * @property {boolean} disableFormatting If `true`, will disable automatic contextual formatting for this `Embed`. */
+ * @property {boolean} disableAutomaticContext If `true`, will disable automatic context formatting for this `Embed`. */
 
 /** @typedef bE_sendOptions
  * @property {CommandInteraction|import("discord.js").Channel|Message} handler ***REQUIRED*** to send the embed.
@@ -53,15 +63,15 @@
  * @property {string} imageURL Preforms a non-mutative change to the `Embed`'s IMAGE.
  * @property {bE_footer} footer Preforms a non-mutative change to the `Embed`'s FOOTER.
  * @property {string|string[]} color Preforms a non-mutative change to the `Embed`'s COLOR.
- * 
+ *
  * @property {ActionRowBuilder|ActionRowBuilder[]} components The components to send with the embed
  * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
  * @property {import("./dT_dynaSendV2").SendMethod} sendMethod The method to send the embed.
  *
  * **1.** By default, "reply" is used if a `CommandInteraction` is provided as the handler. If "reply" fails, "editReply" is used.
- * 
+ *
  * **2.** By default, "sendToChannel" is used if a `Channel` is provided as the handler.
- * 
+ *
  * **3.** By default, "messageReply" is used if a `Message` is provided as the handler.
  * @property {boolean} ephemeral If the message should be ephemeral. This only works for the "reply" `SendMethod`.
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message.
@@ -76,3 +86,18 @@ const logger = require("../logger");
 const jt = require("../jsTools");
 
 const config = require("./dT_config.json");
+
+class BetterEmbed {
+	#init = {
+		context: { interaction: null, channel: null, message: null },
+		author: { user: null, text: null, iconURL: null, linkURL: null },
+		title: { text: null, linkURL: null },
+		thumbnailURL: null,
+		description: null,
+		imageURL: null,
+		footer: { text: null, iconURL: null },
+		color: config.EMBED_COLOR || null,
+		timestamp: null,
+		disableFormatting: false
+	};
+}
