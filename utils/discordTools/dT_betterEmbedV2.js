@@ -35,7 +35,7 @@
  * @property {bE_footer} footer The footer to be displayed at the bottom of the `Embed`.
  * @property {string|string[]|null} color The color of the `Embed`.
  * @property {bE_timestamp} timestamp The timestamp to be displayed to the right of the `Embed`'s footer.
- * 
+ *
  * If set to `true`, will use the current time.
  * @property {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fields The FIELDS of the `Embed`.
  * @property {boolean} disableAutomaticContext If `true`, will disable automatic context formatting for this `Embed`. */
@@ -84,7 +84,9 @@ const jt = require("../jsTools");
 const config = require("./dT_config.json");
 
 class BetterEmbed {
-	#init = {
+	#embed = new EmbedBuilder();
+
+	#init_data = {
 		context: { interaction: null, channel: null, message: null },
 		author: { user: null, text: null, icon: null, hyperlink: null },
 		title: { text: null, hyperlink: null },
@@ -94,6 +96,93 @@ class BetterEmbed {
 		footer: { text: null, iconURL: null },
 		color: config.EMBED_COLOR || null,
 		timestamp: null,
-		disableFormatting: false
+		fields: null,
+		disableAutomaticContext: false
 	};
+
+	/** @param {string} str */
+	#_applyContextFormatting(str) {
+		if (!str) return null;
+
+		return str
+			.replace(/(?<!\\)\$USER\b/g, this.data.author.context)
+			.replace(/(?<!\\)\$USERNAME\b/g, this.data.author.context?.user?.username || this.data.author.context.username);
+	}
+
+	#_parseData() {
+		/* - - - - - { Cleanup Shorthand Configurations } - - - - - */
+		if (this.data.fields) this.data.fields = jt.forceArray(this.data.fields);
+
+		// prettier-ignore
+		if (typeof this.data.author === "string")
+			this.data.author = { user: null, text: this.data.author, icon: null, hyperlink: null };
+		else if (!this.data.author)
+			this.data.author = { user: null, text: null, icon: null, hyperlink: null };
+
+		// prettier-ignore
+		if (typeof this.data.title === "string")
+			this.data.title = { text: this.data.title, hyperlink: null };
+		else if (!this.data.title)
+			this.data.title = { text: null, hyperlink: null };
+
+		// prettier-ignore
+		if (typeof this.data.footer === "string")
+			this.data.footer = { text: this.data.footer, iconURL: null };
+		else if (!this.data.footer)
+            this.data.footer = { text: null, iconURL: null };
+
+		/* - - - - - { Context } - - - - - */
+		// If no author context was provided, use the interaction's author
+		if (!this.data.author.context && this.data.context.interaction)
+			this.data.author.context = this.data.context.interaction.member;
+
+		// If no author context was provided, use the message's author
+		if (!this.data.author.context && this.data.context.message)
+			this.data.author.context = this.data.context.message?.member || this.data.context.message?.author;
+
+		/* - - - - - { Formatting } - - - - - */
+		if (!this.data.disableAutomaticContext) {
+			this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
+			this.data.title.text = this.#_applyContextFormatting(this.data.title.text);
+			this.data.description = this.#_applyContextFormatting(this.data.description);
+			this.data.footer.text = this.#_applyContextFormatting(this.data.footer.text);
+		}
+	}
+
+	/** @param {{}} options Configure with temporary data. */
+	#_configure(options) {
+		const execute = () => {
+			// this.#_setAuthor();
+			// this.#_setTitle();
+			// this.#_setThumbnail();
+			// this.#_setDescription();
+			// this.#_setImage();
+			// this.#_setFooter();
+			// this.#_setColor();
+			// this.#_setTimestamp();
+		};
+
+		if (options) {
+			let _prev = structuredClone(this.data);
+
+			this.data = { ...this.data, ...data };
+			this.#_parseData();
+			execute();
+			this.data = _prev;
+			return;
+		}
+
+		this.#_parseData();
+		execute();
+	}
+
+	/** A better version of the classic EmbedBuilder.
+	 * - **`$USER`**: *author's mention (@xsqu1znt)*
+	 *
+	 * - **`$USERNAME`**: *author's display name or username*
+	 * @param {bE_options} options */
+	constructor(options) {
+		this.data = { ...this.#init_data, ...options };
+		this.#_configure();
+	}
 }
