@@ -7,10 +7,10 @@
  * @property {string} content The text content to send in the message.
  * @property {EmbedBuilder|BetterEmbed|Array<EmbedBuilder|BetterEmbed>} embeds One or more `Embed`s to send.
  * @property {ActionRowBuilder|ActionRowBuilder[]} components The components to add in the message.
- * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions in the message.
+ * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
  * @property {SendMethod} sendMethod The method to send the message.
  *
- * Default is *reply*. if *reply* fails, *editReply* will be used.
+ * Default is "reply". If "reply" fails, "editReply" will be used.
  * @property {boolean} ephemeral If the message should be ephemeral. This only works for the "reply" `SendMethod`.
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message.
  *
