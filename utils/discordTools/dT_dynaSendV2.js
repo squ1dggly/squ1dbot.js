@@ -60,10 +60,10 @@ async function dynaSend(options) {
 		throw new Error("You must provide a Message to use the 'messageEdit' or 'messageReply' SendMethod");
 
 	if (["reply", "followUp"].includes(options.sendMethod) && options.ephemeral)
-		logger.debug("[DYNASEND]: Ephemeral can only be used with interaction based SendMethods (excluding 'editReply')");
+		logger.debug("[DynaSend]: Ephemeral can only be used with interaction based SendMethods (excluding 'editReply')");
 
 	if (options.deleteAfter && options.deleteAfter < 1000)
-		logger.debug("[DYNASEND]: deleteAfter is less than 1 second; Is this intentional?");
+		logger.debug("[DynaSend]: deleteAfter is less than 1 second; Is this intentional?");
 
 	// prettier-ignore
 	// Interaction based SendMethod fallback
@@ -89,7 +89,7 @@ async function dynaSend(options) {
 		case "reply":
 			message = await options.interaction.reply(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to send message",
+					"[DynaSend]: Failed to send message",
 					`REPLY_TO_INTERACTION | SendMethod: '${options.sendMethod}'`,
 					err
 				);
@@ -101,7 +101,7 @@ async function dynaSend(options) {
 		case "editReply":
 			message = await options.interaction.editReply(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to edit message",
+					"[DynaSend]: Failed to edit message",
 					`EDIT_INTERACTION | SendMethod: '${options.sendMethod}'`,
 					err
 				);
@@ -113,7 +113,7 @@ async function dynaSend(options) {
 		case "followUp":
 			message = await options.interaction.followUp(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to send message",
+					"[DynaSend]: Failed to send message",
 					`FOLLOW_UP_INTERACTION | SendMethod: '${options.sendMethod}'`,
 					err
 				);
@@ -125,7 +125,7 @@ async function dynaSend(options) {
 		case "sendToChannel":
 			message = await options.channel.send(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to send message",
+					"[DynaSend]: Failed to send message",
 					`SEND_TO_CHANNEL | SendMethod: '${options.sendMethod}'`,
 					err
 				);
@@ -143,7 +143,7 @@ async function dynaSend(options) {
 
 			message = await options.message.edit(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to edit message",
+					"[DynaSend]: Failed to edit message",
 					`EDIT_MESSAGE | SendMethod: '${options.sendMethod}'`,
 					err
 				);
@@ -155,7 +155,7 @@ async function dynaSend(options) {
 		case "messageReply":
 			message = await options.message.reply(sendData).catch(err => {
 				logger.error(
-					"[DYNASEND]: Failed to send message",
+					"[DynaSend]: Failed to send message",
 					`REPLY_TO_MESSAGE | SendMethod: '${options.sendMethod}'`,
 					err
 				);

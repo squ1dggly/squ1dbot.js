@@ -176,7 +176,7 @@ class BetterEmbed {
 		execute();
 	}
 
-	/** A better version of the classic EmbedBuilder.
+	/** A better version of the classic `EmbedBuilder`.
 	 * - **`$USER`**: *author's mention (@xsqu1znt)*
 	 *
 	 * - **`$USERNAME`**: *author's display name or username*
@@ -185,4 +185,52 @@ class BetterEmbed {
 		this.data = { ...this.#init_data, ...options };
 		this.#_configure();
 	}
+
+	/** Returns a new `BetterEmbed` with the same configuration.
+	 * - **`$USER`**: *author's mention (@xsqu1znt)*
+	 *
+	 * - **`$USERNAME`**: *author's display name or username*
+	 * @param {bE_options} options */
+	clone(options) {
+		return new BetterEmbed({ ...this.options, ...options });
+	}
+
+	/** Serializes this builder to API-compatible JSON data.
+	 *
+	 * @remarks
+	 * This method runs validations on the data before serializing it. As such, it may throw an error if the data is invalid.
+	 */
+	toJSON() {
+		return this.#embed.toJSON();
+	}
+
+	/** Set the embed's description.
+	 * @param {string|null} description The text to be displayed inside of the `Embed`. */
+	setDescription(description = this.data.description) {
+		if (!this.data.disableAutomaticContext) description = this.#_applyContextFormatting(description);
+
+		this.#embed.setDescription(description);
+		this.data.description = description;
+
+		return this;
+	}
+
+	/** Set the embed's image.
+	 * @param {string|null} url The image to be displayed inside of the `Embed`. */
+	setImage(url = this.data.imageURL) {
+		url = url.toLowerCase().trim();
+
+		// wrapping in a try-catch checks if the URL is valid
+		try {
+			this.#embed.setImage(url);
+		} catch {
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGEURL | '${this.options.imageURL}'`);
+			return this;
+		}
+
+		this.data.imageURL = url;
+		return this;
+	}
 }
+
+module.exports = BetterEmbed;
