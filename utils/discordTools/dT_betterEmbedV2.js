@@ -75,8 +75,19 @@
  * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example.
  * @property {boolean} fetchReply Whether to return the `Message` object after sending. `true` by default. */
 
+/** @typedef {CommandInteraction|import("discord.js").Channel|Message} Handler
+ * ***REQUIRED*** to send the embed.
+ *
+ * The type of handler depends on the `SendMethod` you choose to use.
+ *
+ * **1.** `CommandInteraction` is required for `Interaction` based `SendMethods`.
+ *
+ * **2.** `Channel` is required for the "sendToChannel" `SendMethod`.
+ *
+ * **3.** `Message` is required for `Message` based `SendMethods`. */
+
 // prettier-ignore
-const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder } = require("discord.js");
+const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder, BaseChannel } = require("discord.js");
 const dynaSend = require("./dT_dynaSendV2");
 const logger = require("../logger");
 const jt = require("../jsTools");
@@ -135,6 +146,9 @@ class BetterEmbed {
 		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
 		// Color format
 		if (this.data.color !== null) this.data.color = `#${this.data.color}`;
+
+		// Timestamp
+		if (this.data.timestamp === true) this.data.timestamp = Date.now();
 
 		/* - - - - - { Context } - - - - - */
 		// If no author context was provided, use the interaction's author
@@ -387,6 +401,48 @@ class BetterEmbed {
 			}
 
 		return this;
+	}
+
+	/** Set the embed's timestamp.
+	 * @param {bE_timestamp} timestamp */
+	setTimestamp(timestamp = this.data.timestamp) {
+		this.options.timestamp = timestamp || null;
+		this.#_parseData();
+
+		try {
+			this.#embed.setTimestamp(timestamp || undefined);
+		} catch {
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_TIMESTAMP | '${this.data.imageURL}'`);
+			return this;
+		}
+
+		return this;
+	}
+
+	/** Send the embed using the `Interaction`, `Channel`, or `Message`.
+	 * - **`$USER`**: *author's mention (@xsqu1znt)*
+	 *
+	 * - **`$USERNAME`**: *author's display name or username*
+	 * @param {Handler} handler
+	 * @param {bE_sendOptions} options */
+	async send(handler, options) {
+		// TODO: MAKE THIS MAKE SENSE
+		let _embed = this.#_configure(options);
+
+		let sendData = {
+			interaction: handler instanceof CommandInteraction ? handler : null,
+			channel: handler instanceof BaseChannel ? handler : null,
+			message: handler instanceof Message ? handler : null,
+			embeds: [_embed],
+			components: [],
+			allowedMentions: {},
+			sendMethod: "reply",
+			...this.data,
+			...options
+		};
+
+		// Send the message
+		return await dynaSend(sendData);
 	}
 }
 
