@@ -140,12 +140,42 @@ class BetterEmbed {
 		if (!this.data.author.context && this.data.context.message)
 			this.data.author.context = this.data.context.message?.member || this.data.context.message?.author;
 
+		/* - - - - - { Lowercase-ify Links } - - - - - */
+		// Author
+		if (this.data.author.hyperlink) this.data.author.hyperlink = this.data.author.hyperlink.toLowerCase();
+
+		// Author icon
+		if (typeof this.data.author.icon === "string") this.data.author.icon = this.data.author.icon.toLowerCase();
+
+		// Title
+		if (this.data.title.hyperlink) this.data.title.hyperlink = this.data.title.hyperlink.toLowerCase();
+
+		// Thumbnail
+		if (this.data.thumbnailURL) this.data.thumbnailURL = this.data.thumbnailURL.toLowerCase();
+
+		// Image
+		if (this.data.imageURL) this.data.imageURL = this.data.imageURL.toLowerCase();
+
+		// Footer icon
+		if (this.data.footer.iconURL) this.data.footer.iconURL = this.data.footer.iconURL.toLowerCase();
+
 		/* - - - - - { Formatting } - - - - - */
 		if (!this.data.disableAutomaticContext) {
 			this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
 			this.data.title.text = this.#_applyContextFormatting(this.data.title.text);
 			this.data.description = this.#_applyContextFormatting(this.data.description);
 			this.data.footer.text = this.#_applyContextFormatting(this.data.footer.text);
+
+			// Author icon
+			if (this.data.author.icon === true && this.data.author.context) {
+				if (this.data.author.context instanceof GuildMember)
+					this.data.author.icon = this.data.author.context.user.displayAvatarURL();
+
+				if (this.data.author.context instanceof User)
+					this.data.author.icon = this.data.author.context.displayAvatarURL();
+			}
+			// Author icon fallback
+			else this.data.author.icon = null;
 		}
 	}
 
@@ -162,6 +192,7 @@ class BetterEmbed {
 			// this.#_setTimestamp();
 		};
 
+		// TODO: USE CLONE INSTEAD
 		if (options) {
 			let _prev = structuredClone(this.data);
 
@@ -204,13 +235,86 @@ class BetterEmbed {
 		return this.#embed.toJSON();
 	}
 
+	/** Set the embed's author.
+	 * @param {bE_author} author */
+	setAuthor(author = this.data.author) {
+		// prettier-ignore
+		if (author === null)
+				this.options.author = structuredClone(this.#init_data.author);
+	
+		else if (typeof author === "string")
+			this.data.author = { ...this.data.author, text: author };
+	
+		else
+			this.data.author = { ...this.data.author, ...author };
+
+		this.#_parseData();
+
+		try {
+			this.#embed.setAuthor(this.data.author);
+		} catch {
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGEURL | '${this.options.imageURL}'`);
+			return this;
+		}
+
+		// this.#_setAuthor();
+		return this;
+	}
+
+	/* #_setAuthor() {
+			super.setAuthor({ name: this.#_formatMarkdown(this.options.author.text) });
+			this.#_parseOptions();
+	
+			try {
+				// prettier-ignore
+				if (typeof this.options.author.iconURL === "string")
+					super.setAuthor({ name: this.options.author.text, iconURL: this.options.author.iconURL });
+	
+				else if (this.options.author.iconURL === true) {
+					let _iconURL = "";
+	
+					// Get the avatar URL of the provided user
+					if (this.options.author.user) {
+						try {
+							_iconURL = this.options.author.user.user.avatarURL({ dynamic: true });
+						} catch {
+							_iconURL = this.options.author.user.avatarURL({ dynamic: true });
+						}
+					}
+	
+					// Get the avatar URL from the user's interaction
+					else if (this.options.interaction)
+						_iconURL = this.options.interaction.user.avatarURL({ dynamic: true });
+	
+					super.setAuthor({ name: this.options.author.text, iconURL: _iconURL });
+				}
+	
+				// Remove the avatar icon from the embed
+				else if (this.options.author.iconURL === null)
+					this.data.author.icon_url = undefined;
+			} catch (err) {
+				console.error(err);
+				logger.error("Could not configure embed", "invalid_authorIconURL", `\`${this.options.author.iconURL}\``);
+			}
+	
+			try {
+				// prettier-ignore
+				if (this.options.author.linkURL)
+					super.setAuthor({ url: this.options.author.linkURL });
+				else
+					this.data.author.url = undefined;
+			} catch {
+				logger.error("Could not configure embed", "invalid_authorLinkURL", `\`${this.options.author.linkURL}\``);
+			}
+		} */
+
 	/** Set the embed's description.
 	 * @param {string|null} description The text to be displayed inside of the `Embed`. */
 	setDescription(description = this.data.description) {
 		if (!this.data.disableAutomaticContext) description = this.#_applyContextFormatting(description);
 
-		this.#embed.setDescription(description);
 		this.data.description = description;
+		this.#embed.setDescription(description);
 
 		return this;
 	}
