@@ -22,7 +22,7 @@
 
 /** @typedef bE_footer
  * @property {string|null} text The text to be displayed.
- * @property {string|null} iconURL The icon to be displayed on the bottom left of the `Embed`. */
+ * @property {string|null} icon The icon to be displayed on the bottom left of the `Embed`. */
 /** @typedef {bE_footer|string|null} bE_footer */
 
 /** @typedef bE_options
@@ -93,7 +93,7 @@ class BetterEmbed {
 		thumbnailURL: null,
 		imageURL: null,
 		description: null,
-		footer: { text: null, iconURL: null },
+		footer: { text: null, icon: null },
 		color: config.EMBED_COLOR || null,
 		timestamp: null,
 		fields: null,
@@ -127,9 +127,14 @@ class BetterEmbed {
 
 		// prettier-ignore
 		if (typeof this.data.footer === "string")
-			this.data.footer = { text: this.data.footer, iconURL: null };
+			this.data.footer = { text: this.data.footer, icon: null };
 		else if (!this.data.footer)
-            this.data.footer = { text: null, iconURL: null };
+			this.data.footer = { text: null, icon: null };
+
+		// Color case
+		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
+		// Color format
+		if (this.data.color !== null) this.data.color = `#${this.data.color}`;
 
 		/* - - - - - { Context } - - - - - */
 		// If no author context was provided, use the interaction's author
@@ -142,22 +147,22 @@ class BetterEmbed {
 
 		/* - - - - - { Lowercase-ify Links } - - - - - */
 		// Author
-		if (this.data.author.hyperlink) this.data.author.hyperlink = this.data.author.hyperlink.toLowerCase();
+		if (this.data.author.hyperlink) this.data.author.hyperlink = this.data.author.hyperlink.toLowerCase().trim();
 
 		// Author icon
-		if (typeof this.data.author.icon === "string") this.data.author.icon = this.data.author.icon.toLowerCase();
+		if (typeof this.data.author.icon === "string") this.data.author.icon = this.data.author.icon.toLowerCase().trim();
 
 		// Title
-		if (this.data.title.hyperlink) this.data.title.hyperlink = this.data.title.hyperlink.toLowerCase();
+		if (this.data.title.hyperlink) this.data.title.hyperlink = this.data.title.hyperlink.toLowerCase().trim();
 
 		// Thumbnail
-		if (this.data.thumbnailURL) this.data.thumbnailURL = this.data.thumbnailURL.toLowerCase();
+		if (this.data.thumbnailURL) this.data.thumbnailURL = this.data.thumbnailURL.toLowerCase().trim();
 
 		// Image
-		if (this.data.imageURL) this.data.imageURL = this.data.imageURL.toLowerCase();
+		if (this.data.imageURL) this.data.imageURL = this.data.imageURL.toLowerCase().trim();
 
 		// Footer icon
-		if (this.data.footer.iconURL) this.data.footer.iconURL = this.data.footer.iconURL.toLowerCase();
+		if (this.data.footer.icon) this.data.footer.icon = this.data.footer.icon.toLowerCase().trim();
 
 		/* - - - - - { Formatting } - - - - - */
 		if (!this.data.disableAutomaticContext) {
@@ -236,11 +241,11 @@ class BetterEmbed {
 	}
 
 	/** Set the embed's author.
-	 * @param {bE_author} author */
+	 * @param {bE_author} author The AUTHOR of the `Embed`. */
 	setAuthor(author = this.data.author) {
 		// prettier-ignore
 		if (author === null)
-			this.options.author = structuredClone(this.#init_data.author);
+			this.data.author = structuredClone(this.#init_data.author);
 	
 		else if (typeof author === "string")
 			this.data.author = { ...this.data.author, text: author };
@@ -255,7 +260,7 @@ class BetterEmbed {
 			try {
 				this.#embed.setAuthor({ iconURL: this.data.author.icon || undefined });
 			} catch {
-				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_ICON | '${this.options.imageURL}'`);
+				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_ICON | '${this.data.author.icon}'`);
 				return this;
 			}
 
@@ -264,12 +269,44 @@ class BetterEmbed {
 			try {
 				this.#embed.setAuthor({ iconURL: this.data.author.icon || undefined });
 			} catch {
-				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_HYPERLINK | '${this.options.imageURL}'`);
+				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_HYPERLINK | '${this.data.author.icon}'`);
 				return this;
 			}
 
 		// Text
 		this.#embed.setAuthor({ name: this.data.author.text || undefined });
+
+		return this;
+	}
+
+	/** Set the embed's title.
+	 * @param {bE_title} title The TITLE of the `Embed`. */
+	setTitle(title) {
+		// prettier-ignore
+		if (title === null)
+			this.data.title = structuredClone(this.#init_data.title);
+
+		else if (typeof author === "string")
+			this.data.title = { ...this.data.title, text: title };
+
+		else
+			this.data.title = { ...this.data.title, ...title };
+
+		this.#_parseData();
+
+		// Hyperlink
+		if (this.data.title.hyperlink)
+			try {
+				this.#embed.setURL(this.data.title.hyperlink || undefined);
+			} catch {
+				logger.error(
+					"[BetterEmbed]: Failed to configure",
+					`INVALID_TITLE_HYPERLINK | '${this.data.title.hyperlink}'`
+				);
+				return this;
+			}
+
+		this.#embed.setTitle(this.data.title || undefined);
 
 		return this;
 	}
@@ -294,11 +331,61 @@ class BetterEmbed {
 		try {
 			this.#embed.setImage(url);
 		} catch {
-			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGEURL | '${this.options.imageURL}'`);
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGEURL | '${this.data.imageURL}'`);
 			return this;
 		}
 
 		this.data.imageURL = url;
+		this.#_parseData();
+
+		return this;
+	}
+
+	/** Set the embed's footer.
+	 * @param {bE_footer} footer */
+	setFooter(footer = this.data.footer) {
+		// prettier-ignore
+		if (footer === null)
+			this.data.footer = structuredClone(this.#init_data.footer);
+	
+		else if (typeof footer === "string")
+			this.data.footer = { ...this.data.footer, text: footer };
+	
+		else
+			this.data.footer = { ...this.data.footer, ...footer };
+
+		this.#_parseData();
+
+		// Icon
+		if (this.data.footer.icon)
+			try {
+				this.#embed.setFooter({ iconURL: this.data.footer.icon || undefined });
+			} catch {
+				logger.error("[BetterEmbed]: Failed to configure", `INVALID_FOOTER_ICON | '${this.data.footer.icon}'`);
+				return this;
+			}
+
+		// Text
+		this.#embed.setFooter({ name: this.data.footer.text || undefined });
+
+		return this;
+	}
+
+	/** Set the embed's color.
+	 * @param {bE_footer} color */
+	setColor(color = this.data.color) {
+		this.data.color = color !== null ? jt.choice(jt.forceArray(color || config.EMBED_COLOR)) : null;
+
+		this.#_parseData();
+
+		if (this.data.color)
+			try {
+				this.#embed.setColor(this.data.color);
+			} catch {
+				logger.error("[BetterEmbed]: Failed to configure", `INVALID_COLOR | '${this.data.color}'`);
+				return this;
+			}
+
 		return this;
 	}
 }
