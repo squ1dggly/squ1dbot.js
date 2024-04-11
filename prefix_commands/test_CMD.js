@@ -1,5 +1,5 @@
 const { Client, Message, User, GuildMember } = require("discord.js");
-const { BetterEmbed } = require("../utils/discordTools");
+const { BetterEmbed, BetterEmbedV2 } = require("../utils/discordTools");
 const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
@@ -12,9 +12,11 @@ module.exports = {
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
-		let guildMember = message.member;
-		let user = message.author;
-
-		console.log(`User: ${user instanceof User} | GuildMember: ${guildMember instanceof GuildMember}`);
+		let embed = new BetterEmbedV2({
+			context: { message },
+			author: { text: "Test Embed", icon: true },
+			description: "This is an embed. I am also, as of $YEAR, gay.",
+			timestamp: true
+		});
 	}
 };

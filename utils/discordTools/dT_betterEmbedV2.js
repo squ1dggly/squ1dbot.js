@@ -246,31 +246,18 @@ class BetterEmbed {
 	}
 
 	/** @param {{}} options Configure with temporary data. */
-	#_configure(options) {
-		const execute = () => {
-			// this.#_setAuthor();
-			// this.#_setTitle();
-			// this.#_setThumbnail();
-			// this.#_setDescription();
-			// this.#_setImage();
-			// this.#_setFooter();
-			// this.#_setColor();
-			// this.#_setTimestamp();
-		};
+	#_configure(options = null) {
+		if (options) return this.clone({ ...this.data, ...options });
 
-		// TODO: USE CLONE INSTEAD
-		if (options) {
-			let _prev = structuredClone(this.data);
-
-			this.data = { ...this.data, ...data };
-			this.#_parseData();
-			execute();
-			this.data = _prev;
-			return;
-		}
-
-		this.#_parseData();
-		execute();
+		this.setAuthor();
+		this.setTitle();
+		this.setThumbnail();
+		this.setDescription();
+		this.setImage();
+		this.setFooter();
+		this.addFields();
+		this.setColor();
+		this.setTimestamp();
 	}
 
 	/** A better version of the classic `EmbedBuilder`.
@@ -298,6 +285,8 @@ class BetterEmbed {
 	 * @param {bE_options} options */
 	constructor(options) {
 		this.data = { ...this.#init_data, ...options };
+
+		this.#_parseData();
 		this.#_configure();
 	}
 
