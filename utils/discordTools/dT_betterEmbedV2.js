@@ -146,8 +146,8 @@ class BetterEmbed {
 
 		// prettier-ignore
 		str = str
-			// Utility
 			.replace(/(?<!\\)\$INVIS\b/g, config.INVIS_CHAR)
+
 			// User mentions
 			.replace(/(?<!\\|<)@[0-9]+(?!>)/g, s => `<@${s.substring(1)}>`)
 			// Role mentions
@@ -164,7 +164,7 @@ class BetterEmbed {
 			.replace(/(?<!\\)\$day/g, `0${new Date().getDate()}`.slice(-2))
 
 		// Return the formatted string
-		return str;
+		return str.replace(/(?<!\\)\\/g, "");
 	}
 
 	#_parseData() {
@@ -279,11 +279,22 @@ class BetterEmbed {
 	 * - **`$USER`**: *author's mention (@xsqu1znt)*
 	 * - **`$USER_NAME`**: *author's username*
 	 * - **`$DISPLAY_NAME`**: *author's display name (requires `GuildMember` context)*
+	 * - **`$USER_AVATAR`**: *author's avatar*
 	 *
-	 * /// Utility:
+	 * /// General:
+	 * - **`$BOT_AVATAR`**: *bot's avatar (requires `Interaction` or `Message` context)*
 	 * - **`$INVIS`**: *invisible character for fields*
 	 *
+	 * - **`$YEAR`**: *YYYY*
+	 * - **`$MONTH`**: *MM*
+	 * - **`$DAY`**: *DD*
+	 * - **`$year`**: *YY*
+	 * - **`$month`**: *M or MM*
+	 * - **`$day`**: *D or DD*
+	 *
 	 * All functions utilize automatic context formatting, unless `disableAutomaticContext` is set to `true`.
+	 *
+	 * **NOTE**: Use a blackslash `\` to escape any context.
 	 * @param {bE_options} options */
 	constructor(options) {
 		this.data = { ...this.#init_data, ...options };
@@ -614,9 +625,25 @@ class BetterEmbed {
 	}
 
 	/** Send the embed using the `Interaction`, `Channel`, or `Message`.
-	 * - **`$USER`**: *author's mention (@xsqu1znt)*
 	 *
-	 * - **`$USERNAME`**: *author's display name or username*
+	 * /// Author:
+	 * - **`$USER`**: *author's mention (@xsqu1znt)*
+	 * - **`$USER_NAME`**: *author's username*
+	 * - **`$DISPLAY_NAME`**: *author's display name (requires `GuildMember` context)*
+	 * - **`$USER_AVATAR`**: *author's avatar*
+	 *
+	 * /// General:
+	 * - **`$BOT_AVATAR`**: *bot's avatar (requires `Interaction` or `Message` context)*
+	 * - **`$INVIS`**: *invisible character for fields*
+	 *
+	 * - **`$YEAR`**: *YYYY*
+	 * - **`$MONTH`**: *MM*
+	 * - **`$DAY`**: *DD*
+	 * - **`$year`**: *YY*
+	 * - **`$month`**: *M or MM*
+	 * - **`$day`**: *D or DD*
+	 *
+	 * **NOTE**: Use a blackslash `\` to escape any context.
 	 * @param {Handler} handler
 	 * @param {bE_sendOptions} options */
 	async send(handler, options) {
