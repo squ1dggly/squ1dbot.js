@@ -19,6 +19,6 @@ module.exports = {
 			timestamp: true
 		});
 
-		return await embed.send()
+		return await embed.send(message)
 	}
 };

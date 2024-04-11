@@ -613,27 +613,9 @@ class BetterEmbed {
 		return this;
 	}
 
-	/** Send the embed using the `Interaction`, `Channel`, or `Message`.
+	/** Send the embed.
 	 *
-	 * /// Author:
-	 * - **`$USER`**: *author's mention (@xsqu1znt)*
-	 * - **`$USER_NAME`**: *author's username*
-	 * - **`$DISPLAY_NAME`**: *author's display name (requires `GuildMember` context)*
-	 * - **`$USER_AVATAR`**: *author's avatar*
-	 *
-	 * /// General:
-	 * - **`$BOT_AVATAR`**: *bot's avatar (requires `Interaction` or `Message` context)*
-	 * - **`$INVIS`**: *invisible character for fields*
-	 *
-	 * - **`$YEAR`**: *YYYY*
-	 * - **`$MONTH`**: *MM*
-	 * - **`$DAY`**: *DD*
-	 * - **`$year`**: *YY*
-	 * - **`$month`**: *M or MM*
-	 * - **`$day`**: *D or DD*
-	 *
-	 * **NOTE**: Use a blackslash `\` to escape any context.
-	 * @param {Handler} handler **REQUIRED** to send the `Embed`.
+	 * @param {Handler} handler The `Interaction`, `Channel`, or `Message` to use to send the `Embed`.
 	 * @param {bE_sendOptions} options */
 	async send(handler, options) {
 		let _embed = this;
