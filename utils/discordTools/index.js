@@ -3,12 +3,14 @@ const config = require("./dT_config.json");
 const { PermissionFlagsBits } = require("discord.js");
 
 const BetterEmbed = require("./dT_betterEmbed");
+const BetterEmbedV2 = require("./dT_betterEmbedV2");
 const EmbedNavigator = require("./dT_embedNavigator");
 
 const deleteMessageAfter = require("./dT_deleteMessageAfter");
 const messageToArray = require("./dT_messageToArray");
 const awaitConfirm = require("./dT_awaitConfirm");
 const dynaSend = require("./dT_dynaSend");
+const dynaSendV2 = require("./dT_dynaSendV2");
 const ansi = require("./dT_ansi");
 
 const jt = require("../jsTools");
@@ -31,12 +33,14 @@ for (let [key, val] of Object.entries(config.navigator.buttons)) if (!val.TEXT) 
 
 module.exports = {
 	BetterEmbed,
+	BetterEmbedV2,
 	EmbedNavigator,
 
 	deleteMessageAfter,
 	messageToArray,
 	awaitConfirm,
 	dynaSend,
+	dynaSendV2,
 
 	markdown: {
 		ansi,
