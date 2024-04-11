@@ -232,7 +232,7 @@ class BetterEmbed {
 		this.setDescription();
 		this.setImage();
 		this.setFooter();
-		this.addFields();
+		this.addFields(this.data.fields, true);
 		this.setColor();
 		this.setTimestamp();
 	}
