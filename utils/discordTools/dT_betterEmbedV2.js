@@ -227,9 +227,12 @@ class BetterEmbed {
 	}
 
 	/** A better version of the classic `EmbedBuilder`.
+	 *
 	 * - **`$USER`**: *author's mention (@xsqu1znt)*
 	 *
 	 * - **`$USERNAME`**: *author's display name or username*
+	 *
+	 * All functions utilize automatic context formatting, unless `disableAutomaticContext` is set to `true`.
 	 * @param {bE_options} options */
 	constructor(options) {
 		this.data = { ...this.#init_data, ...options };
@@ -356,7 +359,7 @@ class BetterEmbed {
 	}
 
 	/** Set the embed's footer.
-	 * @param {bE_footer} footer */
+	 * @param {bE_footer} footer The FOOTER of the `Embed`. */
 	setFooter(footer = this.data.footer) {
 		// prettier-ignore
 		if (footer === null)
@@ -385,6 +388,147 @@ class BetterEmbed {
 		return this;
 	}
 
+	/** Add or replace the embed's fields.
+	 *
+	 * - **NOTE**: You can only have a MAX of 25 fields per `Embed`.
+	 * @param {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fieldData The FIELDS of the `Embed`. */
+	addFields(fieldData = this.data.fields, replaceAll = false) {
+		fieldData = jt.forceArray(fieldData);
+
+		// Clear all fields
+		if (replaceAll && (!fieldData.length || (fieldData[0] === null && fieldData.length === 1))) {
+			this.data.fields = [];
+			this.#_parseData();
+
+			this.#embed.spliceFields(0, this.#embed.data.fields?.length);
+			return this;
+		}
+
+		/* - - - - - { Validate Fields } - - - - - */
+		if (fieldData.length > 25) {
+			// prettier-ignore
+			logger.debug(`[BetterEmbed]: You can only have a MAX of 25 fields per \`Embed\`. ${fieldData.length - 25} fields have been trimmed.`);
+
+			// Trim the array
+			fieldData = fieldData.slice(0, 25);
+		}
+
+		// Check if all fields have a NAME and VALUE property
+		for (let i = 0; i < fieldData.length; i++) {
+			if (!fieldData[i].name) {
+				logger.debug(`[BetterEmbed]: Field ${i} does not have a 'name' property. Field has been removed.`);
+				console.log(fieldData[i]);
+
+				// Remove from array
+				fieldData.splice(i, 1);
+				continue;
+			}
+
+			if (!fieldData[i].value) {
+				logger.debug(`[BetterEmbed]: Field ${i} does not have a 'value' property. Field has been removed.`);
+				console.log(fieldData[i]);
+
+				// Remove from array
+				fieldData.splice(i, 1);
+				continue;
+			}
+
+			/// Apply context formatting
+			if (!this.data.disableAutomaticContext) fieldData[i].name = this.#_applyContextFormatting(fieldData[i].name);
+			if (!this.data.disableAutomaticContext) fieldData[i].value = this.#_applyContextFormatting(fieldData[i].value);
+		}
+
+		if (replaceAll) {
+			this.data.fields = fieldData;
+			this.#_parseData();
+
+			this.#embed.setFields(fieldData);
+		} else {
+			this.data.fields.push(...fieldData);
+
+			// Cap out field size
+			if (this.data.fields.length > 25) {
+				// prettier-ignore
+				logger.debug(`[BetterEmbed]: You can only have a MAX of 25 fields per \`Embed\`. ${this.data.fields.length - 25} fields have been trimmed.`);
+
+				// Trim the array
+				this.data.fields = this.data.fields.slice(0, 25);
+			}
+
+			this.#_parseData();
+			this.#embed.addFields(fieldData);
+		}
+
+		return this;
+	}
+
+	/** Edit or delete the embed's fields.
+	 *
+	 * - **NOTE**: You can only have a MAX of 25 fields per `Embed`.
+	 * @param {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fieldData The FIELDS of the `Embed`. */
+	spliceFields(index, deleteCount, fieldData) {
+		fieldData = jt.forceArray(fieldData);
+
+		// Delete fields
+		if (deleteCount && !fieldData.length) {
+			this.data.fields.splice(index, deleteCount);
+			this.#embed.setFields(this.data.fields);
+		}
+
+		/* - - - - - { Validate Fields } - - - - - */
+		if (fieldData.length) {
+			if (fieldData.length > 25) {
+				// prettier-ignore
+				logger.debug(`[BetterEmbed]: You can only have a MAX of 25 fields per \`Embed\`. ${fieldData.length - 25} fields have been trimmed.`);
+
+				// Trim the array
+				fieldData = fieldData.slice(0, 25);
+			}
+
+			// Check if all fields have a NAME and VALUE property
+			for (let i = 0; i < fieldData.length; i++) {
+				if (!fieldData[i].name) {
+					logger.debug(`[BetterEmbed]: Field ${i} does not have a 'name' property. Field has been removed.`);
+					console.log(fieldData[i]);
+
+					// Remove from array
+					fieldData.splice(i, 1);
+					continue;
+				}
+
+				if (!fieldData[i].value) {
+					logger.debug(`[BetterEmbed]: Field ${i} does not have a 'value' property. Field has been removed.`);
+					console.log(fieldData[i]);
+
+					// Remove from array
+					fieldData.splice(i, 1);
+					continue;
+				}
+
+				/// Apply context formatting
+				if (!this.data.disableAutomaticContext) fieldData[i].name = this.#_applyContextFormatting(fieldData[i].name);
+				if (!this.data.disableAutomaticContext)
+					fieldData[i].value = this.#_applyContextFormatting(fieldData[i].value);
+			}
+
+			// Add the new fields at the index
+			this.data.fields.splice(index, 0, ...fieldData);
+
+			// Cap out field size
+			if (this.data.fields.length > 25) {
+				// prettier-ignore
+				logger.debug(`[BetterEmbed]: You can only have a MAX of 25 fields per \`Embed\`. ${this.data.fields.length - 25} fields have been trimmed.`);
+
+				// Trim the array
+				this.data.fields = this.data.fields.slice(0, 25);
+			}
+
+			this.#_parseData();
+		}
+
+		return this;
+	}
+
 	/** Set the embed's color.
 	 * @param {bE_footer} color */
 	setColor(color = this.data.color) {
@@ -394,7 +538,7 @@ class BetterEmbed {
 
 		if (this.data.color)
 			try {
-				this.#embed.setColor(this.data.color);
+				this.#embed.setColor(this.data.color || undefined);
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_COLOR | '${this.data.color}'`);
 				return this;
@@ -436,10 +580,15 @@ class BetterEmbed {
 			embeds: [_embed],
 			components: [],
 			allowedMentions: {},
-			sendMethod: "reply",
+			sendMethod: "",
 			...this.data,
 			...options
 		};
+
+		// SendMethod defaults
+		if (sendData.interaction) sendData.sendMethod = "reply";
+		else if (sendData.channel) sendData.sendMethod = "sendToChannel";
+		else if (sendData.message) sendData.sendMethod = "messageReply";
 
 		// Send the message
 		return await dynaSend(sendData);
