@@ -580,7 +580,7 @@ class BetterEmbed {
 	}
 
 	/** Set the embed's color.
-	 * @param {bE_footer} color */
+	 * @param {bE_footer} color The COLOR of the `Embed`. */
 	setColor(color = this.data.color) {
 		this.data.color = color !== null ? jt.choice(jt.forceArray(color || config.EMBED_COLOR)) : null;
 
@@ -598,7 +598,7 @@ class BetterEmbed {
 	}
 
 	/** Set the embed's timestamp.
-	 * @param {bE_timestamp} timestamp */
+	 * @param {bE_timestamp} timestamp The TIMESTAMP of the `Embed`. */
 	setTimestamp(timestamp = this.data.timestamp) {
 		this.options.timestamp = timestamp || null;
 		this.#_parseData();
@@ -633,7 +633,7 @@ class BetterEmbed {
 	 * - **`$day`**: *D or DD*
 	 *
 	 * **NOTE**: Use a blackslash `\` to escape any context.
-	 * @param {Handler} handler
+	 * @param {Handler} handler **REQUIRED** to send the `Embed`.
 	 * @param {bE_sendOptions} options */
 	async send(handler, options) {
 		let _embed = this;

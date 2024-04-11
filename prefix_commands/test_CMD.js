@@ -18,5 +18,7 @@ module.exports = {
 			description: "This is an embed. I am also, as of $YEAR, gay.",
 			timestamp: true
 		});
+
+		return await embed.send()
 	}
 };
