@@ -16,7 +16,7 @@ module.exports = {
 			context: { message },
 			author: { text: "Test Embed", icon: true },
 			description: "This is an embed. I am also, as of $YEAR, gay.",
-			fields: [{ name: "$INVIS", value: "This is an invisible field." }]
+			fields: { name: "$year/$month/$day", value: "date moment" }
 		});
 
 		console.log(embed.data);
