@@ -118,9 +118,53 @@ class BetterEmbed {
 	#_applyContextFormatting(str) {
 		if (!str) return null;
 
-		return str
-			.replace(/(?<!\\)\$USER\b/g, this.data.author.context)
-			.replace(/(?<!\\)\$USERNAME\b/g, this.data.author.context?.user?.username || this.data.author.context.username);
+		let _user = null;
+		let _guildMember = null;
+
+		if (this.data.author.context instanceof User) _user = this.data.author.context;
+		if (this.data.author.context instanceof GuildMember) {
+			_guildMember = this.data.author.context;
+			_user = this.data.author.context.user;
+		}
+
+		/* - - - - - { Author Context } - - - - - */
+		// prettier-ignore
+		if (_user && this.data.author.context) str = str
+			.replace(/(?<!\\)\$USER\b/g, _user)
+			.replace(/(?<!\\)\$USER_NAME\b/g, _user.username)
+			.replace(/(?<!\\)\$USER_AVATAR\b/g, _user.avatarURL());
+
+		// prettier-ignore
+		// GuildMember specific context
+		if (_guildMember && this.data.author.context?.user) str = str
+			.replace(/(?<!\\)\$DISPLAY_NAME\b/g, _guildMember.displayName);
+
+		/* - - - - - { General Context } - - - - - */
+		// prettier-ignore
+		if (this.data.context.interaction || this.data.context.message) str = str
+			.replace(/(?<!\\)\$BOT_AVATAR\b/g, (this.data.context.interaction || this.data.context.message).client.user.avatarURL());
+
+		// prettier-ignore
+		str = str
+			// Utility
+			.replace(/(?<!\\)\$INVIS\b/g, config.INVIS_CHAR)
+			// User mentions
+			.replace(/(?<!\\|<)@[0-9]+(?!>)/g, s => `<@${s.substring(1)}>`)
+			// Role mentions
+			.replace(/(?<!\\|<)@&[0-9]+(?!>)/g, s => `<@&${s.substring(2)}>`)
+			// Channel mentions
+			.replace(/(?<!\\|<)#[0-9]+(?!>)/g, s => `<#${s.substring(1)}>`)
+
+			/// Dates
+			.replace(/(?<!\\)\$YEAR/g, new Date().getFullYear())
+			.replace(/(?<!\\)\$MONTH/g, `0${new Date().getMonth() + 1}`.slice(-2))
+			.replace(/(?<!\\)\$DAY/g, `0${new Date().getDate()}`.slice(-2))
+			.replace(/(?<!\\)\$year/g, `${new Date().getFullYear()}`.substring(2))
+			.replace(/(?<!\\)\$month/g, `0${new Date().getMonth() + 1}`.slice(-2))
+			.replace(/(?<!\\)\$day/g, `0${new Date().getDate()}`.slice(-2))
+
+		// Return the formatted string
+		return str;
 	}
 
 	#_parseData() {
@@ -231,9 +275,13 @@ class BetterEmbed {
 
 	/** A better version of the classic `EmbedBuilder`.
 	 *
+	 * /// Author:
 	 * - **`$USER`**: *author's mention (@xsqu1znt)*
+	 * - **`$USER_NAME`**: *author's username*
+	 * - **`$DISPLAY_NAME`**: *author's display name (requires `GuildMember` context)*
 	 *
-	 * - **`$USERNAME`**: *author's display name or username*
+	 * /// Utility:
+	 * - **`$INVIS`**: *invisible character for fields*
 	 *
 	 * All functions utilize automatic context formatting, unless `disableAutomaticContext` is set to `true`.
 	 * @param {bE_options} options */
@@ -254,8 +302,7 @@ class BetterEmbed {
 	/** Serializes this builder to API-compatible JSON data.
 	 *
 	 * @remarks
-	 * This method runs validations on the data before serializing it. As such, it may throw an error if the data is invalid.
-	 */
+	 * This method runs validations on the data before serializing it. As such, it may throw an error if the data is invalid. */
 	toJSON() {
 		return this.#embed.toJSON();
 	}
@@ -576,7 +623,7 @@ class BetterEmbed {
 		let _embed = this;
 
 		// prettier-ignore
-		if (options.author || options.title || options.thumbnailURL || options.description || options.imageURL || options.footer || options.footer || options.color || options.timestamp) {
+		if (options?.author || options?.title || options?.thumbnailURL || options?.description || options?.imageURL || options?.footer || options?.footer || options?.color || options?.timestamp) {
 			// Clone the embed and apply the options
 			_embed = this.#_configure(options);
 		} else {
