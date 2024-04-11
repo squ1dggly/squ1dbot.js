@@ -206,25 +206,6 @@ class BetterEmbed {
 		if (!this.data.author.context && this.data.context.message)
 			this.data.author.context = this.data.context.message?.member || this.data.context.message?.author;
 
-		/* - - - - - { Lowercase-ify Links } - - - - - */
-		// Author
-		if (this.data.author.hyperlink) this.data.author.hyperlink = this.data.author.hyperlink.toLowerCase().trim();
-
-		// Author icon
-		if (typeof this.data.author.icon === "string") this.data.author.icon = this.data.author.icon.toLowerCase().trim();
-
-		// Title
-		if (this.data.title.hyperlink) this.data.title.hyperlink = this.data.title.hyperlink.toLowerCase().trim();
-
-		// Thumbnail
-		if (this.data.thumbnailURL) this.data.thumbnailURL = this.data.thumbnailURL.toLowerCase().trim();
-
-		// Image
-		if (this.data.imageURL) this.data.imageURL = this.data.imageURL.toLowerCase().trim();
-
-		// Footer icon
-		if (this.data.footer.icon) this.data.footer.icon = this.data.footer.icon.toLowerCase().trim();
-
 		/* - - - - - { Formatting } - - - - - */
 		if (!this.data.disableAutomaticContext) {
 			this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
@@ -235,13 +216,14 @@ class BetterEmbed {
 			// Author icon
 			if (this.data.author.icon === true && this.data.author.context) {
 				if (this.data.author.context instanceof GuildMember)
-					this.data.author.icon = this.data.author.context.user.displayAvatarURL();
+					this.data.author.icon = this.data.author.context.user.avatarURL();
 
+				// prettier-ignore
 				if (this.data.author.context instanceof User)
-					this.data.author.icon = this.data.author.context.displayAvatarURL();
+					this.data.author.icon = this.data.author.context.avatarURL();
 			}
 			// Author icon fallback
-			else this.data.author.icon = null;
+			else if (!this.data.author.icon) this.data.author.icon = null;
 		}
 	}
 
@@ -320,28 +302,29 @@ class BetterEmbed {
 		else
 			this.data.author = { ...this.data.author, ...author };
 
-		this.#_parseData();
-
 		// Icon
 		if (this.data.author.icon)
 			try {
-				this.#embed.setAuthor({ iconURL: this.data.author.icon || null });
-			} catch {
+				// prettier-ignore
+				this.#embed.setAuthor({ name: this.#embed.data.author?.name, iconURL: this.data.author.icon, url: this.#embed.data.author?.url });
+			} catch (err) {
+				console.log(err);
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_ICON | '${this.data.author.icon}'`);
-				return this;
 			}
 
 		// Hyperlink
 		if (this.data.author.hyperlink)
 			try {
-				this.#embed.setAuthor({ iconURL: this.data.author.icon || null });
+				// prettier-ignore
+				this.#embed.setAuthor({ name: this.#embed.data.author?.name, iconURL: this.#embed.data.author?.icon_url, url: this.data.author.hyperlink });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_HYPERLINK | '${this.data.author.icon}'`);
-				return this;
 			}
 
 		// Text
-		this.#embed.setAuthor({ name: this.data.author.text || null });
+		if (!this.data.disableAutomaticContext) this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
+		// prettier-ignore
+		this.#embed.setAuthor({ name: this.data.author.text, iconURL: this.#embed.data.author?.icon_url,url: this.data.author.hyperlink });
 
 		return this;
 	}
@@ -359,8 +342,6 @@ class BetterEmbed {
 		else
 			this.data.title = { ...this.data.title, ...title };
 
-		this.#_parseData();
-
 		// Hyperlink
 		if (this.data.title.hyperlink)
 			try {
@@ -373,6 +354,8 @@ class BetterEmbed {
 				return this;
 			}
 
+		/// Text
+		if (!this.data.disableAutomaticContext) this.data.title.text = this.#_applyContextFormatting(this.data.title.text);
 		this.#embed.setTitle(this.data.title.text || null);
 
 		return this;
@@ -392,7 +375,6 @@ class BetterEmbed {
 		}
 
 		this.data.thumbnailURL = url;
-		this.#_parseData();
 
 		return this;
 	}
@@ -422,7 +404,6 @@ class BetterEmbed {
 		}
 
 		this.data.imageURL = url;
-		this.#_parseData();
 
 		return this;
 	}
@@ -440,19 +421,18 @@ class BetterEmbed {
 		else
 			this.data.footer = { ...this.data.footer, ...footer };
 
-		this.#_parseData();
-
 		// Icon
 		if (this.data.footer.icon)
 			try {
-				this.#embed.setFooter({ iconURL: this.data.footer.icon || null });
+				this.#embed.setFooter({ text: this.#embed.data.footer?.text, iconURL: this.data.footer.icon });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_FOOTER_ICON | '${this.data.footer.icon}'`);
 				return this;
 			}
 
 		// Text
-		this.#embed.setFooter({ text: this.data.footer.text || null });
+		if (!this.data.disableAutomaticContext) this.data.footer.text = this.#_applyContextFormatting(this.data.footer.text);
+		this.#embed.setFooter({ text: this.data.footer.text, iconURL: this.#embed.data.footer?.icon_url });
 
 		return this;
 	}
@@ -467,7 +447,6 @@ class BetterEmbed {
 		// Clear all fields
 		if (replaceAll && (!fieldData.length || (fieldData[0] === null && fieldData.length === 1))) {
 			this.data.fields = [];
-			this.#_parseData();
 
 			this.#embed.spliceFields(0, this.#embed.data.fields?.length);
 			return this;
@@ -509,8 +488,6 @@ class BetterEmbed {
 
 		if (replaceAll) {
 			this.data.fields = fieldData;
-			this.#_parseData();
-
 			this.#embed.setFields(fieldData);
 		} else {
 			this.data.fields.push(...fieldData);
@@ -524,7 +501,6 @@ class BetterEmbed {
 				this.data.fields = this.data.fields.slice(0, 25);
 			}
 
-			this.#_parseData();
 			this.#embed.addFields(fieldData);
 		}
 
@@ -591,8 +567,6 @@ class BetterEmbed {
 				// Trim the array
 				this.data.fields = this.data.fields.slice(0, 25);
 			}
-
-			this.#_parseData();
 		}
 
 		return this;
@@ -603,7 +577,10 @@ class BetterEmbed {
 	setColor(color = this.data.color) {
 		this.data.color = color !== null ? color : null;
 
-		this.#_parseData();
+		// Color case
+		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
+		// Color format
+		if (this.data.color !== null && !this.data.color.startsWith("#")) this.data.color = `#${this.data.color}`;
 
 		try {
 			this.#embed.setColor(this.data.color || null);
@@ -619,7 +596,7 @@ class BetterEmbed {
 	 * @param {bE_timestamp} timestamp The TIMESTAMP of the `Embed`. */
 	setTimestamp(timestamp = this.data.timestamp) {
 		this.data.timestamp = timestamp || null;
-		this.#_parseData();
+		if (this.data.timestamp === true) this.data.timestamp = Date.now();
 
 		try {
 			this.#embed.setTimestamp(timestamp || null);
@@ -637,6 +614,7 @@ class BetterEmbed {
 	 * @param {bE_sendOptions} options */
 	async send(handler, options) {
 		let _embed = this;
+		this.#_parseData();
 
 		// prettier-ignore
 		if (options?.author || options?.title || options?.thumbnailURL || options?.description || options?.imageURL || options?.footer || options?.footer || options?.color || options?.timestamp) {
