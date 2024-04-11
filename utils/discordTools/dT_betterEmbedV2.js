@@ -34,7 +34,7 @@
  * @property {string|null} imageURL The image to be displayed inside of the `Embed`.
  * @property {bE_footer} footer The footer to be displayed at the bottom of the `Embed`.
  * @property {string|string[]|null} color The color of the `Embed`.
- * @property {bE_timestamp} timestamp The timestamp to be displayed to the right of the `Embed`'s footer.
+ * @property {string|Number|boolean|Date} timestamp The timestamp to be displayed to the right of the `Embed`'s footer.
  *
  * If set to `true`, will use the current time.
  * @property {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fields The FIELDS of the `Embed`.
@@ -59,6 +59,9 @@
  * @property {string} imageURL Preforms a non-mutative change to the `Embed`'s IMAGE.
  * @property {bE_footer} footer Preforms a non-mutative change to the `Embed`'s FOOTER.
  * @property {string|string[]} color Preforms a non-mutative change to the `Embed`'s COLOR.
+ * @property {string|Number|boolean|Date} timestamp The timestamp to be displayed to the right of the `Embed`'s footer.
+ *
+ * If set to `true`, will use the current time.
  *
  * @property {ActionRowBuilder|ActionRowBuilder[]} components The components to send with the embed
  * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
@@ -462,7 +465,7 @@ class BetterEmbed {
 		return this;
 	}
 
-	/** Edit or delete the embed's fields.
+	/** Replace or delete the embed's fields.
 	 *
 	 * - **NOTE**: You can only have a MAX of 25 fields per `Embed`.
 	 * @param {import("discord.js").APIEmbedField|import("discord.js").APIEmbedField[]} fieldData The FIELDS of the `Embed`. */
@@ -570,8 +573,16 @@ class BetterEmbed {
 	 * @param {Handler} handler
 	 * @param {bE_sendOptions} options */
 	async send(handler, options) {
-		// TODO: MAKE THIS MAKE SENSE
-		let _embed = this.#_configure(options);
+		let _embed = this;
+
+		// prettier-ignore
+		if (options.author || options.title || options.thumbnailURL || options.description || options.imageURL || options.footer || options.footer || options.color || options.timestamp) {
+			// Clone the embed and apply the options
+			_embed = this.#_configure(options);
+		} else {
+			// Configure the embed before sending
+			this.#_configure();
+		}
 
 		let sendData = {
 			interaction: handler instanceof CommandInteraction ? handler : null,
