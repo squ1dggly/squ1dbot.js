@@ -189,11 +189,6 @@ class BetterEmbed {
 		else if (!this.data.footer)
 			this.data.footer = { text: null, icon: null };
 
-		// Color case
-		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
-		// Color format
-		if (this.data.color !== null && !this.data.color.startsWith("#")) this.data.color = `#${this.data.color}`;
-
 		// Timestamp
 		if (this.data.timestamp === true) this.data.timestamp = Date.now();
 
@@ -576,11 +571,6 @@ class BetterEmbed {
 	 * @param {bE_footer} color The COLOR of the `Embed`. */
 	setColor(color = this.data.color) {
 		this.data.color = color !== null ? color : null;
-
-		// Color case
-		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
-		// Color format
-		if (this.data.color !== null && !this.data.color.startsWith("#")) this.data.color = `#${this.data.color}`;
 
 		try {
 			this.#embed.setColor(this.data.color || null);

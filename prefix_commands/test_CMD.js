@@ -16,6 +16,7 @@ module.exports = {
 			context: { message },
 			author: { text: "Test Embed", icon: true },
 			description: "This is an embed. I am also, as of $YEAR, gay.",
+			color: "Blue",
 			timestamp: true
 		});
 
