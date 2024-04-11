@@ -13,12 +13,12 @@ module.exports = {
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
 		let embed = new BetterEmbedV2({
-			context: { message },
+			// context: { message },
 			author: { text: "Test Embed", icon: true },
 			description: "This is an embed. I am also, as of $YEAR, gay.",
 			timestamp: true
 		});
 
-		return await embed.send(message)
+		return await embed.send(message);
 	}
 };

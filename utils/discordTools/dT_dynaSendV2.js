@@ -51,13 +51,13 @@ async function dynaSend(options) {
 
 	/* - - - - - { Error Checking } - - - - - */
 	if (!options.interaction && !options.channel && !options.message)
-		throw new Error("You must provide either a CommandInteraction, Channel, or Message");
+		throw new Error("[DynaSend]: You must provide either a CommandInteraction, Channel, or Message");
 
 	if (options.deleteAfter && isNaN(options.deleteAfter))
-		throw new Error("You must provide a valid time string, or milliseconds for 'deleteAfter'");
+		throw new Error("[DynaSend]: You must provide a valid time string, or milliseconds for 'deleteAfter'");
 
 	if (["messageEdit", "messageReply"].includes(options.sendMethod) && !options.message)
-		throw new Error("You must provide a Message to use the 'messageEdit' or 'messageReply' SendMethod");
+		throw new Error("[DynaSend]: You must provide a Message to use the 'messageEdit' or 'messageReply' SendMethod");
 
 	if (["reply", "followUp"].includes(options.sendMethod) && options.ephemeral)
 		logger.debug("[DynaSend]: Ephemeral can only be used with interaction based SendMethods (excluding 'editReply')");

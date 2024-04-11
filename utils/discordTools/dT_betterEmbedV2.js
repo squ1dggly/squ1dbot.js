@@ -108,9 +108,9 @@ class BetterEmbed {
 		imageURL: null,
 		description: null,
 		footer: { text: null, icon: null },
-		color: config.EMBED_COLOR || null,
+		color: jt.choice(config.EMBED_COLOR) || null,
 		timestamp: null,
-		fields: null,
+		fields: [],
 		disableAutomaticContext: false
 	};
 
@@ -192,7 +192,7 @@ class BetterEmbed {
 		// Color case
 		if (this.data.color !== null) this.data.color = this.data.color.toLowerCase().trim();
 		// Color format
-		if (this.data.color !== null) this.data.color = `#${this.data.color}`;
+		if (this.data.color !== null && !this.data.color.startsWith("#")) this.data.color = `#${this.data.color}`;
 
 		// Timestamp
 		if (this.data.timestamp === true) this.data.timestamp = Date.now();
@@ -325,7 +325,7 @@ class BetterEmbed {
 		// Icon
 		if (this.data.author.icon)
 			try {
-				this.#embed.setAuthor({ iconURL: this.data.author.icon || undefined });
+				this.#embed.setAuthor({ iconURL: this.data.author.icon || null });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_ICON | '${this.data.author.icon}'`);
 				return this;
@@ -334,21 +334,21 @@ class BetterEmbed {
 		// Hyperlink
 		if (this.data.author.hyperlink)
 			try {
-				this.#embed.setAuthor({ iconURL: this.data.author.icon || undefined });
+				this.#embed.setAuthor({ iconURL: this.data.author.icon || null });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_HYPERLINK | '${this.data.author.icon}'`);
 				return this;
 			}
 
 		// Text
-		this.#embed.setAuthor({ name: this.data.author.text || undefined });
+		this.#embed.setAuthor({ name: this.data.author.text || null });
 
 		return this;
 	}
 
 	/** Set the embed's title.
 	 * @param {bE_title} title The TITLE of the `Embed`. */
-	setTitle(title) {
+	setTitle(title = this.data.title) {
 		// prettier-ignore
 		if (title === null)
 			this.data.title = structuredClone(this.#init_data.title);
@@ -364,7 +364,7 @@ class BetterEmbed {
 		// Hyperlink
 		if (this.data.title.hyperlink)
 			try {
-				this.#embed.setURL(this.data.title.hyperlink || undefined);
+				this.#embed.setURL(this.data.title.hyperlink || null);
 			} catch {
 				logger.error(
 					"[BetterEmbed]: Failed to configure",
@@ -373,7 +373,26 @@ class BetterEmbed {
 				return this;
 			}
 
-		this.#embed.setTitle(this.data.title || undefined);
+		this.#embed.setTitle(this.data.title.text || null);
+
+		return this;
+	}
+
+	/** Set the embed's thumbnail.
+	 * @param {bE_title} title The THUMBNAIL of the `Embed`. */
+	setThumbnail(url = this.data.thumbnailURL) {
+		if (url) url = url.toLowerCase().trim();
+
+		// wrapping in a try-catch checks if the URL is valid
+		try {
+			this.#embed.setThumbnail(url);
+		} catch {
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_THUMBNAIL_URL | '${this.data.thumbnailURL}'`);
+			return this;
+		}
+
+		this.data.thumbnailURL = url;
+		this.#_parseData();
 
 		return this;
 	}
@@ -392,13 +411,13 @@ class BetterEmbed {
 	/** Set the embed's image.
 	 * @param {string|null} url The image to be displayed inside of the `Embed`. */
 	setImage(url = this.data.imageURL) {
-		url = url.toLowerCase().trim();
+		if (url) url = url.toLowerCase().trim();
 
 		// wrapping in a try-catch checks if the URL is valid
 		try {
 			this.#embed.setImage(url);
 		} catch {
-			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGEURL | '${this.data.imageURL}'`);
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGE_URL | '${this.data.imageURL}'`);
 			return this;
 		}
 
@@ -426,14 +445,14 @@ class BetterEmbed {
 		// Icon
 		if (this.data.footer.icon)
 			try {
-				this.#embed.setFooter({ iconURL: this.data.footer.icon || undefined });
+				this.#embed.setFooter({ iconURL: this.data.footer.icon || null });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_FOOTER_ICON | '${this.data.footer.icon}'`);
 				return this;
 			}
 
 		// Text
-		this.#embed.setFooter({ name: this.data.footer.text || undefined });
+		this.#embed.setFooter({ text: this.data.footer.text || null });
 
 		return this;
 	}
@@ -582,17 +601,16 @@ class BetterEmbed {
 	/** Set the embed's color.
 	 * @param {bE_footer} color The COLOR of the `Embed`. */
 	setColor(color = this.data.color) {
-		this.data.color = color !== null ? jt.choice(jt.forceArray(color || config.EMBED_COLOR)) : null;
+		this.data.color = color !== null ? color : null;
 
 		this.#_parseData();
 
-		if (this.data.color)
-			try {
-				this.#embed.setColor(this.data.color || undefined);
-			} catch {
-				logger.error("[BetterEmbed]: Failed to configure", `INVALID_COLOR | '${this.data.color}'`);
-				return this;
-			}
+		try {
+			this.#embed.setColor(this.data.color || null);
+		} catch {
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_COLOR | '${this.data.color}'`);
+			return this;
+		}
 
 		return this;
 	}
@@ -600,13 +618,13 @@ class BetterEmbed {
 	/** Set the embed's timestamp.
 	 * @param {bE_timestamp} timestamp The TIMESTAMP of the `Embed`. */
 	setTimestamp(timestamp = this.data.timestamp) {
-		this.options.timestamp = timestamp || null;
+		this.data.timestamp = timestamp || null;
 		this.#_parseData();
 
 		try {
-			this.#embed.setTimestamp(timestamp || undefined);
+			this.#embed.setTimestamp(timestamp || null);
 		} catch {
-			logger.error("[BetterEmbed]: Failed to configure", `INVALID_TIMESTAMP | '${this.data.imageURL}'`);
+			logger.error("[BetterEmbed]: Failed to configure", `INVALID_TIMESTAMP | '${this.data.timestamp}'`);
 			return this;
 		}
 
