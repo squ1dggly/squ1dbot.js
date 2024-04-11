@@ -164,7 +164,7 @@ class BetterEmbed {
 			.replace(/(?<!\\)\$day/g, `0${new Date().getDate()}`.slice(-2))
 
 		// Return the formatted string
-		return str.replace(/(?<!\\)\\/g, "");
+		return str;
 	}
 
 	#_parseData() {

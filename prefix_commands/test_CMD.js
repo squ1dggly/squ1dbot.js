@@ -19,7 +19,7 @@ module.exports = {
 			fields: { name: "$year/$month/$day", value: "date moment" }
 		});
 
-		// TODO: \ doesn't escape in final embed | disableAutomaticContext breaks everything
+		// TODO: disableAutomaticContext breaks everything
 
 		console.log(embed.data);
 
