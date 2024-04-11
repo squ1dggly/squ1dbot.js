@@ -306,7 +306,7 @@ class BetterEmbed {
 		if (this.data.author.icon)
 			try {
 				// prettier-ignore
-				this.#embed.setAuthor({ name: this.#embed.data.author?.name, iconURL: this.data.author.icon, url: this.#embed.data.author?.url });
+				this.#embed.setAuthor({ name: this.#embed.data.author?.name || null, iconURL: this.data.author.icon, url: this.#embed.data.author?.url || null });
 			} catch (err) {
 				console.log(err);
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_ICON | '${this.data.author.icon}'`);
@@ -316,7 +316,7 @@ class BetterEmbed {
 		if (this.data.author.hyperlink)
 			try {
 				// prettier-ignore
-				this.#embed.setAuthor({ name: this.#embed.data.author?.name, iconURL: this.#embed.data.author?.icon_url, url: this.data.author.hyperlink });
+				this.#embed.setAuthor({ name: this.#embed.data.author?.name || null, iconURL: this.#embed.data.author?.icon_url || null, url: this.data.author.hyperlink });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_AUTHOR_HYPERLINK | '${this.data.author.icon}'`);
 			}
@@ -324,7 +324,7 @@ class BetterEmbed {
 		// Text
 		if (!this.data.disableAutomaticContext) this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
 		// prettier-ignore
-		this.#embed.setAuthor({ name: this.data.author.text, iconURL: this.#embed.data.author?.icon_url,url: this.data.author.hyperlink });
+		this.#embed.setAuthor({ name: this.data.author.text, iconURL: this.#embed.data.author?.icon_url || null, url: this.#embed.data.author.url || null });
 
 		return this;
 	}
@@ -424,7 +424,7 @@ class BetterEmbed {
 		// Icon
 		if (this.data.footer.icon)
 			try {
-				this.#embed.setFooter({ text: this.#embed.data.footer?.text, iconURL: this.data.footer.icon });
+				this.#embed.setFooter({ text: this.#embed.data.footer?.text || null, iconURL: this.data.footer.icon });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_FOOTER_ICON | '${this.data.footer.icon}'`);
 				return this;
@@ -432,7 +432,7 @@ class BetterEmbed {
 
 		// Text
 		if (!this.data.disableAutomaticContext) this.data.footer.text = this.#_applyContextFormatting(this.data.footer.text);
-		this.#embed.setFooter({ text: this.data.footer.text, iconURL: this.#embed.data.footer?.icon_url });
+		this.#embed.setFooter({ text: this.data.footer.text, iconURL: this.#embed.data.footer?.icon_url || null });
 
 		return this;
 	}
