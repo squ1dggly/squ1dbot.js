@@ -1,6 +1,5 @@
-const { Client, CommandInteraction, SlashCommandBuilder, Collection } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
@@ -55,7 +54,7 @@ module.exports = {
 			interaction,
 			color: "Red",
 			title: "Carefully review your decision...",
-			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) from ${interaction.channel}...`,
+			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) from ${channel}...`,
 			deleteOnCancel: true,
 			deleteOnConfirm: true
 		});
@@ -68,7 +67,7 @@ module.exports = {
 		/* - - - - - { Send the Success Embed } - - - - - */
 		let embed_nuke = new BetterEmbedV2({
 			title: "Nuke Complete",
-			description: `Deleted ${messages.size} messages from ${interaction.channel}.`
+			description: `Deleted ${messages.size} messages from ${channel}.`
 		});
 
 		// Send the embed
