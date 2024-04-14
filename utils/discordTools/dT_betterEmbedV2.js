@@ -220,6 +220,11 @@ class BetterEmbed {
 			// Author icon fallback
 			else if (!this.data.author.icon) this.data.author.icon = null;
 		}
+		// Fallback
+		else {
+			// Author icon
+			if (this.data.author.icon === true) this.data.author.icon = null;
+		}
 	}
 
 	/** @param {{}} options Configure with temporary data. */
@@ -300,6 +305,10 @@ class BetterEmbed {
 		// Icon
 		if (this.data.author.icon)
 			try {
+				// enables the use of the $USER_AVATAR and $BOT_AVATAR context
+				if (!this.data.disableAutomaticContext)
+					this.data.author.icon = this.#_applyContextFormatting(this.data.author.icon);
+
 				// prettier-ignore
 				this.#embed.setAuthor({ name: this.#embed.data.author?.name || null, iconURL: this.data.author.icon, url: this.#embed.data.author?.url || null });
 			} catch (err) {
@@ -319,7 +328,7 @@ class BetterEmbed {
 		// Text
 		if (!this.data.disableAutomaticContext) this.data.author.text = this.#_applyContextFormatting(this.data.author.text);
 		// prettier-ignore
-		this.#embed.setAuthor({ name: this.data.author.text, iconURL: this.#embed.data.author?.icon_url || null, url: this.#embed.data.author.url || null });
+		this.#embed.setAuthor({ name: this.data.author.text, iconURL: this.#embed.data.author?.icon_url || null, url: this.#embed.data.author?.url || null });
 
 		return this;
 	}
@@ -359,10 +368,13 @@ class BetterEmbed {
 	/** Set the embed's thumbnail.
 	 * @param {bE_title} title The THUMBNAIL of the `Embed`. */
 	setThumbnail(url = this.data.thumbnailURL) {
-		if (url) url = url.toLowerCase().trim();
+		if (url) url = url.trim();
 
 		// wrapping in a try-catch checks if the URL is valid
 		try {
+			// enables the use of the $USER_AVATAR and $BOT_AVATAR context
+			if (!this.data.disableAutomaticContext) url = this.#_applyContextFormatting(url);
+
 			this.#embed.setThumbnail(url);
 		} catch {
 			logger.error("[BetterEmbed]: Failed to configure", `INVALID_THUMBNAIL_URL | '${this.data.thumbnailURL}'`);
@@ -388,10 +400,13 @@ class BetterEmbed {
 	/** Set the embed's image.
 	 * @param {string|null} url The image to be displayed inside of the `Embed`. */
 	setImage(url = this.data.imageURL) {
-		if (url) url = url.toLowerCase().trim();
+		if (url) url = url.trim();
 
 		// wrapping in a try-catch checks if the URL is valid
 		try {
+			// enables the use of the $USER_AVATAR and $BOT_AVATAR context
+			if (!this.data.disableAutomaticContext) url = this.#_applyContextFormatting(url);
+
 			this.#embed.setImage(url);
 		} catch {
 			logger.error("[BetterEmbed]: Failed to configure", `INVALID_IMAGE_URL | '${this.data.imageURL}'`);
@@ -419,6 +434,10 @@ class BetterEmbed {
 		// Icon
 		if (this.data.footer.icon)
 			try {
+				// enables the use of the $USER_AVATAR and $BOT_AVATAR context
+				if (!this.data.disableAutomaticContext)
+					this.data.footer.icon = this.#_applyContextFormatting(this.data.footer.icon);
+
 				this.#embed.setFooter({ text: this.#embed.data.footer?.text || null, iconURL: this.data.footer.icon });
 			} catch {
 				logger.error("[BetterEmbed]: Failed to configure", `INVALID_FOOTER_ICON | '${this.data.footer.icon}'`);
@@ -570,7 +589,7 @@ class BetterEmbed {
 	/** Set the embed's color.
 	 * @param {bE_footer} color The COLOR of the `Embed`. */
 	setColor(color = this.data.color) {
-		this.data.color = color !== null ? color : null;
+		this.data.color = color !== null ? jt.choice(jt.forceArray(color)) : null;
 
 		try {
 			this.#embed.setColor(this.data.color || null);
@@ -623,7 +642,6 @@ class BetterEmbed {
 			components: [],
 			allowedMentions: {},
 			sendMethod: "",
-			...this.data,
 			...options
 		};
 

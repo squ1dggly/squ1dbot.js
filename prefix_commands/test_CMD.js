@@ -14,15 +14,23 @@ module.exports = {
 	execute: async (client, message) => {
 		let embed = new BetterEmbedV2({
 			context: { message },
-			author: { text: "Test Embed", icon: true },
+			author: { text: "Test Embed", icon: "$BOT_AVATAR" },
 			description: "This is an embed. I am also, as of $YEAR, gay.",
-			fields: { name: "$year/$month/$day", value: "date moment" }
+			footer: { text: "this is the footer.", icon: "$USER_AVATAR" },
+			thumbnailURL: "$USER_AVATAR",
+			imageURL:
+				"https://media.discordapp.net/attachments/983469348108771388/1171307431293362227/dad.gif?ex=66273b0d&is=6614c60d&hm=283292d66f0c1375569d69ab6e8801c2adba691ed07079934038127a542b22fe&",
+			color: ["Red", "White", "Blue"],
+			fields: [
+				{ name: "$year/$month/$day", value: "date moment" },
+				{ name: "$MONTH/$DAY/$YEAR", value: "date moment (americanized)" },
+				{ name: "$DISPLAY_NAME", value: "$USER_NAME" }
+			],
+			timestamp: true
 		});
-
-		// TODO: disableAutomaticContext breaks everything
 
 		console.log(embed.data);
 
-		return await embed.send(message);
+		return await embed.send(message, { allowedMentions: { repliedUser: false } });
 	}
 };

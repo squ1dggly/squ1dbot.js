@@ -79,8 +79,9 @@ async function dynaSend(options) {
 		content: options.content,
 		components: options.components,
 		embeds: options.embeds,
-		allowedMentions: options.allowedMentions, // BUGGED
-		// Add ephemeral if applicable
+		// Add allowedMentions, if applicable
+		...(Object.keys(options.allowedMentions).length ? { allowedMentions: options.allowedMentions } : {}),
+		// Add ephemeral, if applicable
 		...(["reply", "followUp"].includes(options.sendMethod) ? { ephemeral: options.ephemeral } : {}),
 		fetchReply: options.fetchReply
 	};
