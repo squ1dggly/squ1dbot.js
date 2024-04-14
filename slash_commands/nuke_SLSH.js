@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, Collection } = require("discord.js");
 const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
 const jt = require("../utils/jsTools");
 
@@ -24,8 +24,14 @@ module.exports = {
 
 			if (!_messages.size) return currentMessages;
 
-			// Increment the message total
-			currentMessages ? currentMessages.merge(_messages) : (currentMessages = _messages);
+			// Merge collections
+			if (currentMessages)
+				currentMessages = currentMessages.merge(
+					_messages,
+					x => ({ keep: true, value: x }),
+					y => ({ keep: true, value: y })
+				);
+			else currentMessages = _messages;
 
 			// Run it back
 			return await fetchMessages(_messages.last(), currentMessages);
