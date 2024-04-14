@@ -15,6 +15,7 @@ module.exports = {
 		let embed = new BetterEmbedV2({
 			context: { message },
 			author: { text: "Test Embed", icon: "$BOT_AVATAR" },
+			title: { text: "Test Title", hyperlink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
 			description: "This is an embed. I am also, as of $YEAR, gay.",
 			footer: { text: "this is the footer.", icon: "$USER_AVATAR" },
 			thumbnailURL: "$USER_AVATAR",
