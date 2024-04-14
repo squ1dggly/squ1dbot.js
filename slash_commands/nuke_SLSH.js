@@ -1,5 +1,6 @@
-const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder, Collector } = require("discord.js");
 const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
+const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
@@ -62,7 +63,7 @@ module.exports = {
 		if (!confirmation) return;
 
 		// Delete the messages
-		await interaction.channel.bulkDelete(messages);
+		await Promise.all(jt.chunk(Array.from(messages.values()), 100).map(chunk => channel.bulkDelete(chunk)));
 
 		/* - - - - - { Send the Success Embed } - - - - - */
 		let embed_nuke = new BetterEmbedV2({
