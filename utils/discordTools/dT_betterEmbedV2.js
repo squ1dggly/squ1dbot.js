@@ -620,7 +620,7 @@ class BetterEmbed {
 	/** Send the embed.
 	 *
 	 * @param {Handler} handler The `Interaction`, `Channel`, or `Message` to use to send the `Embed`.
-	 * @param {bE_sendOptions} options */
+	 * @param {bE_sendOptions} options Preform a non-mutative change to the `Embed` before sending. */
 	async send(handler, options) {
 		let _embed = this;
 		this.#_parseData();
