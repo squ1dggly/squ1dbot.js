@@ -84,7 +84,6 @@ module.exports = {
 	 * @param {Client} client client */
 	pushToUsers: async client => {
 		let slashCommands = [...client.slashCommands_userInstall.values()].map(slsh => slsh.data);
-		console.log(slashCommands);
 
 		logger.log(`registering slash commands for user installs...`);
 
