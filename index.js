@@ -42,6 +42,7 @@ const client = new Client({
 
 /// Collections that hold valuable information for the client
 client.slashCommands = new Collection();
+client.slashCommands_userInstall = new Collection();
 client.prefixCommands = new Collection();
 
 // Run importers
@@ -59,18 +60,11 @@ logger.log("connecting to Discord...");
 client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 	/* - - - - - { Production } - - - - - */
 	if (!DEV_MODE) {
-		// Slash commands for special servers only
-		let slashCommands_special = client.slashCommands.filter(slsh => ["escape"].includes(slsh.builder.name)).map(slsh => slsh.builder);
-		// Slash commands for the support server only
-		let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name)).map(slsh => slsh.builder);
-		// Slash commands for the general public
-		let slashCommands_public = client.slashCommands.filter(slsh => !["escape"].includes(slsh.builder.name)).map(slsh => slsh.builder);
-
 		// Register special slash commands
-		await slashCommandManager.push(client, { ids: "1052726201086656612", slashCommands: slashCommands_special });
+		// await slashCommandManager.push(client, { ids: "1052726201086656612", slashCommands: slashCommands_special });
 
 		// Register public slash commands
-		await slashCommandManager.push(client, { global: true, slashCommands: slashCommands_public });
+		await slashCommandManager.push(client, { global: true });
 	}
 	
 	/* - - - - - { Dev } - - - - - */
@@ -78,7 +72,7 @@ client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
 	// Register slash commands :: { GLOBAL }
-	// await slashCommandManager.push(client, { global: true });
+	await slashCommandManager.push(client, { global: true });
 
 	// Remove commands (does nothing if commands were registered globally) :: { LOCAL }
 	// await slashCommandManager.remove(client, { ids: "your_server_id" });

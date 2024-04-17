@@ -26,6 +26,6 @@ module.exports = {
 		});
 
 		// Reply to the interaction with the embed
-		return await embed_cookie.send();
+		return await embed_cookie.send(interaction);
 	}
 };

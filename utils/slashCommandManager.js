@@ -34,9 +34,12 @@ module.exports = {
 	push: async (client, options = {}) => {
 		options = { slashCommands: [], ids: [], global: false, ...options };
 
+		// prettier-ignore
 		// Get the slash commands from the client
 		if (!options.slashCommands.length)
-			options.slashCommands = [...client.slashCommands.values()].map(slsh => slsh.builder);
+			options.slashCommands = [...client.slashCommands.values(), ...client.slashCommands_userInstall.values()]
+				.map(slsh => slsh?.builder || slsh.data);
+
 		// prettier-ignore
 		if (!options.slashCommands.length) return logger.error(
 			"Failed to register slash commands",
