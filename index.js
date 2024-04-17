@@ -57,15 +57,23 @@ importers_dir.forEach(fn => {
 logger.log("connecting to Discord...");
 // prettier-ignore
 client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
-	// Slash commands for special servers only
-	let slashCommands_special = client.slashCommands.filter(slsh => ["escape"].includes(slsh.builder.name));
+	/* - - - - - { Production } - - - - - */
+	if (!DEV_MODE) {
+		// Slash commands for special servers only
+		let slashCommands_special = client.slashCommands.filter(slsh => ["escape"].includes(slsh.builder.name));
+		// Slash commands for the support server only
+		// let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name));
+		// Slash commands for the general public
+		let slashCommands_public = client.slashCommands.filter(slsh => !["escape"].includes(slsh.builder.name));
 
-	// Slash commands for the support server only
-	let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name));
+		// Register special slash commands
+		await slashCommandManager.push(client, { ids: "1052726201086656612", slashCommands: slashCommands_special });
 
-	// Slash commands for the general public
-	let slashCommands_public = client.slashCommands.filter(slsh => !["escape"].includes(slsh.builder.name));
-
+		// Register public slash commands
+		await slashCommandManager.push(client, { global: true, slashCommands: slashCommands_public });
+	}
+	
+	/* - - - - - { Dev } - - - - - */
 	// Register slash commands to a specific server :: { LOCAL }
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
