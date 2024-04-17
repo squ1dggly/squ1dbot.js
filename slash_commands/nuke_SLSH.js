@@ -16,13 +16,13 @@ module.exports = {
 	execute: async (client, interaction) => {
 		let channel = interaction.options.getChannel("channel") || interaction.channel;
 
-		const fetchMessages = async (lastMessage = null, currentMessages = null) => {
+		const fetchMessages = async (interactionMessageID, lastMessage = null, currentMessages = null) => {
 			let _messages = await channel.messages.fetch({
 				limit: 100,
 				before: lastMessage?.id || null
 			});
 
-			if (!_messages.size) return currentMessages;
+			if (!_messages.size) return currentMessages ? currentMessages.filter(m => m.id !== interactionMessageID) : null;
 
 			// Merge collections
 			if (currentMessages)
@@ -34,14 +34,20 @@ module.exports = {
 			else currentMessages = _messages;
 
 			// Run it back
-			return await fetchMessages(_messages.last(), currentMessages);
+			return await fetchMessages(interactionMessageID, _messages.last(), currentMessages);
 		};
 
 		// Let the user know we're fetching messages
-		await interaction.editReply({ content: "`⏳` Getting channel messages. This might take a second..." });
+		let interactionReply = await interaction.editReply({
+			content: "`⏳` Getting channel messages. This might take a second..."
+		});
 
 		// Get the all the messages in the channel
-		let messages = await fetchMessages();
+		let messages = await fetchMessages(interactionReply.id);
+		// prettier-ignore
+		if (!messages.size) return await interactionReply
+			.edit({ content: `No messages were found in ${channel}!` })
+			.catch(() => null);
 
 		// Remove the message content
 		await interaction
@@ -60,7 +66,7 @@ module.exports = {
 			deleteOnConfirm: true
 		});
 
-		if (!confirmation) return;
+		if (!confirmation) return interactionReply;
 
 		// Delete the messages
 		await Promise.all(jt.chunk(Array.from(messages.values()), 100).map(chunk => channel.bulkDelete(chunk)));

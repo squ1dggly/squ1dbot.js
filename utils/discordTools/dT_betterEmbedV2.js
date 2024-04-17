@@ -462,7 +462,7 @@ class BetterEmbed {
 		if (replaceAll && (!fieldData.length || (fieldData[0] === null && fieldData.length === 1))) {
 			this.data.fields = [];
 
-			this.#embed.spliceFields(0, this.#embed.data.fields?.length);
+			this.#embed.spliceFields(0, this.#embed.data.fields?.length || 0);
 			return this;
 		}
 
