@@ -64,10 +64,10 @@ client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 		// await slashCommandManager.push(client, { ids: "1052726201086656612", slashCommands: slashCommands_special });
 
 		// Register public slash commands
-		// await slashCommandManager.push(client, { global: true });
+		await slashCommandManager.push(client, { global: true });
 
 		// Register user install slash commands
-		// await slashCommandManager.pushToUsers(client);
+		await slashCommandManager.pushToUsers(client);
 	}
 	
 	/* - - - - - { Dev } - - - - - */
