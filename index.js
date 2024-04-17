@@ -57,6 +57,15 @@ importers_dir.forEach(fn => {
 logger.log("connecting to Discord...");
 // prettier-ignore
 client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
+	// Slash commands for special servers only
+	let slashCommands_special = client.slashCommands.filter(slsh => ["escape"].includes(slsh.builder.name));
+
+	// Slash commands for the support server only
+	let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name));
+
+	// Slash commands for the general public
+	let slashCommands_public = client.slashCommands.filter(slsh => !["escape"].includes(slsh.builder.name));
+
 	// Register slash commands to a specific server :: { LOCAL }
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 

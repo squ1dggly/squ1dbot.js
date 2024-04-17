@@ -5,7 +5,7 @@ const jt = require("../utils/jsTools");
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Admin",
-	options: { deferReply: true, icon: "💣" },
+	options: { icon: "💣", deferReply: true, guildAdminOnly: true },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("nuke")
@@ -61,7 +61,7 @@ module.exports = {
 			interaction,
 			color: "Red",
 			title: "Carefully review your decision...",
-			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) from ${channel}...`,
+			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) in ${channel}...`,
 			deleteOnCancel: true,
 			deleteOnConfirm: true
 		});
@@ -75,7 +75,7 @@ module.exports = {
 		let embed_nuke = new BetterEmbedV2({
 			title: "Nuke Complete 💣",
 			thumbnailURL: "https://c.tenor.com/WUZwFbmOnfwAAAAC/tenor.gif",
-			description: `Deleted ${messages.size} ${messages.size === 1 ? "message" : "messages"} from ${channel}.`
+			description: `Deleted ${messages.size} ${messages.size === 1 ? "message" : "messages"} in ${channel}.`
 		});
 
 		// Send the embed

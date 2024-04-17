@@ -117,6 +117,7 @@ class BetterEmbed {
 	/** @param {string} str */
 	#_applyContextFormatting(str) {
 		if (!str) return null;
+		if (!str.includes("$")) return str;
 
 		let _user = null;
 		let _guildMember = null;
