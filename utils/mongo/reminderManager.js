@@ -142,7 +142,7 @@ async function reminder_toggle(id, enabled) {
 
 async function reminder_toggleAll(user_id, guild_id, enabled) {
 	// Fetch all reminders
-	let reminders = await reminder_fetchForUser(user_id, guild_id);
+	let reminders = await reminder_fetchForUserInGuild(user_id, guild_id);
 
 	await Promise.all(
 		reminders.map(async reminder => {

@@ -251,7 +251,7 @@ async function subcommand_toggle(interaction) {
 
 	// Get interaction options
 	let id = interaction.options.getString("id").toLowerCase().trim();
-	let enabled = interaction.options.getBoolean("enabled");
+	let enabled = interaction.options.getBoolean("enabled") || null;
 
 	let reminderCount = 0;
 
@@ -285,7 +285,7 @@ async function subcommand_toggle(interaction) {
 
 		// Delete the reminder
 		reminderCount = id.length;
-		await reminderManager.toggleAll(id);
+		await reminderManager.toggle(id, enabled);
 	}
 
 	// prettier-ignore
