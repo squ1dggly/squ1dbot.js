@@ -7,7 +7,7 @@ module.exports = {
 	options: { hidden: true },
 
 	// prettier-ignore
-	data: {
+	builderRaw: {
         name: "fuck",
         type: 1,
         description: "What the fuck do you want?",
