@@ -1,10 +1,10 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbedV2 } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
+const { BetterEmbedV2 } = require("../../utils/discordTools");
+const jt = require("../../utils/jsTools");
 
-const config = { escape: require("../configs/config_escape.json") };
+const config = { escape: require("../../configs/config_escape.json") };
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "SPECIAL",
 	options: { icon: "🌴", hidden: true },

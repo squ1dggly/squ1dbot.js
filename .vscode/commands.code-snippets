@@ -30,7 +30,7 @@
 			"        });\n",
 
 			"        // Reply to the user with the embed",
-			"        return await embed_${1:cookie}.reply(message, { allowedMentions: { repliedUser: false } });$0",
+			"        return await embed_${1:cookie}.send(message, { allowedMentions: { repliedUser: false } });$0",
 			"    }",
 			"};",
 			""
@@ -72,7 +72,7 @@
 			"        });\n",
 
 			"        // Reply to the user with the embed",
-			"        return await embed_${1:cookie}.reply(message, { allowedMentions: { repliedUser: false } });$0",
+			"        return await embed_${1:cookie}.send(message, { allowedMentions: { repliedUser: false } });$0",
 			"    }",
 			"};",
 			""
@@ -111,7 +111,7 @@
 			"        });\n",
 
 			"        // Reply to the interaction with the embed",
-			"        return await embed_${1:cookie}.send();$0",
+			"        return await embed_${1:cookie}.send(interaction);$0",
 			"    }",
 			"};",
 			""
@@ -155,7 +155,7 @@
 			"        });\n",
 
 			"        // Reply to the interaction with the embed",
-			"        return await embed_${1:cookie}.send();$0",
+			"        return await embed_${1:cookie}.send(interaction);$0",
 			"    }",
 			"};",
 			""

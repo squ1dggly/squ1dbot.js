@@ -80,6 +80,20 @@ module.exports = {
             }).catch(err => logger.error("Failed to register slash commands", "type: local", err));
 	},
 
+	/** Push slash commands for user installs
+	 * @param {Client} client client */
+	pushToUsers: async client => {
+		let slashCommands = [...client.slashCommands_userInstall.values()].map(slsh => slsh.data);
+		console.log(slashCommands);
+
+		logger.log(`registering slash commands for user installs...`);
+
+		return await rest
+			.put(Routes.applicationCommands(client.user.id), { body: slashCommands })
+			.then(() => logger.success("slash commands registered (user_install)"))
+			.catch(err => logger.error("Failed to register slash commands", "type: user_install", err));
+	},
+
 	/** Remove slash commands from one or more guilds
 	 * @param {Client} client client
 	 * @param {remove_options} options remove options */
