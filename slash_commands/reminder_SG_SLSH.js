@@ -215,7 +215,7 @@ async function subcommand_delete(interaction) {
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
@@ -267,7 +267,7 @@ async function subcommand_toggle(interaction) {
 		await reminderManager.toggleAll(interaction.user.id, interaction.guild.id, enabled);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
@@ -460,7 +460,7 @@ async function subcommand_triggerDelete(interaction) {
 		await reminderManager.trigger.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(

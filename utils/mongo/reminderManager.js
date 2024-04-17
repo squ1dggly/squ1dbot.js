@@ -120,7 +120,7 @@ async function reminder_edit(id, query) {
 }
 
 async function reminder_toggle(id, enabled) {
-	id = jt.isArray(id);
+	id = jt.forceArray(id);
 
 	await Promise.all(
 		id.map(async id => {
@@ -185,7 +185,7 @@ async function reminder_addFromTrigger(reminderTriggerData) {
 }
 
 async function reminder_delete(ids) {
-	ids = jt.isArray(ids);
+	ids = jt.forceArray(ids);
 
 	// Delete the documents
 	await models.reminder
@@ -251,7 +251,7 @@ async function trigger_add(data) {
 }
 
 async function trigger_delete(ids) {
-	ids = jt.isArray(ids);
+	ids = jt.forceArray(ids);
 
 	// Delete the documents
 	await models.reminderTrigger
