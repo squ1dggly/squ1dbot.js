@@ -45,7 +45,7 @@ module.exports = {
 		// Get the all the messages in the channel
 		let messages = await fetchMessages(interactionReply.id);
 		// prettier-ignore
-		if (!messages.size) return await interactionReply
+		if (!messages?.size) return await interactionReply
 			.edit({ content: `No messages were found in ${channel}!` })
 			.catch(() => null);
 
@@ -73,8 +73,9 @@ module.exports = {
 
 		/* - - - - - { Send the Success Embed } - - - - - */
 		let embed_nuke = new BetterEmbedV2({
-			title: "Nuke Complete",
-			description: `Deleted ${messages.size} messages from ${channel}.`
+			title: "Nuke Complete 💣",
+			thumbnailURL: "https://c.tenor.com/WUZwFbmOnfwAAAAC/tenor.gif",
+			description: `Deleted ${messages.size} ${messages.size === 1 ? "message" : "messages"} from ${channel}.`
 		});
 
 		// Send the embed
