@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, SlashCommandBuilder, Collector } = require("discord.js");
+const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
 const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
 const jt = require("../utils/jsTools");
 
