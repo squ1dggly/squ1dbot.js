@@ -62,7 +62,7 @@ client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 		// Slash commands for special servers only
 		let slashCommands_special = client.slashCommands.filter(slsh => ["escape"].includes(slsh.builder.name)).map(slsh => slsh.builder);
 		// Slash commands for the support server only
-		// let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name));
+		let slashCommands_support = client.slashCommands.filter(slsh => [].includes(slsh.builder.name)).map(slsh => slsh.builder);
 		// Slash commands for the general public
 		let slashCommands_public = client.slashCommands.filter(slsh => !["escape"].includes(slsh.builder.name)).map(slsh => slsh.builder);
 
