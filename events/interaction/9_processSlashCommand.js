@@ -45,15 +45,19 @@ module.exports = {
 	execute: async (client, interaction) => {
 		// prettier-ignore
 		// Filter out DM interactions
-		if (!interaction.guildId) return interaction.reply({
+		/* if (!interaction.guildId) return interaction.reply({
 			content: "Commands cannot be used in DMs.", ephemeral: true
-		});
+		}); */
 
 		// Filter out non-guild and non-command interactions
-		if (!interaction.guild || !interaction.isCommand()) return;
+		if (/* !interaction.guild ||  */!interaction.isCommand()) return;
 
 		// Get the slash command function from the client if it exists
-		let slashCommand = client.slashCommands.get(interaction.commandName) || null;
+		let slashCommand =
+			client.slashCommands.get(interaction.commandName) ||
+			client.slashCommands_userInstall.get(interaction.commandName) ||
+			null;
+
 		// prettier-ignore
 		if (!slashCommand) return await interaction.reply({
 			content: `\`/${interaction.commandName}\` is not a command.`

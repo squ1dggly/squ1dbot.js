@@ -34,12 +34,9 @@ module.exports = {
 	push: async (client, options = {}) => {
 		options = { slashCommands: [], ids: [], global: false, ...options };
 
-		// prettier-ignore
 		// Get the slash commands from the client
 		if (!options.slashCommands.length)
-			options.slashCommands = [...client.slashCommands.values(), ...client.slashCommands_userInstall.values()]
-				.map(slsh => slsh?.builder || slsh.data);
-
+			options.slashCommands = [...client.slashCommands.values()].map(slsh => slsh.builder);
 		// prettier-ignore
 		if (!options.slashCommands.length) return logger.error(
 			"Failed to register slash commands",
@@ -81,6 +78,20 @@ module.exports = {
                 let sucessful_count = sucessful.filter(s => s).length;
                 logger.success(`slash commands registered for ${sucessful_count} ${sucessful_count === 1 ? "guild" : "guilds"} (local)`)
             }).catch(err => logger.error("Failed to register slash commands", "type: local", err));
+	},
+
+	/** Push slash commands for user installs
+	 * @param {Client} client client */
+	pushToUsers: async client => {
+		let slashCommands = [...client.slashCommands_userInstall.values()].map(slsh => slsh.data);
+		console.log(slashCommands);
+
+		logger.log(`registering slash commands for user installs...`);
+
+		return await rest
+			.put(Routes.applicationCommands(client.user.id), { body: slashCommands })
+			.then(() => logger.success("slash commands registered (user_install)"))
+			.catch(err => logger.error("Failed to register slash commands", "type: user_install", err));
 	},
 
 	/** Remove slash commands from one or more guilds

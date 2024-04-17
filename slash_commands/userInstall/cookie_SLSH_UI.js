@@ -1,5 +1,4 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { BetterEmbedV2 } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */
@@ -10,8 +9,9 @@ module.exports = {
 	// prettier-ignore
 	data: {
         name: "fuck",
+        type: 1,
         description: "What the fuck do you want?",
-        integration_types: [1],
+        integration_types: [0, 1],
         contexts: [0, 1, 2]
     },
 
@@ -32,13 +32,6 @@ module.exports = {
 			"Shut the fuck up."
 		];
 
-		// Create the embed :: { COOKIE }
-		let embed_cookie = new BetterEmbedV2({
-			context: { interaction },
-			description: jt.choice(choices)
-		});
-
-		// Reply to the interaction with the embed
-		return await embed_cookie.send(interaction);
+		return await interaction.reply({ content: jt.choice(choices) });
 	}
 };
