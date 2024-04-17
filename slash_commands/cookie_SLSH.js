@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbed } = require("../modules/discordTools");
-const jt = require("../modules/jsTools");
+const { BetterEmbedV2 } = require("../utils/discordTools");
+const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */
 module.exports = {
@@ -20,8 +20,8 @@ module.exports = {
 		];
 
 		// Create the embed :: { COOKIE }
-		let embed_cookie = new BetterEmbed({
-			interaction,
+		let embed_cookie = new BetterEmbedV2({
+			context: { interaction },
 			description: jt.choice(choices)
 		});
 

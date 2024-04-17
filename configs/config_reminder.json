@@ -13,8 +13,7 @@
 
 	"PING_STYLES": [
 		{ "text": "$USER you have a reminder for **$REMINDER**!", "rarity": 100 },
-		{ "text": "$USER reminder about **$REMINDER**! Chop chop!", "rarity": 100 },
-		{ "text": "$USER ho, ho, ho! Merry chr- Wait, it's January. Anyways, your reminder: **$REMINDER**.", "rarity": 5 }
+		{ "text": "$USER reminder about **$REMINDER**! Chop chop!", "rarity": 100 }
 	],
 
 	"FUN_STYLES": [

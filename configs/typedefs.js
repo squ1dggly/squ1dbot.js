@@ -1,4 +1,7 @@
 /** @typedef CommandOptions
+ * @property {boolean} deferReply defer the interaction
+ *
+ * ***required if your command can take longer than 3 seconds to execute***
  * @property {string} icon icon to show in the help command list
  * @property {boolean} botAdminOnly only allow bot staff to use this command
  * @property {boolean} guildAdminOnly only allow guild admins to use this command
@@ -28,6 +31,11 @@
  * @property {string} cmdName command name
  * @property {string} prefix prefix used */
 
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+/** @typedef EventExports
+ * @property {string} name name of the event
+ * @property {Events} eventType listener to be bound to
+ * @property {boolean} enabled whether to be executed or not (optional) **|** `true` is default */
+
+const { Events, PermissionFlagsBits, SlashCommandBuilder } = require("discord.js");
 
 module.exports = null;

@@ -1,7 +1,7 @@
 const { Client, CommandInteraction, Message, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../modules/discordTools");
-const { reminderManager } = require("../modules/mongo");
-const jt = require("../modules/jsTools");
+const { BetterEmbedV2, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../utils/discordTools");
+const { reminderManager } = require("../utils/mongo");
+const jt = require("../utils/jsTools");
 
 const config = { reminder: require("../configs/config_reminder.json") };
 
@@ -53,8 +53,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 
 	// prettier-ignore
 	// Create the embed :: { REMINDER SYNC ENABLED }
-	let embed_syncEnabled = new BetterEmbed({
-		interaction,
+	let embed_syncEnabled = new BetterEmbedV2({
 		title: "Sync Enabled",
 		description: isSlashCommand
 			? `I'll sync your reminder whenever you use ${slashCommandReference ? `</${sync_command_name}:${slashCommandReference.id}>` : `${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\` command`}.`
@@ -63,7 +62,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 	});
 
 	// Let the user know sync was enabled
-	return await embed_syncEnabled.send({ sendMethod: "followUp" /* , ephemeral: true */ });
+	return await embed_syncEnabled.send(interaction, { sendMethod: "followUp" });
 }
 
 /** @param {Client} client @param {CommandInteraction} interaction @param {string} reminderID */
@@ -161,8 +160,7 @@ async function subcommand_add(interaction) {
 	);
 
 	// Create the embed :: { REMINDER ADD }
-	let embed_reminderAdd = new BetterEmbed({
-		interaction,
+	let embed_reminderAdd = new BetterEmbedV2({
 		title: "Reminder Added",
 		description: 'You will be reminded about "*$NAME*" $DYNAMIC $ETA.\n$OPTIONS'
 			.replace("$NAME", name)
@@ -183,7 +181,7 @@ async function subcommand_add(interaction) {
 		awaitSyncMessage(interaction, reminder._id);
 	}
 
-	return await embed_reminderAdd.send();
+	return await embed_reminderAdd.send(interaction);
 }
 
 /** @param {CommandInteraction} interaction */
@@ -217,7 +215,7 @@ async function subcommand_delete(interaction) {
 		await reminderManager.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
@@ -253,7 +251,7 @@ async function subcommand_toggle(interaction) {
 
 	// Get interaction options
 	let id = interaction.options.getString("id").toLowerCase().trim();
-	let enabled = interaction.options.getBoolean("enabled");
+	let enabled = interaction.options.getBoolean("enabled") || null;
 
 	let reminderCount = 0;
 
@@ -269,7 +267,7 @@ async function subcommand_toggle(interaction) {
 		await reminderManager.toggleAll(interaction.user.id, interaction.guild.id, enabled);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
@@ -287,7 +285,7 @@ async function subcommand_toggle(interaction) {
 
 		// Delete the reminder
 		reminderCount = id.length;
-		await reminderManager.toggleAll(id);
+		await reminderManager.toggle(id, enabled);
 	}
 
 	// prettier-ignore
@@ -347,8 +345,7 @@ async function subcommand_list(interaction) {
 
 	for (let i = 0; i < reminders_f_chunk.length; i++) {
 		// Create the embed :: { REMINDER LIST }
-		let embed = new BetterEmbed({
-			interaction,
+		let embed = new BetterEmbedV2({
 			title: "Reminder List",
 			description: reminders_f_chunk[i].join("\n"),
 			footer: `Page ${i + 1} of ${reminders_f_chunk.length} | Total: ${reminders.length}`
@@ -365,7 +362,7 @@ async function subcommand_list(interaction) {
 		pagination: { type: "short" }
 	});
 
-	return await pagination.send();
+	return await pagination.send(interaction);
 }
 
 /** @param {CommandInteraction} interaction */
@@ -419,8 +416,7 @@ async function subcommand_triggerAdd(interaction) {
 	});
 
 	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderTriggerAdd = new BetterEmbed({
-		interaction,
+	let embed_reminderTriggerAdd = new BetterEmbedV2({
 		title: "Reminder Trigger Added",
 		description: 'I\'ll set a reminder for "*$NAME*" whenever you say **$TRIGGER**.$CHANNEL'
 			.replace("$NAME", name)
@@ -430,7 +426,7 @@ async function subcommand_triggerAdd(interaction) {
 		footer: `ID: ${reminderTrigger._id}`
 	});
 
-	return await embed_reminderTriggerAdd.send();
+	return await embed_reminderTriggerAdd.send(interaction);
 }
 
 /** @param {CommandInteraction} interaction */
@@ -464,7 +460,7 @@ async function subcommand_triggerDelete(interaction) {
 		await reminderManager.trigger.deleteAll(interaction.user.id, interaction.guild.id);
 	} else {
 		// Split IDs by comma
-		id = jt.isArray(id.split(",")).map(str => str.trim());
+		id = jt.forceArray(id.split(",")).map(str => str.trim());
 
 		// Check if the IDs exist
 		let id_exists = await Promise.all(
@@ -529,8 +525,7 @@ async function subcommand_triggerList(interaction) {
 
 	for (let i = 0; i < triggers_f_chunk.length; i++) {
 		// Create the embed :: { REMINDER LIST }
-		let embed = new BetterEmbed({
-			interaction,
+		let embed = new BetterEmbedV2({
 			title: "Reminder Trigger List",
 			description: triggers_f_chunk[i].join("\n"),
 			footer: `Page ${i + 1} of ${triggers_f_chunk.length} | Total: ${triggers.length}`
@@ -547,7 +542,7 @@ async function subcommand_triggerList(interaction) {
 		pagination: { type: "short" }
 	});
 
-	return await pagination.send();
+	return await pagination.send(interaction);
 }
 
 /** @type {import("../configs/typedefs").SlashCommandExports} */

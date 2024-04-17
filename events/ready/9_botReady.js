@@ -1,12 +1,11 @@
-/** @file Executed as soon as the bot's connected to Discord @author xsqu1znt */
-
-const { Client } = require("discord.js");
+const { Client, Events } = require("discord.js");
 const { name } = require("../../package.json");
-const logger = require("../../modules/logger");
+const logger = require("../../utils/logger");
 
+/** @type {import("../../configs/typedefs.js").EventExports} */
 module.exports = {
-	name: "BOT_READY",
-	event: "ready",
+	name: "clientReady",
+	eventType: Events.ClientReady,
 
 	/** @param {Client} client  */
 	execute: async client => {

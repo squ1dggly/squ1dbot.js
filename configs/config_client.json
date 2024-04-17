@@ -1,25 +1,29 @@
 {
 	"TOKEN": "",
 	"MONGO_URI": "",
-	"MODE": "PRODUCTION",
-	"PREFIX": ";",
+
+	"TOKEN_DEV": "",
+	"MONGO_URI_DEV": "",
+	"DEV_MODE": false,
+
+	"PREFIX": "s!",
 
 	"OWNER_ID": "842555247145779211",
 	"ADMIN_IDS": [""],
 	"admin_bypass_ids": {},
 
-	"client_status": {
-		"host": {
-			"ACTIVITY": {
-				"STATUS": "dnd",
-				"TYPE": "CUSTOM",
-				"NAME": "🧨 playing with unstable substances...",
-				"STREAM_URL": ""
-			}
-		},
+	"support_server": {
+		"INVITE_URL": "https://discord.gg/KG8CPKkUdg",
+		"GUILD_ID": "1052726201086656612",
+		"channels": {
+			"WELCOME": "1234"
+		}
+	},
 
-		"production": {
+	"client_status": {
+		"default": {
 			"INTERVAL": "1m",
+			"RANDOM_ACTIVITY": true,
 
 			"ACTIVITY": [
 				{ "STATUS": "idle", "TYPE": "CUSTOM", "NAME": "Need any /help?" },
@@ -36,14 +40,12 @@
 		},
 
 		"dev": {
-			"INTERVAL": "25s",
-
-			"ACTIVITY": [
-				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "🧨 playing with unstable substances..." },
-				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "💣 messing around with explosives..." },
-				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "👨‍💻 hacking into the mainframe..." },
-				{ "STATUS": "dnd", "TYPE": "CUSTOM", "NAME": "🐤 learning how to walk..." }
-			]
+			"ACTIVITY": {
+				"STATUS": "dnd",
+				"TYPE": "CUSTOM",
+				"NAME": "🧨 playing with unstable substances...",
+				"STREAM_URL": ""
+			}
 		}
 	}
 }

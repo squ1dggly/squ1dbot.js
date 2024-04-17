@@ -4,8 +4,8 @@
 		"prefix": "cmd",
 		"body": [
 			"const { Client, Message } = require(\"discord.js\");",
-			"const { BetterEmbed } = require(\"../modules/discordTools\");",
-			"const jt = require(\"../modules/jsTools\");\n",
+			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").PrefixCommandExports} */",
 			"module.exports = {",
@@ -24,7 +24,7 @@
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbed({",
+			"        let embed_${1:cookie} = new BetterEmbedV2({",
 			"            author: { user: message.author },",
 			"            description: jt.choice(choices)",
 			"        });\n",
@@ -42,8 +42,8 @@
 		"prefix": "cmd.perms",
 		"body": [
 			"const { Client, PermissionFlagsBits, Message } = require(\"discord.js\");",
-			"const { BetterEmbed } = require(\"../modules/discordTools\");",
-			"const jt = require(\"../modules/jsTools\");\n",
+			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").PrefixCommandExports} */",
 			"module.exports = {",
@@ -66,7 +66,7 @@
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbed({",
+			"        let embed_${1:cookie} = new BetterEmbedV2({",
 			"            author: { user: message.author },",
 			"            description: jt.choice(choices)",
 			"        });\n",
@@ -81,11 +81,11 @@
 
 	"Slash Command": {
 		"scope": "javascript",
-		"prefix": "slash",
+		"prefix": "cmd.slash",
 		"body": [
 			"const { Client, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
-			"const { BetterEmbed } = require(\"../modules/discordTools\");",
-			"const jt = require(\"../modules/jsTools\");\n",
+			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").SlashCommandExports} */",
 			"module.exports = {",
@@ -105,8 +105,8 @@
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbed({",
-			"            interaction,",
+			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"            context: { interaction },",
 			"            description: jt.choice(choices)",
 			"        });\n",
 
@@ -120,11 +120,11 @@
 
 	"Slash Command (Perms)": {
 		"scope": "javascript",
-		"prefix": "slash.perms",
+		"prefix": "cmd.slash.perms",
 		"body": [
 			"const { Client, PermissionFlagsBits, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
-			"const { BetterEmbed } = require(\"../modules/discordTools\");",
-			"const jt = require(\"../modules/jsTools\");\n",
+			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").SlashCommandExports} */",
 			"module.exports = {",
@@ -149,8 +149,8 @@
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbed({",
-			"            interaction,",
+			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"            context: { interaction },",
 			"            description: jt.choice(choices)",
 			"        });\n",
 
