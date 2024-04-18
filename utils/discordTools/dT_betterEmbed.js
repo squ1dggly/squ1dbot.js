@@ -97,6 +97,8 @@ const jt = require("../jsTools");
 
 const config = require("./dT_config.json");
 
+const DEV_MODE = process.env.DEV_MODE === "true" ? true : false || config.client.DEV_MODE || false;
+
 class BetterEmbed {
 	#embed = new EmbedBuilder();
 
@@ -108,7 +110,7 @@ class BetterEmbed {
 		imageURL: null,
 		description: null,
 		footer: { text: null, icon: null },
-		color: jt.choice(config.EMBED_COLOR) || null,
+		color: jt.choice(DEV_MODE ? config.EMBED_COLOR_DEV : config.EMBED_COLOR) || null,
 		timestamp: null,
 		fields: [],
 		disableAutomaticContext: false
