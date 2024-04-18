@@ -1,8 +1,8 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbed, EmbedNavigator } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
+const { BetterEmbed, EmbedNavigator } = require("../../utils/discordTools");
+const jt = require("../../utils/jsTools");
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Utility",
 	options: { hidden: true },

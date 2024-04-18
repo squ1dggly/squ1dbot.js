@@ -1,8 +1,8 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
+const { BetterEmbedV2, awaitConfirm } = require("../../utils/discordTools");
+const jt = require("../../utils/jsTools");
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Admin",
 	options: { icon: "💣", deferReply: true, guildAdminOnly: true },

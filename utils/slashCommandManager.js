@@ -1,4 +1,4 @@
-/** @file Push, remove, or refresh slash commands to/from/in a guild */
+/** @file Push, remove, or refresh slash commands to/from/in a guild, and users */
 
 /** @typedef push_options
  * @property {SlashCommandBuilder|SlashCommandBuilder[]} slashCommands specific slash commands to push
@@ -37,11 +37,7 @@ module.exports = {
 
 		// Import slash commands from the client
 		if (!options.slashCommands.length)
-			options.slashCommands = [
-				...client.slashCommands.values(),
-				...client.slashCommands_special.values(),
-				...client.slashCommands_userInstall.values()
-			];
+			options.slashCommands = [...client.slashCommands_public.values(), ...client.slashCommands_userInstall.values()];
 		// Filter out invalid slash commands
 		else options.slashCommands = jt.forceArray(options.slashCommands).filter(slsh => slsh);
 
@@ -57,7 +53,7 @@ module.exports = {
 
 			// prettier-ignore
 			return await rest
-				.put(Routes.applicationCommands(client.user.id), { body: options.slashCommands.map(slsh => slsh.builder || slsh.builderRaw) })
+				.put(Routes.applicationCommands(client.user.id), { body: options.slashCommands.map(slsh => slsh?.builder || slsh.commandData) })
 				.then(() => logger.success("application commands (/) registered (global)"))
 				.catch(err => logger.error("Failed to register application commands (/)", "type: global", err));
 		}
@@ -78,7 +74,7 @@ module.exports = {
 		// prettier-ignore
 		// Iterate through each guild ID and register slash commands
 		return await Promise.all(options.ids.map(id => rest
-            .put(Routes.applicationGuildCommands(client.user.id, id), { body: options.slashCommands })
+            .put(Routes.applicationGuildCommands(client.user.id, id), { body: options.slashCommands.map(slsh => slsh?.builder || slsh.commandData) })
             .catch(err => logger.error(`Failed to register application commands (/)", "type: local | guildID: ${id}`, err)
         )))
             .then(sucessful => {
@@ -96,12 +92,12 @@ module.exports = {
 
 		// Remove slash commands (globally)
 		if (options.global) {
-			logger.log(`removing slash commands globally...`);
+			logger.log(`removing application commands (/) globally...`);
 
 			return await rest
 				.put(Routes.applicationCommands(client.user.id), { body: [] })
-				.then(() => logger.success("slash commands removed (global)"))
-				.catch(err => logger.error("Failed to remove slash commands", "type: global", err));
+				.then(() => logger.success("application commands (/) removed (global)"))
+				.catch(err => logger.error("Failed to remove application commands (/)", "type: global", err));
 		}
 
 		/// Remove slash commands (locally)
@@ -111,24 +107,24 @@ module.exports = {
 		options.ids ||= (await client.guilds.fetch()).map(({ id }) => id);
 		// prettier-ignore
 		if (!options.ids.length) return logger.error(
-			"Failed to remove slash commands",
+			"Failed to remove application commands (/)",
 			"type: local", "You must provide at least 1 guild ID"
         );
 
 		// prettier-ignore
-		logger.log(`removing slash commands for ${options.ids.length} ${options.ids.length === 1 ? "guild" : "guilds"}...`);
+		logger.log(`removing application commands (/) for ${options.ids.length} ${options.ids.length === 1 ? "guild" : "guilds"}...`);
 
 		// prettier-ignore
 		// Iterate through each guild ID and remove slash commands
 		return await Promise.all(options.ids.map(id => rest
             .put(Routes.applicationGuildCommands(client.user.id, id), { body: [] })
-            .catch(err => logger.error("Failed to remove slash commands", `type: local | guildID: ${id}`, err)
+            .catch(err => logger.error("Failed to remove application commands (/)", `type: local | guildID: ${id}`, err)
         )))
             .then(sucessful => {
                 // Get the number of guilds that were successfully registered
                 let sucessful_count = sucessful.filter(s => s).length;
-                logger.success(`slash commands removed for ${sucessful_count} ${sucessful_count === 1 ? "guild" : "guilds"} (local)`)
-            }).catch(err => logger.error("Failed to remove slash commands", "type: local", err));
+                logger.success(`application commands (/) removed for ${sucessful_count} ${sucessful_count === 1 ? "guild" : "guilds"} (local)`)
+            }).catch(err => logger.error("Failed to remove application commands (/)", "type: local", err));
 	},
 
 	/** Refresh slash commands in one or more guilds

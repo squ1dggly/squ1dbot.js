@@ -1,9 +1,9 @@
 const { Client, CommandInteraction, Message, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { BetterEmbedV2, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../utils/discordTools");
-const { reminderManager } = require("../utils/mongo");
-const jt = require("../utils/jsTools");
+const { BetterEmbedV2, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../../utils/discordTools");
+const { reminderManager } = require("../../utils/mongo");
+const jt = require("../../utils/jsTools");
 
-const config = { reminder: require("../configs/config_reminder.json") };
+const config = { reminder: require("../../configs/config_reminder.json") };
 
 /** @param {CommandInteraction} interaction @param {string} reminderID @param {Message} syncMessage */
 async function enableReminderSync(interaction, reminderID, syncMessage) {
@@ -545,7 +545,7 @@ async function subcommand_triggerList(interaction) {
 	return await pagination.send(interaction);
 }
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Utility",
 	options: { icon: "⏰" },

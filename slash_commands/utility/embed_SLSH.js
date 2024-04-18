@@ -5,8 +5,8 @@ const {
 	ActionRowBuilder, ButtonBuilder, ChannelSelectMenuBuilder,
 	ButtonStyle, ComponentType, TextInputStyle, StringSelectMenuBuilder
 } = require("discord.js");
-const { BetterEmbed } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
+const { BetterEmbed } = require("../../utils/discordTools");
+const jt = require("../../utils/jsTools");
 
 const config = require("./embed_config.json");
 
@@ -15,7 +15,7 @@ const timeouts = {
 	channelSelect: jt.parseTime(config.timeouts.CHANNEL_SELECT)
 };
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Utility",
 	options: { icon: "📝", guildAdminOnly: true },
