@@ -9,8 +9,8 @@ module.exports = {
 	// prettier-ignore
 	commandData: {
         name: "fuck",
-        type: 1,
         description: "What the fuck do you want?",
+        type: 1,
         integration_types: [0, 1],
         contexts: [0, 1, 2]
     },
