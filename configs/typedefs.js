@@ -42,13 +42,6 @@
  * @property {SlashCommandBuilder} builder Slash command builder.
  * @property {Function} execute Executed when the command is used. */
 
-/** @typedef RawSlashCommandExports
- * @property {string} category Category of the command.
- * @property {string} categoryIcon Icon of the command category.
- * @property {CommandOptions} options Extra options for the command.
- * @property {RawCommandData} commandData Raw JSON data used to register the command.
- * @property {Function} execute Executed when the command is used. */
-
 /* - - - - - { Prefix Command } - - - - - */
 
 /** @typedef PrefixCommandExports
@@ -65,6 +58,15 @@
  * @property {string} cleanContent Message content without the command name.
  * @property {string} cmdName Command name.
  * @property {string} prefix Prefix used. */
+
+/* - - - - - { Special Command } - - - - - */
+
+/** @typedef RawCommandExports
+ * @property {string} category Category of the command.
+ * @property {string} categoryIcon Icon of the command category.
+ * @property {CommandOptions} options Extra options for the command.
+ * @property {RawCommandData} commandData Raw JSON data used to register the command.
+ * @property {Function} execute Executed when the command is used. */
 
 /* - - - - - { Event } - - - - - */
 
