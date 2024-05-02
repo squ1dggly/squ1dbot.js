@@ -166,7 +166,7 @@
 		"scope": "javascript",
 		"prefix": "cmd.raw",
 		"body": [
-			"const { Client, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
+			"const { Client, CommandInteraction } = require(\"discord.js\");",
 			"const { BetterEmbed } = require(\"../utils/discordTools\");",
 			"const jt = require(\"../utils/jsTools\");\n",
 
