@@ -1,5 +1,5 @@
 const { Client, Message, User, GuildMember } = require("discord.js");
-const { BetterEmbed, BetterEmbed } = require("../utils/discordTools");
+const { BetterEmbed } = require("../utils/discordTools");
 const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
