@@ -8,9 +8,10 @@ const jt = require("../../utils/jsTools");
 
 const config = { reminder: require("../../configs/config_reminder.json") };
 
+/** @type {import("../../configs/typedefs.js").EventExports} */
 module.exports = {
 	name: "reminderInterval",
-	event: Events.ClientReady,
+	eventType: Events.ClientReady,
 
 	/** @param {Client} client  */
 	execute: async client => {
