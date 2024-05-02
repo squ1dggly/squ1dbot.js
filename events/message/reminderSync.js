@@ -1,5 +1,5 @@
 const { Client, Message, Events } = require("discord.js");
-const { messageContentToArray } = require("../../utils/discordTools");
+const { messageToArray } = require("../../utils/discordTools");
 const { reminderManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
@@ -41,7 +41,7 @@ module.exports = {
 
             /* - - - - - { Check for Cooldown Keywords } - - - - - */
             // Check if the first embed contains anything suggesting the user's still on cooldown
-			let embedContent = messageContentToArray(message, 1);
+			let embedContent = messageToArray(message, 1);
 
 			for (regex of config.reminder.COOLDOWN_REGEX)
 				for (str of embedContent)
