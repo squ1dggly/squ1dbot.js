@@ -6,14 +6,13 @@ module.exports = {
 	category: "USER_INSTALL",
 	options: { hidden: true },
 
-	// prettier-ignore
 	commandData: {
-        name: "fuck",
-        description: "What the fuck do you want?",
-        type: 1,
-        integration_types: [0, 1],
-        contexts: [0, 1, 2]
-    },
+		name: "fuck",
+		description: "What the fuck do you want?",
+		type: 1,
+		integration_types: [0, 1],
+		contexts: [0, 1, 2]
+	},
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {

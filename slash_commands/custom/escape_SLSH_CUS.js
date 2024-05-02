@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbedV2 } = require("../../utils/discordTools");
+const { BetterEmbed } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
 
 const config = { escape: require("../../configs/config_escape.json") };
@@ -20,7 +20,7 @@ module.exports = {
 			content: jt.choice(config.escape.ERROR)
 		});
 
-		let embed_escape = new BetterEmbedV2({
+		let embed_escape = new BetterEmbed({
 			title: "Medaka's Escape",
 			description: jt.chance(69) ? jt.choice(config.escape.BAD) : jt.choice(config.escape.GOOD)
 		});

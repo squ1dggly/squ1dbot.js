@@ -59,28 +59,12 @@ importers_dir.forEach(fn => {
 // Connect the client to discord
 logger.log("connecting to Discord...");
 // prettier-ignore
-client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
-	/* - - - - - { Production } - - - - - */
-	if (!DEV_MODE) {
-		// Register special slash commands
-		// await slashCommandManager.push(client, { ids: "1052726201086656612", slashCommands: slashCommands_special });
-
-		// Register public slash commands
-		// await slashCommandManager.push(client, { global: true });
-
-		// Register user install slash commands
-		// await slashCommandManager.pushToUsers(client);
-	}
-	
-	/* - - - - - { Dev } - - - - - */
+client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {	
 	// Register slash commands to a specific server :: { LOCAL }
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 
 	// Register slash commands :: { GLOBAL }
 	// await slashCommandManager.push(client, { global: true });
-
-	// Register slash commands :: { USER INSTALL }
-	// await slashCommandManager.pushToUsers(client);
 
 	// Remove commands (does nothing if commands were registered globally) :: { LOCAL }
 	// await slashCommandManager.remove(client, { ids: "your_server_id" });

@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, Message, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { BetterEmbedV2, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../../utils/discordTools");
+const { BetterEmbed, EmbedNavigator, awaitConfirm, messageContentToArray } = require("../../utils/discordTools");
 const { reminderManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
@@ -53,7 +53,7 @@ async function enableReminderSync(interaction, reminderID, syncMessage) {
 
 	// prettier-ignore
 	// Create the embed :: { REMINDER SYNC ENABLED }
-	let embed_syncEnabled = new BetterEmbedV2({
+	let embed_syncEnabled = new BetterEmbed({
 		title: "Sync Enabled",
 		description: isSlashCommand
 			? `I'll sync your reminder whenever you use ${slashCommandReference ? `</${sync_command_name}:${slashCommandReference.id}>` : `${syncMessage.author}'s \`/${syncMessage.interaction.commandName}\` command`}.`
@@ -160,7 +160,7 @@ async function subcommand_add(interaction) {
 	);
 
 	// Create the embed :: { REMINDER ADD }
-	let embed_reminderAdd = new BetterEmbedV2({
+	let embed_reminderAdd = new BetterEmbed({
 		title: "Reminder Added",
 		description: 'You will be reminded about "*$NAME*" $DYNAMIC $ETA.\n$OPTIONS'
 			.replace("$NAME", name)
@@ -345,7 +345,7 @@ async function subcommand_list(interaction) {
 
 	for (let i = 0; i < reminders_f_chunk.length; i++) {
 		// Create the embed :: { REMINDER LIST }
-		let embed = new BetterEmbedV2({
+		let embed = new BetterEmbed({
 			title: "Reminder List",
 			description: reminders_f_chunk[i].join("\n"),
 			footer: `Page ${i + 1} of ${reminders_f_chunk.length} | Total: ${reminders.length}`
@@ -416,7 +416,7 @@ async function subcommand_triggerAdd(interaction) {
 	});
 
 	/* - - - - - { Send the Result } - - - - - */
-	let embed_reminderTriggerAdd = new BetterEmbedV2({
+	let embed_reminderTriggerAdd = new BetterEmbed({
 		title: "Reminder Trigger Added",
 		description: 'I\'ll set a reminder for "*$NAME*" whenever you say **$TRIGGER**.$CHANNEL'
 			.replace("$NAME", name)
@@ -525,7 +525,7 @@ async function subcommand_triggerList(interaction) {
 
 	for (let i = 0; i < triggers_f_chunk.length; i++) {
 		// Create the embed :: { REMINDER LIST }
-		let embed = new BetterEmbedV2({
+		let embed = new BetterEmbed({
 			title: "Reminder Trigger List",
 			description: triggers_f_chunk[i].join("\n"),
 			footer: `Page ${i + 1} of ${triggers_f_chunk.length} | Total: ${triggers.length}`
