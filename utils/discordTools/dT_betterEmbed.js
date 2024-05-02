@@ -95,7 +95,7 @@ const dynaSend = require("./dT_dynaSend");
 const logger = require("../logger");
 const jt = require("../jsTools");
 
-const config = require("./dT_config.json");
+const config = { client: require("../../configs/config_client.json"), dt: require("./dT_config.json") };
 
 const DEV_MODE = process.env.DEV_MODE === "true" ? true : false || config.client.DEV_MODE || false;
 
@@ -110,7 +110,7 @@ class BetterEmbed {
 		imageURL: null,
 		description: null,
 		footer: { text: null, icon: null },
-		color: jt.choice(DEV_MODE ? config.EMBED_COLOR_DEV : config.EMBED_COLOR) || null,
+		color: jt.choice(DEV_MODE ? config.dt.EMBED_COLOR_DEV : config.dt.EMBED_COLOR) || null,
 		timestamp: null,
 		fields: [],
 		disableAutomaticContext: false
@@ -149,7 +149,7 @@ class BetterEmbed {
 
 		// prettier-ignore
 		str = str
-			.replace(/(?<!\\)\$INVIS\b/g, config.INVIS_CHAR)
+			.replace(/(?<!\\)\$INVIS\b/g, config.dt.INVIS_CHAR)
 
 			// User mentions
 			.replace(/(?<!\\|<)@[0-9]+(?!>)/g, s => `<@${s.substring(1)}>`)
