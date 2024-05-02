@@ -71,7 +71,7 @@ module.exports = client => {
 	// prettier-ignore
 	// Slash Commands (User Install)
 	for (let command of slashCommands.userInstall)
-		client.slashCommands_userInstall.set(command.data.name, command);
+		client.slashCommands_userInstall.set(command.commandData.name, command);
 
 	// prettier-ignore
 	// Slash Commands (Staff) (staff server only commands)
