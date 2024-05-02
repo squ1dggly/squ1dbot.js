@@ -1,19 +1,18 @@
 const { Client, CommandInteraction } = require("discord.js");
 const jt = require("../../utils/jsTools");
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").RawCommandExports} */
 module.exports = {
 	category: "USER_INSTALL",
 	options: { hidden: true },
 
-	// prettier-ignore
-	data: {
-        name: "fuck",
-        type: 1,
-        description: "What the fuck do you want?",
-        integration_types: [0, 1],
-        contexts: [0, 1, 2]
-    },
+	commandData: {
+		name: "fuck",
+		description: "What the fuck do you want?",
+		type: 1,
+		integration_types: [0, 1],
+		contexts: [0, 1, 2]
+	},
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {

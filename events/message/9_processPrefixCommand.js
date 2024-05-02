@@ -1,6 +1,6 @@
 // prettier-ignore
 const { Client, Events, PermissionFlagsBits, GuildMember, Message, userMention, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { BetterEmbed, markdown } = require("../../utils/discordTools/index.js");
+const { BetterEmbed, markdown } = require("../../utils/discordTools");
 const { guildManager } = require("../../utils/mongo");
 const logger = require("../../utils/logger");
 const jt = require("../../utils/jsTools");
@@ -8,12 +8,12 @@ const jt = require("../../utils/jsTools");
 const config = { client: require("../../configs/config_client.json") };
 
 /** @param {Message} message @param {string} commandName */
-function userIsBotAdminOrBypass(message, commandName) {
-	return [
-		config.client.OWNER_ID,
-		...config.client.ADMIN_IDS,
-		...(config.client.admin_bypass_ids[commandName] || [])
-	].includes(message.author.id);
+function userIsBotAdminOrBypass(interaction) {
+	let bypass = config.client.admin_bypass.find(b => b.COMMAND_NAME === interaction.commandName) || null;
+
+	return [config.client.OWNER_ID, ...config.client.ADMIN_IDS, ...(bypass ? bypass.USER_IDS : [])].includes(
+		interaction.user.id
+	);
 }
 
 /** @param {Message} message @param {string} commandName */
@@ -78,6 +78,9 @@ module.exports = {
 		let prefixCommand = client.prefixCommands.get(commandName) || null;
 		if (!prefixCommand) return;
 
+		// Check if the prefix command is guild Only
+		if (prefixCommand?.options?.guildOnly && !message.guildId) return;
+
 		/* - - - - - { Parse Prefix Command } - - - - - */
 		try {
 			// Check for command options
@@ -94,14 +97,14 @@ module.exports = {
 				if (botAdminOnly && !userIsBotAdminOrBypass(message, commandName)) return await new BetterEmbed({
 					color: "Red",
 					description: `Only the developers of ${client.user} can use that command.`
-				}).reply(message, { allowedMentions: { repliedUser: false } });
+				}).send(message, { sendMethod: "messageReply", allowedMentions: { repliedUser: false } });
 
 				// prettier-ignore
 				// Check if the command requires the user to have admin permission in the current guild
 				if (guildAdminOnly && !userIsGuildAdminOrBypass(message, commandName)) return await new BetterEmbed({
 					color: "Red",
 					description: "You need admin to use that command."
-				}).reply(message, { allowedMentions: { repliedUser: false } });
+				}).send(message, { sendMethod: "messageReply", allowedMentions: { repliedUser: false } });
 
 				// Check if the user has the required permissions
 				if (specialUserPerms) {
@@ -112,7 +115,7 @@ module.exports = {
 						color: "Red",
 						title: `User Missing ${_specialUserPerms.missing.length === 1 ? "Permission" : "Permissions"}`,
 						description:  _specialUserPerms.missing.join(", ")
-					}).reply(message, { allowedMentions: { repliedUser: false } });
+					}).send(message, { sendMethod: "messageReply", allowedMentions: { repliedUser: false } });
 				}
 
 				// Check if the bot has the required permissions
@@ -122,9 +125,9 @@ module.exports = {
 					// prettier-ignore
 					if (!_specialBotPerms.passed) return await new BetterEmbed({
 						color: "Red",
-						title: `Missing ${_specialBotPerms.missing.length === 1 ? "Permission" : "Permissions"}`,
+						title: `Bot Missing ${_specialBotPerms.missing.length === 1 ? "Permission" : "Permissions"}`,
 						description: _specialBotPerms.missing.join(", ")
-					}).reply(message, { allowedMentions: { repliedUser: false } });
+					}).send(message, { sendMethod: "messageReply", allowedMentions: { repliedUser: false } });
 				}
 			}
 
@@ -136,36 +139,45 @@ module.exports = {
 				// TODO: run code here after the command is finished
 			});
 		} catch (err) {
-			// Create a button :: { SUPPORT SERVER }
-			let btn_supportServer = new ButtonBuilder()
-				.setStyle(ButtonStyle.Link)
-				.setURL(config.client.support_server.INVITE_URL)
-				.setLabel("Support Server");
+			if (config.client.support_server.INVITE_URL) {
+				// Create the embed :: { FATAL ERROR }
+				let embed_fatalError = new BetterEmbed({
+					title: "⛔ Oh no!",
+					description: `An error occurred while using the **\`${commandName}\`** command.`
+				});
 
-			// Create an action row :: { SUPPORT SERVER }
-			let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
+				// Let the user know an error occurred
+				embed_fatalError.send(message, { sendMethod: "messageReply", allowedMentions: { repliedUser: false } });
+			} else {
+				// Create a button :: { SUPPORT SERVER }
+				let btn_supportServer = new ButtonBuilder()
+					.setStyle(ButtonStyle.Link)
+					.setURL(config.client.support_server.INVITE_URL)
+					.setLabel("Support Server");
 
-			// Create the embed :: { FATAL ERROR }
-			let embed_fatalError = new BetterEmbed({
-				title: "⛔ Ruh-roh raggy!",
-				description: `An error occurred while using the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere.`,
-				footer: "but frankly, I'd rather you didn't",
-				color: "#ff3864"
-			});
+				// Create an action row :: { SUPPORT SERVER }
+				let aR_supportServer = new ActionRowBuilder().setComponents(btn_supportServer);
 
-			// Let the user know an error occurred
-			embed_fatalError
-				.reply(message, {
-					components: message.guild.id !== config.client.support_server.GUILD_ID ? aR_supportServer : [],
-					allowedMentions: { repliedUser: false },
-					ephemeral: true
-				})
-				.catch(() => null);
+				// Create the embed :: { FATAL ERROR }
+				let embed_fatalError = new BetterEmbed({
+					color: "Red",
+					title: "⛔ Ruh-roh raggy!",
+					description: `An error occurred while using the **\`${commandName}\`** command.\nYou should probably report this unfortunate occurrence somewhere.`,
+					footer: "but frankly, I'd rather you didn't"
+				});
 
-			// Log the error
+				// Let the user know an error occurred
+				embed_fatalError.send(message, {
+					sendMethod: "messageReply",
+					components: interaction.guild.id !== config.client.support_server.GUILD_ID ? aR_supportServer : [],
+					allowedMentions: { repliedUser: false }
+				});
+			}
+
+			// Log the error to the console
 			return logger.error(
 				"Could not execute command",
-				`PRFX_CMD: ${prefix}${commandName} | guildID: ${message.guild.id} | userID: ${message.author.id}`,
+				`PRFX_CMD: ${prefix}${commandName} | guildID: '${message.guild.id}' | userID: '${message.author.id}'`,
 				err
 			);
 		}

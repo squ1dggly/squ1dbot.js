@@ -1,5 +1,5 @@
 const { Client, Message, User, GuildMember } = require("discord.js");
-const { BetterEmbed, BetterEmbedV2 } = require("../utils/discordTools");
+const { BetterEmbed } = require("../utils/discordTools");
 const jt = require("../utils/jsTools");
 
 /** @type {import("../configs/typedefs").PrefixCommandExports} */
@@ -12,7 +12,7 @@ module.exports = {
 
 	/** @param {Client} client @param {Message} message @param {import("../configs/typedefs").PrefixCommandExtra} extra */
 	execute: async (client, message) => {
-		let embed = new BetterEmbedV2({
+		let embed = new BetterEmbed({
 			context: { message },
 			author: { text: "Test Embed", icon: "$BOT_AVATAR" },
 			title: { text: "Test Title", hyperlink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },

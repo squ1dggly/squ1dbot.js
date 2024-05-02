@@ -1,8 +1,8 @@
 const { Client, CommandInteraction, SlashCommandBuilder } = require("discord.js");
-const { BetterEmbedV2, awaitConfirm } = require("../utils/discordTools");
-const jt = require("../utils/jsTools");
+const { BetterEmbed, awaitConfirm } = require("../../utils/discordTools");
+const jt = require("../../utils/jsTools");
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Admin",
 	options: { icon: "💣", deferReply: true, guildAdminOnly: true },
@@ -72,7 +72,7 @@ module.exports = {
 		await Promise.all(jt.chunk(Array.from(messages.values()), 100).map(chunk => channel.bulkDelete(chunk)));
 
 		/* - - - - - { Send the Success Embed } - - - - - */
-		let embed_nuke = new BetterEmbedV2({
+		let embed_nuke = new BetterEmbed({
 			title: "Nuke Complete 💣",
 			thumbnailURL: "https://c.tenor.com/WUZwFbmOnfwAAAAC/tenor.gif",
 			description: `Deleted ${messages.size} ${messages.size === 1 ? "message" : "messages"} in ${channel}.`

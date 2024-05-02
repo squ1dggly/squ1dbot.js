@@ -4,7 +4,7 @@
 		"prefix": "cmd",
 		"body": [
 			"const { Client, Message } = require(\"discord.js\");",
-			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const { BetterEmbed } = require(\"../utils/discordTools\");",
 			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").PrefixCommandExports} */",
@@ -19,12 +19,12 @@
 			"    execute: async (client, message) => {",
 			"        // Create an array of responses",
 			"        let choices = [",
-			"            \"What's up, **\\$USERNAME**! Have a cookie! :cookie:\",",
-			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\"",
+			"            \"What's up, **\\$USER_NAME**! Have a cookie! :cookie:\",",
+			"            \"Hey, **\\$USER_NAME**! Have a glass of milk! :milk:\"",
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"        let embed_${1:cookie} = new BetterEmbed({",
 			"            author: { user: message.author },",
 			"            description: jt.choice(choices)",
 			"        });\n",
@@ -42,7 +42,7 @@
 		"prefix": "cmd.perms",
 		"body": [
 			"const { Client, PermissionFlagsBits, Message } = require(\"discord.js\");",
-			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const { BetterEmbed } = require(\"../utils/discordTools\");",
 			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").PrefixCommandExports} */",
@@ -61,12 +61,12 @@
 			"    execute: async (client, message) => {",
 			"        // Create an array of responses",
 			"        let choices = [",
-			"            \"What's up, **\\$USERNAME**! Have a cookie! :cookie:\",",
-			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\"",
+			"            \"What's up, **\\$USER_NAME**! Have a cookie! :cookie:\",",
+			"            \"Hey, **\\$USER_NAME**! Have a glass of milk! :milk:\"",
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"        let embed_${1:cookie} = new BetterEmbed({",
 			"            author: { user: message.author },",
 			"            description: jt.choice(choices)",
 			"        });\n",
@@ -84,7 +84,7 @@
 		"prefix": "cmd.slash",
 		"body": [
 			"const { Client, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
-			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const { BetterEmbed } = require(\"../utils/discordTools\");",
 			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").SlashCommandExports} */",
@@ -100,12 +100,12 @@
 			"    execute: async (client, interaction) => {",
 			"        // Create an array of responses",
 			"        let choices = [",
-			"            \"What's up, **\\$USERNAME**! Have a cookie! :cookie:\",",
-			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\"",
+			"            \"What's up, **\\$USER_NAME**! Have a cookie! :cookie:\",",
+			"            \"Hey, **\\$USER_NAME**! Have a glass of milk! :milk:\"",
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"        let embed_${1:cookie} = new BetterEmbed({",
 			"            context: { interaction },",
 			"            description: jt.choice(choices)",
 			"        });\n",
@@ -123,7 +123,7 @@
 		"prefix": "cmd.slash.perms",
 		"body": [
 			"const { Client, PermissionFlagsBits, CommandInteraction, SlashCommandBuilder } = require(\"discord.js\");",
-			"const { BetterEmbedV2 } = require(\"../utils/discordTools\");",
+			"const { BetterEmbed } = require(\"../utils/discordTools\");",
 			"const jt = require(\"../utils/jsTools\");\n",
 
 			"/** @type {import(\"../configs/typedefs\").SlashCommandExports} */",
@@ -144,12 +144,55 @@
 			"    execute: async (client, interaction) => {",
 			"        // Create an array of responses",
 			"        let choices = [",
-			"            \"What's up, **\\$USERNAME**! Have a cookie! :cookie:\",",
-			"            \"Hey, **\\$USERNAME**! Have a glass of milk! :milk:\"",
+			"            \"What's up, **\\$USER_NAME**! Have a cookie! :cookie:\",",
+			"            \"Hey, **\\$USER_NAME**! Have a glass of milk! :milk:\"",
 			"        ];\n",
 
 			"        // Create the embed :: { COOKIE }",
-			"        let embed_${1:cookie} = new BetterEmbedV2({",
+			"        let embed_${1:cookie} = new BetterEmbed({",
+			"            context: { interaction },",
+			"            description: jt.choice(choices)",
+			"        });\n",
+
+			"        // Reply to the interaction with the embed",
+			"        return await embed_${1:cookie}.send(interaction);$0",
+			"    }",
+			"};",
+			""
+		]
+	},
+
+	"Raw Command": {
+		"scope": "javascript",
+		"prefix": "cmd.raw",
+		"body": [
+			"const { Client, CommandInteraction } = require(\"discord.js\");",
+			"const { BetterEmbed } = require(\"../utils/discordTools\");",
+			"const jt = require(\"../utils/jsTools\");\n",
+
+			"/** @type {import(\"../configs/typedefs\").RawCommandExports} */",
+			"module.exports = {",
+			"    category: \"Fun\",",
+			"    options: { icon: \"🍪\" },\n",
+
+			"    commandData: {",
+			"    	name: \"${1:cookie}\",",
+			"    	description: \"${2:Get a cookie or a glass of milk}\",",
+			"    	type: 1,",
+			"    	integration_types: [0, 1],",
+			"    	context: [0, 1, 2],",
+			"    },\n",
+
+			"    /** @param {Client} client @param {CommandInteraction} interaction */",
+			"    execute: async (client, interaction) => {",
+			"        // Create an array of responses",
+			"        let choices = [",
+			"            \"What's up, **\\$USER_NAME**! Have a cookie! :cookie:\",",
+			"            \"Hey, **\\$USER_NAME**! Have a glass of milk! :milk:\"",
+			"        ];\n",
+
+			"        // Create the embed :: { COOKIE }",
+			"        let embed_${1:cookie} = new BetterEmbed({",
 			"            context: { interaction },",
 			"            description: jt.choice(choices)",
 			"        });\n",
