@@ -59,7 +59,7 @@ module.exports = {
 		}).catch(() => null);
 
 		// prettier-ignore
-		// Check if the slash command is Guild Only
+		// Check if the slash command is guild Only
 		if (slashCommand?.options?.guildOnly && !interaction.guildId) return interaction.reply({
 			content: "This command cannot be used outside of a guild.", ephemeral: true
 		});
