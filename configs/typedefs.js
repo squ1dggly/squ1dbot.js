@@ -1,10 +1,25 @@
-/** @typedef UserInstallCommandData
+/** @typedef RawCommandData
  * @property {string} name Name of the command.
  * @property {string} description Description of the command.
- * @property {number} type
- * @property {number[]} integration_types Type of integrations. `0` for guilds, `1` for DMs.
- * @property {number[]} contexts
- */
+ * @property {number} type Type of command.
+ *
+ * - `1` `CHAT_INPUT`
+ *
+ * - `2` `USER` - ui-based
+ *
+ * - `3` `MESSAGE` - ui-based
+ * @property {number[]} integration_types Type of integrations.
+ *
+ * - `0` `GUILD_INSTALL`
+ *
+ * - `1` `USER_INSTALL`
+ * @property {number[]} contexts Context of the integration.
+ *
+ * - `0` `GUILD`
+ *
+ * - `1` `BOT_DM`
+ *
+ * - `2` `PRIVATE_CHANNEL` */
 
 /** @typedef CommandOptions
  * @property {boolean} deferReply Defer the interaction.
@@ -18,6 +33,8 @@
  * @property {PermissionFlagsBits|PermissionFlagsBits[]} specialBotPerms Require the bot to have certain permissions in the current guild.
  * @property {boolean} hidden Hide this command from the help command list. */
 
+/* - - - - - { Slash Command } - - - - - */
+
 /** @typedef SlashCommandExports
  * @property {string} category Category of the command.
  * @property {string} categoryIcon Icon of the command category.
@@ -25,14 +42,14 @@
  * @property {SlashCommandBuilder} builder Slash command builder.
  * @property {Function} execute Executed when the command is used. */
 
-/** @typedef UserInstallCommandExports
+/** @typedef RawSlashCommandExports
  * @property {string} category Category of the command.
  * @property {string} categoryIcon Icon of the command category.
  * @property {CommandOptions} options Extra options for the command.
- * @property {SlashCommandBuilder} commandData Raw JSON data used to register the command.
- * 
- * ***A user install command builder does not exist yet.***
+ * @property {RawCommandData} commandData Raw JSON data used to register the command.
  * @property {Function} execute Executed when the command is used. */
+
+/* - - - - - { Prefix Command } - - - - - */
 
 /** @typedef PrefixCommandExports
  * @property {string} name Name of the command.
@@ -48,6 +65,8 @@
  * @property {string} cleanContent Message content without the command name.
  * @property {string} cmdName Command name.
  * @property {string} prefix Prefix used. */
+
+/* - - - - - { Event } - - - - - */
 
 /** @typedef EventExports
  * @property {string} name Name of the event.

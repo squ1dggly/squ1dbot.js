@@ -1,7 +1,7 @@
 const { Client, CommandInteraction } = require("discord.js");
 const jt = require("../../utils/jsTools");
 
-/** @type {import("../configs/typedefs").SlashCommandExports} */
+/** @type {import("../../configs/typedefs").RawSlashCommandExports} */
 module.exports = {
 	category: "USER_INSTALL",
 	options: { hidden: true },
