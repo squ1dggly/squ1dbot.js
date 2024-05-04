@@ -19,20 +19,17 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
-		let specialChance = jt.chance(5);
-		let specialReplyUsed = false;
+		let specialReply_chance = jt.chance(5);
+		let specialReply_used = false;
 		let reply = "";
 
-		if (!specialChance) {
-			// Pick a general reply
-			reply = jt.choice(config.fuck.REPLIES_GENERAL);
-		} else {
+		if (specialReply_chance) {
 			for (let special of config.fuck.replies_special) {
 				// Check if the interaction was from a special user
 				if (interaction.user.id === special.USER_ID) {
 					// Set reply to the special reply made specifically for that user
 					reply = jt.choice(special.REPLIES);
-					specialReplyUsed = true;
+					specialReply_used = true;
 
 					// End the for-loop
 					break;
@@ -41,13 +38,20 @@ module.exports = {
 
 			// If no special reply was found, pick a general reply
 			if (!reply) reply = jt.choice(config.fuck.REPLIES_GENERAL);
+		} else {
+			// Pick a general reply
+			reply = jt.choice(config.fuck.REPLIES_GENERAL);
 		}
 
 		// Create the embed :: { FUCK }
 		let embed_fuck = new BetterEmbed({
 			context: { interaction },
 			description: reply,
-			color: specialReplyUsed
+			author: specialReply_chance
+				? { text: `Special reply: ${interaction.user.username}`, hyperlink: "https://youtu.be/dQw4w9WgXcQ" }
+				: null,
+			footer: specialReply_chance ? `there's only a 5% chance of this happening` : null,
+			color: specialReply_used
 				? "#FFCB47"
 				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
 		});
