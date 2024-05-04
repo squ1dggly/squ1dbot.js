@@ -1,5 +1,8 @@
 const { Client, CommandInteraction } = require("discord.js");
+const { BetterEmbed } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
+
+const config = { fuck: require("../../configs/config_fuck.json") };
 
 /** @type {import("../../configs/typedefs").RawCommandExports} */
 module.exports = {
@@ -16,21 +19,47 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
-		// Create an array of responses
-		let choices = [
-			"Why hello there, **$USERNAME**!",
-			"Why goodbye there.",
-			"Fuck off, you little shit.",
-			"Now who the flying fuck are you?",
-			"After all these years, you still never cease to amaze me with how pathetic you are.",
-			"I didn't ask to be fucked, now did I?",
-			"I'm going to go fuck myself.",
-			"I can't even catch a break from you for 3 FUCKING SECONDS? Now you have to bother me outside of the server too?",
-			"What are you? A breadstick? Because you're acting like a dipshit to me.",
-			"Fuck you. Suck a baguette. You dipshit.",
-			"Shut the fuck up."
-		];
+		let specialReply_chance = jt.chance(5);
+		let specialReply_used = false;
+		let reply = "";
 
-		return await interaction.reply({ content: jt.choice(choices) });
+		if (specialReply_chance) {
+			for (let special of config.fuck.replies_special) {
+				// Check if the interaction was from a special user
+				if (interaction.user.id === special.USER_ID) {
+					// Set reply to the special reply made specifically for that user
+					reply = jt.choice(special.REPLIES);
+					specialReply_used = true;
+
+					// End the for-loop
+					break;
+				}
+			}
+
+			// If no special reply was found, pick a general reply
+			if (!reply) reply = jt.choice(config.fuck.REPLIES_GENERAL);
+		} else {
+			// Pick a general reply
+			reply = jt.choice(config.fuck.REPLIES_GENERAL);
+		}
+
+		// Create the embed :: { FUCK }
+		let embed_fuck = new BetterEmbed({
+			context: { interaction },
+			description: reply,
+			author: specialReply_chance
+				? {
+						text: `Special reply: ${interaction.user.username}`,
+						hyperlink: jt.choice(["https://cornhub.website", "https://youtu.be/dQw4w9WgXcQ"])
+				  }
+				: null,
+			footer: specialReply_chance ? `there's only a 5% chance of this happening` : null,
+			color: specialReply_used
+				? "#FFCB47"
+				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
+		});
+
+		// Reply to the interaction with the embed
+		return await embed_fuck.send(interaction);
 	}
 };

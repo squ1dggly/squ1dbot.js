@@ -45,6 +45,8 @@ client.slashCommands_public = new Collection();
 client.slashCommands_userInstall = new Collection();
 client.slashCommands_staff = new Collection();
 client.slashCommands_custom = new Collection();
+
+client.slashCommands = new Collection();
 client.prefixCommands = new Collection();
 
 // Run importers
