@@ -198,7 +198,7 @@ class BetterEmbed {
 		/* - - - - - { Context } - - - - - */
 		// If no author context was provided, use the interaction's author
 		if (!this.data.author.context && this.data.context.interaction)
-			this.data.author.context = this.data.context.interaction.member;
+			this.data.author.context = this.data.context.interaction?.member || this.data.context.interaction?.user;
 
 		// If no author context was provided, use the message's author
 		if (!this.data.author.context && this.data.context.message)
