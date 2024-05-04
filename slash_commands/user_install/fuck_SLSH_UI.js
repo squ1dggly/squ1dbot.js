@@ -56,7 +56,8 @@ module.exports = {
 			footer: specialReply_chance ? `there's only a 5% chance of this happening` : null,
 			color: specialReply_used
 				? "#FFCB47"
-				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
+				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"],
+			disableAutomaticContext: false
 		});
 
 		// Reply to the interaction with the embed
