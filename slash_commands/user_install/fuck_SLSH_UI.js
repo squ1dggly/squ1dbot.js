@@ -1,4 +1,5 @@
 const { Client, CommandInteraction } = require("discord.js");
+const { BetterEmbed } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
 
 const config = { fuck: require("../../configs/config_fuck.json") };
@@ -18,6 +19,40 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
-		return await interaction.reply({ content: jt.choice(choices) });
+		let specialChance = jt.chance(5);
+		let specialReplyUsed = false;
+		let reply = "";
+
+		if (!specialChance) {
+			// Pick a general reply
+			reply = jt.choice(config.fuck.REPLIES_GENERAL);
+		} else {
+			for (let special of config.fuck.replies_special) {
+				// Check if the interaction was from a special user
+				if (interaction.user.id === special.USER_ID) {
+					// Set reply to the special reply made specifically for that user
+					reply = jt.choice(special.REPLIES);
+					specialReplyUsed = true;
+
+					// End the for-loop
+					break;
+				}
+			}
+
+			// If no special reply was found, pick a general reply
+			if (!reply) reply = jt.choice(config.fuck.REPLIES_GENERAL);
+		}
+
+		// Create the embed :: { FUCK }
+		let embed_fuck = new BetterEmbed({
+			context: { interaction },
+			description: reply,
+			color: specialReplyUsed
+				? "#FFCB47"
+				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
+		});
+
+		// Reply to the interaction with the embed
+		return await embed_fuck.send(interaction);
 	}
 };
