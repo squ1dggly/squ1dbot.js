@@ -1,10 +1,15 @@
 {
 	"REPLIES_GENERAL": [
 		"As of $month/$day/$year, you're still a fucking bitch.",
+        "Look at this [clown](<$USER_AVATAR>).",
 		"Why hello there, **$USER_NAME**!",
 		"Why hello there.",
+        "Nice try, you rapscallion. I'm not paying my taxes.",
+        "There's not enough hot steamy hardcore corn starring the Banana Man these days...",
 		"Why goodbye there.",
 		"Fuck off, you little shit.",
+        "[Check out this sick video!](<https://www.youtube.com/watch?v=dQw4w9WgXcQ>)",
+        "Go check out <https://cornhub.website> you freaky fuck.",
 		"Now who the flying fuck are you?",
 		"Have you heard the tale of the Flaccid Monkey? No? Well you're missing out because his tail wasn't as flaccid as yours.",
 		"After all these years, you still never cease to amaze me with how pathetic you are.",
@@ -85,7 +90,8 @@
 		"I may be gay, but that doesn't mean you can keep raw dogging my ass with all these commands, bro.",
 		"Well lick my boots and call me a dumbass!\nYou're still whippin' your high horse like a jolly bronco, you piece of shit.",
 		"Sorry, I don't talk to broke ass people.",
-		"What the fuck do you want? You smell like a wet pooch sunbathing in a crusty pizza box."
+		"What the fuck do you want? You smell like a wet pooch sunbathing in a crusty pizza box.",
+        "ok"
 	],
 
 	"replies_special": [

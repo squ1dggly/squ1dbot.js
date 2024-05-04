@@ -48,7 +48,10 @@ module.exports = {
 			context: { interaction },
 			description: reply,
 			author: specialReply_chance
-				? { text: `Special reply: ${interaction.user.username}`, hyperlink: "https://youtu.be/dQw4w9WgXcQ" }
+				? {
+						text: `Special reply: ${interaction.user.username}`,
+						hyperlink: jt.choice(["https://cornhub.website", "https://youtu.be/dQw4w9WgXcQ"])
+				  }
 				: null,
 			footer: specialReply_chance ? `there's only a 5% chance of this happening` : null,
 			color: specialReply_used
