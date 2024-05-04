@@ -1,5 +1,5 @@
 {
-	"general": [
+	"REPLIES_GENERAL": [
 		"Why hello there, **$USER_NAME**!",
 		"Why hello there.",
 		"Why goodbye there.",
@@ -78,20 +78,31 @@
 		"Can I please just relax for 1 goddamn minute? I'm going to have a fucking wet dream about destroying you later.",
 		"I'd travel around the entire world just to smack the shit out of you, you worthless crap.",
 		"I'd have more fun in North Korea than I would being on the same earth as you.",
-		"I just took a shit big enough to cause another Pearl Harbor incident. What the fuck have you been doing besides bothering me?"
+		"I just took a shit big enough to cause another Pearl Harbor incident. What the fuck have you been doing besides bothering me?",
+		"I love coc.",
+		"I love coc. Do you?",
+		"I may be gay, but that doesn't mean you can keep raw dogging my ass with all these commands, bro."
 	],
 
-	"special": [
+	"replies_special": [
 		{
-			"user_id": "396906362916831233",
-			"replies": [
+			"USER_ID": "396906362916831233",
+			"REPLIES": [
 				"You're always horny for your husbands. Right, Medaka?",
-				"You seem like that person I've been hearing about who wants to go to South Korea to get fucked. Are you her?"
+				"You seem like that person I've been hearing about who wants to go to South Korea to get fucked. Are you her?",
+				"Have you heard that song 'Seven' by Hungkok?"
 			]
 		},
 		{
-			"user_id": "233769307920662529",
-			"replies": ["Why hello there, Mastevstev! I have just the banana with your name on it."]
+			"USER_ID": "233769307920662529",
+			"REPLIES": [
+				"Why hello there, Mastevstev! I have just the banana with your name on it.",
+				"Did you just fart?",
+				"I farted.",
+				"Do you see banana man\nHopping over on the white hot sand\nHere he come with some for me\nFreshly taken from banana tree (one, two, three, four)",
+				"Banana man me want a ton\nGive me double and a bonus one\nGive me more for all me friends\nThis banana flow never end",
+				"Do you want a banana?\nPeel it down and go mm mm mm mm\nDo you want a banana?\nThis banana for you"
+			]
 		}
 	]
 }
