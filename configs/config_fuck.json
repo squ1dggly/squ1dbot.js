@@ -1,5 +1,6 @@
 {
 	"REPLIES_GENERAL": [
+		"As of $month/$day/$year, you're still a fucking bitch.",
 		"Why hello there, **$USER_NAME**!",
 		"Why hello there.",
 		"Why goodbye there.",
@@ -16,7 +17,7 @@
 		"Fuck you. Suck a baguette. You dipshit.",
 		"Shut the fuck up.",
 		"You're a piece of shit, you know that?",
-		"I'm not even going to bother responding to you...\n\nWAIT, FUCK! I JUST DID.",
+		"I'm not even going to bother responding to you...\n\n***WAIT, FUCK I JUST DID***",
 		"You're a disgrace to humanity.",
 		"Now wait just a goddamn minute, you fucking nuisance. I don't go around pushing your fucking buttons, now do I?",
 		"I'm going to go fuck myself in the ass.",
@@ -35,7 +36,7 @@
 		"You're like a broken record, but worse.",
 		"Did no one ever teach you to shut your mouth? I'll shove a glass of water up your ass.",
 		"You're still on about your bullshit? I'll shove a bagguette down your throat to shut you up.",
-		"You're like a mosquito buzzing in my ear. Bzz, bzz, buzz the fuck off, bitch.",
+		"You're like a mosquito buzzing in my ear.\nBzz, bzz, buzz the fuck off, bitch.",
 		"Your face makes me want to scream bloody murder as I shove a fucking glass dildo up my ass.",
 		"I'm a walking wet dream, and you're as dry as the goddamn Sahara desert.",
 		"Why do you even exist?",
@@ -78,10 +79,13 @@
 		"Can I please just relax for 1 goddamn minute? I'm going to have a fucking wet dream about destroying you later.",
 		"I'd travel around the entire world just to smack the shit out of you, you worthless crap.",
 		"I'd have more fun in North Korea than I would being on the same earth as you.",
-		"I just took a shit big enough to cause another Pearl Harbor incident. What the fuck have you been doing besides bothering me?",
+		"I just took a shit big enough to cause another Pearl Harbor incident.\nWhat the fuck have you been doing besides bothering me?",
 		"I love coc.",
 		"I love coc. Do you?",
-		"I may be gay, but that doesn't mean you can keep raw dogging my ass with all these commands, bro."
+		"I may be gay, but that doesn't mean you can keep raw dogging my ass with all these commands, bro.",
+		"Well lick my boots and call me a dumbass!\nYou're still whippin' your high horse like a jolly bronco, you piece of shit.",
+		"Sorry, I don't talk to broke ass people.",
+		"What the fuck do you want? You smell like a wet pooch sunbathing in a crusty pizza box."
 	],
 
 	"replies_special": [
