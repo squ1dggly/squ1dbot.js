@@ -49,21 +49,15 @@ module.exports = {
 			.edit({ content: `No messages were found in ${channel}!` })
 			.catch(() => null);
 
-		// Remove the message content
-		await interaction
-			.editReply({
-				content: "If you ask me, I think you should just delete the whole server. 🤷"
-			})
-			.catch(() => null);
-
 		// Make sure the user actually wants to do this
-		let confirmation = await awaitConfirm({
-			interaction,
-			color: "Red",
-			title: "Carefully review your decision...",
-			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) in ${channel}...`,
-			deleteOnCancel: true,
-			deleteOnConfirm: true
+		let confirmation = await awaitConfirm(interaction, {
+			userAccess: interaction.user,
+			text: "If you ask me, I think you should just delete the whole server. 🤷",
+			embed: {
+				color: "Red",
+				title: "⚠️ Carefully review your decision...",
+				description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) in ${channel}...`
+			}
 		});
 
 		if (!confirmation) return interactionReply;
@@ -79,6 +73,6 @@ module.exports = {
 		});
 
 		// Send the embed
-		return await embed_nuke.send(interaction, { sendMethod: "sendToChannel", deleteAfter: "7s" });
+		return await embed_nuke.send(interaction.channel, { deleteAfter: "7s" });
 	}
 };
