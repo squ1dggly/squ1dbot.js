@@ -57,13 +57,14 @@ module.exports = {
 			.catch(() => null);
 
 		// Make sure the user actually wants to do this
-		let confirmation = await awaitConfirm({
-			interaction,
-			color: "Red",
-			title: "Carefully review your decision...",
-			description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) in ${channel}...`,
-			deleteOnCancel: true,
-			deleteOnConfirm: true
+		let confirmation = await awaitConfirm(interaction, {
+			users: interaction.user,
+			content: "If you ask me, I think you should just delete the whole server. 🤷",
+			embed: {
+				color: "Red",
+				title: "Carefully review your decision...",
+				description: `You are about to delete ***EVERY MESSAGE*** (${messages.size} of 'em) in ${channel}...`
+			}
 		});
 
 		if (!confirmation) return interactionReply;

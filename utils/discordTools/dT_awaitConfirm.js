@@ -1,15 +1,15 @@
 /** @typedef aC_options
  * @property {User|User[]|GuildMember|GuildMember[]} users The users that will be able to interact with the message.
- * @property {BetterEmbed.bE_options} embedConfig The configuration of the embed.
  * @property {string} content The text that will either be sent with the embed, or is the confirmation message itself.
- * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
- * @property {import("./dT_dynaSend").SendMethod} sendMethod The method to send the embed.
+ * @property {BetterEmbed.bE_options} embed The configuration of the embed. Utilizes `BetterEmbed`.
  * @property {boolean} dontEmbed Send a message instead of an embed.
  * @property {boolean} deleteOnConfirm Delete the message after the `confirm` button is pressed. Defaults to `true`.
  * @property {boolean} deleteOnCancel Delete the message after the `cancel` button is pressed. Defaults to `true`.
  * @property {string|number} timeout How long to wait before timing out. Defaults to `15` seconds.
  *
- * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example. */
+ * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example.
+ * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
+ * @property {import("./dT_dynaSend").SendMethod} sendMethod The method to send the embed. */
 
 // prettier-ignore
 const { User, GuildMember, CommandInteraction, TextChannel, Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js");
@@ -33,17 +33,18 @@ const config = require("./dT_config.json");
  * **2.** `Channel` is required for the "sendToChannel" `SendMethod`.
  *
  * **3.** `Message` is required for `Message` based `SendMethods`.
- * @param {aC_options} options */
+ * @param {aC_options} options
+ * @returns {Promise<boolean>} */
 async function awaitConfirm(handler, options) {
 	options = {
 		users: [],
-		embedConfig: {},
-		messageContent: "",
-		allowedMentions: {},
-		sendMethod: "reply",
+		content: "",
+		embed: {},
 		dontEmbed: false,
 		deleteOnConfirm: true,
 		deleteOnCancel: true,
+		allowedMentions: {},
+		sendMethod: "reply",
 		timeout: "15s",
 		...options
 	};
@@ -57,11 +58,11 @@ async function awaitConfirm(handler, options) {
 	/* - - - - - { Error Checking } - - - - - */
 	if (!options.users?.length) throw new Error("[AwaitConfirm]: 'users' must be provided to handle the interaction.");
 
-	if (!Object.keys(options.embedConfig).length && !dontEmbed)
+	if (!Object.keys(options.embed).length && !dontEmbed)
 		throw new Error("[AwaitConfirm]: 'dontEmbed' is false, but 'embedConfig' is empty.");
 
-	if (!options.messageContent && !dontEmbed)
-		throw new Error("[AwaitConfirm]: 'dontEmbed' is true, but 'messageContent' is empty.");
+	if (!options.content && !dontEmbed)
+		throw new Error("[AwaitConfirm]: 'dontEmbed' is true, but 'content' is empty.");
 
 	if (options.timeout < 1000) logger.debug("[AwaitConfirm]: 'timeout' is less than 1 second; Is this intentional?");
 
@@ -69,7 +70,7 @@ async function awaitConfirm(handler, options) {
 	let embed = null;
 
 	// Create the embed, if embedConfig is provided
-	if (Object.keys(options.embedConfig).length) embed = new BetterEmbed(options.embedConfig);
+	if (Object.keys(options.embed).length) embed = new BetterEmbed(options.embed);
 
 	/* - - - - - { Create the Confirmation Message } - - - - - */
 	let buttons = {
@@ -85,6 +86,7 @@ async function awaitConfirm(handler, options) {
 	if (embed) {
 		// Send the embed using BetterEmbed
 		message = await embed.send(handler, {
+			content: options.content,
 			allowedMentions: options.allowedMentions,
 			components: ar_confirmation
 		});
@@ -95,7 +97,7 @@ async function awaitConfirm(handler, options) {
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
 
-			content: options.messageContent,
+			content: options.content,
 			components: ar_confirmation
 		});
 	}
@@ -110,7 +112,7 @@ async function awaitConfirm(handler, options) {
 				// prettier-ignore
 				// Edit the confirmation message
 				return await message.edit({
-					// clears content if dontEmbed was used, or if messageContent was provided
+					// clears content if dontEmbed was used, or if content was provided
 					content: options.dontEmbed ? "" : options.content ? "" : message.content,
 					components: message.components
 				}).catch(() => null);
