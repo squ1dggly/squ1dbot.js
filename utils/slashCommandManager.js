@@ -37,7 +37,7 @@ module.exports = {
 
 		// Import slash commands from the client
 		if (!options.slashCommands.length)
-			options.slashCommands = [...client.slashCommands_public.values(), ...client.slashCommands_userInstall.values()];
+			options.slashCommands = [...client.slashCommands.public.values(), ...client.slashCommands.userInstall.values()];
 		// Filter out invalid slash commands
 		else options.slashCommands = jt.forceArray(options.slashCommands).filter(slsh => slsh);
 
