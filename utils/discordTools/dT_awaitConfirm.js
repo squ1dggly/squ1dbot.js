@@ -1,6 +1,6 @@
 /** @typedef aC_options
- * @property {User|User[]|GuildMember|GuildMember[]} users The users that will be able to interact with the message.
- * @property {string} content The text that will either be sent with the embed, or is the confirmation message itself.
+ * @property {User|User[]|GuildMember|GuildMember[]} userAccess The users that will be able to interact with the message.
+ * @property {string} text The text that will either be sent with the embed, or is the confirmation message itself.
  * @property {BetterEmbed.bE_options} embed The configuration of the embed. Utilizes `BetterEmbed`.
  * @property {boolean} dontEmbed Send a message instead of an embed.
  * @property {boolean} deleteOnConfirm Delete the message after the `confirm` button is pressed. Defaults to `true`.
@@ -19,8 +19,6 @@ const dynaSend = require("./dT_dynaSend");
 const logger = require("../logger");
 const jt = require("../jsTools");
 
-const config = require("./dT_config.json");
-
 /** Send a confirmation message and await the user's response.
 
  * This function utilizes `BetterEmbed`.
@@ -37,8 +35,8 @@ const config = require("./dT_config.json");
  * @returns {Promise<boolean>} */
 async function awaitConfirm(handler, options) {
 	options = {
-		users: [],
-		content: "",
+		userAccess: [],
+		text: "",
 		embed: {},
 		dontEmbed: false,
 		deleteOnConfirm: true,
@@ -50,19 +48,18 @@ async function awaitConfirm(handler, options) {
 	};
 
 	// Force users to be an array
-	options.users = jt.forceArray(options.users);
+	options.userAccess = jt.forceArray(options.userAccess);
 
 	// Parse timeout
 	options.timeout = jt.parseTime(options.timeout);
 
 	/* - - - - - { Error Checking } - - - - - */
-	if (!options.users?.length) throw new Error("[AwaitConfirm]: 'users' must be provided to handle the interaction.");
+	if (!options.userAccess?.length) throw new Error("[AwaitConfirm]: 'users' must be provided to handle the interaction.");
 
 	if (!Object.keys(options.embed).length && !dontEmbed)
 		throw new Error("[AwaitConfirm]: 'dontEmbed' is false, but 'embedConfig' is empty.");
 
-	if (!options.content && !dontEmbed)
-		throw new Error("[AwaitConfirm]: 'dontEmbed' is true, but 'content' is empty.");
+	if (!options.text && !dontEmbed) throw new Error("[AwaitConfirm]: 'dontEmbed' is true, but 'content' is empty.");
 
 	if (options.timeout < 1000) logger.debug("[AwaitConfirm]: 'timeout' is less than 1 second; Is this intentional?");
 
@@ -86,7 +83,7 @@ async function awaitConfirm(handler, options) {
 	if (embed) {
 		// Send the embed using BetterEmbed
 		message = await embed.send(handler, {
-			content: options.content,
+			content: options.text,
 			allowedMentions: options.allowedMentions,
 			components: ar_confirmation
 		});
@@ -97,7 +94,8 @@ async function awaitConfirm(handler, options) {
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
 
-			content: options.content,
+			content: options.text,
+			allowedMentions: options.allowedMentions,
 			components: ar_confirmation
 		});
 	}
@@ -113,7 +111,7 @@ async function awaitConfirm(handler, options) {
 				// Edit the confirmation message
 				return await message.edit({
 					// clears content if dontEmbed was used, or if content was provided
-					content: options.dontEmbed ? "" : options.content ? "" : message.content,
+					content: options.dontEmbed ? "" : options.text ? "" : message.content,
 					components: message.components
 				}).catch(() => null);
 			};
@@ -139,7 +137,7 @@ async function awaitConfirm(handler, options) {
 		const filter = async i => {
 			await i.deferUpdate().catch(() => null);
 
-			if (options.users.find(u => u.id === i.user.id)) return false;
+			if (!options.userAccess.find(u => u.id === i.user.id)) return false;
 			if (i.componentType !== ComponentType.Button) return false;
 			if (![buttons.confirm.data.custom_id, buttons.cancel.data.custom_id].includes(i.customId)) return false;
 			return true;
