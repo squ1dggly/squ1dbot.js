@@ -45,12 +45,7 @@ module.exports = {
 	execute: async (client, interaction) => {
 		if (!interaction.commandName || !interaction.isCommand()) return;
 
-		let slashCommand =
-			client.slashCommands_public.get(interaction.commandName) ||
-			client.slashCommands_userInstall.get(interaction.commandName) ||
-			client.slashCommands_staff.get(interaction.commandName) ||
-			client.slashCommands_custom.get(interaction.commandName) ||
-			null;
+		let slashCommand = client.slashCommands.all.get(interaction.commandName) || null;
 
 		// prettier-ignore
 		// Slash command not found

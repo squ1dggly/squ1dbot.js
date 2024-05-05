@@ -9,7 +9,7 @@ module.exports = {
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("nuke")
-        .setDescription("Delete all the messages in a channel.")
+        .setDescription("Delete all the messages in a channel")
         .addChannelOption(option => option.setName("channel").setDescription("The channel to nuke.")),
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
@@ -79,6 +79,6 @@ module.exports = {
 		});
 
 		// Send the embed
-		return await embed_nuke.send(interaction.channel, { deleteAfter: "7s" });
+		return await embed_nuke.send(interaction, { sendMethod: "sendToChannel", deleteAfter: "7s" });
 	}
 };
