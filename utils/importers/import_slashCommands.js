@@ -65,21 +65,29 @@ module.exports = client => {
 
 	// prettier-ignore
 	// Slash Commands (Public)
-	for (let command of slashCommands.public)
-		client.slashCommands_public.set(command.builder.name, command);
+	for (let command of slashCommands.public) {
+		client.slashCommands.public.set(command.builder.name, command);
+		client.slashCommands.all.set(command.builder.name, command)
+	}
 
 	// prettier-ignore
 	// Slash Commands (User Install)
-	for (let command of slashCommands.userInstall)
-		client.slashCommands_userInstall.set(command.commandData.name, command);
+	for (let command of slashCommands.userInstall) {
+		client.slashCommands.userInstall.set(command.commandData.name, command);
+		client.slashCommands.all.set(command.commandData.name, command)
+	}
 
 	// prettier-ignore
 	// Slash Commands (Staff) (staff server only commands)
-	for (let command of slashCommands.staff)
-		client.slashCommands_staff.set(command.builder.name, command);
+	for (let command of slashCommands.staff) {
+		client.slashCommands.staff.set(command.builder.name, command);
+		client.slashCommands.all.set(command.builder.name, command)
+	}
 
 	// prettier-ignore
 	// Slash Commands (Special) (custom server only commands)
-	for (let command of slashCommands.custom)
-		client.slashCommands_custom.set(command.builder.name, command);
+	for (let command of slashCommands.custom) {
+		client.slashCommands.custom.set(command.builder.name, command);
+		client.slashCommands.all.set(command.builder.name, command)
+	}
 };
