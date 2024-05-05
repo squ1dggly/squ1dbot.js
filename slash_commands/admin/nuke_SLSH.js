@@ -10,7 +10,7 @@ module.exports = {
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("nuke")
         .setDescription("Delete all the messages in a channel")
-        .addChannelOption(option => option.setName("channel").setDescription("The channel to nuke.")),
+        .addChannelOption(option => option.setName("channel").setDescription("The channel to nuke")),
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
