@@ -37,7 +37,10 @@ module.exports = {
 			}
 
 			// If no special reply was found, pick a general reply
-			if (!reply) reply = jt.choice(config.fuck.REPLIES_GENERAL);
+			if (!reply) {
+				reply = jt.choice(config.fuck.REPLIES_GENERAL);
+				specialReply_used = false;
+			}
 		} else {
 			// Pick a general reply
 			reply = jt.choice(config.fuck.REPLIES_GENERAL);
