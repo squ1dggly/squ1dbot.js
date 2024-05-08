@@ -1,10 +1,10 @@
 {
 	"REPLIES_GENERAL": [
-		"As of $month/$day/$year, you're still a fucking bitch.",
-        "Look at this [clown](<$USER_AVATAR>).",
+		"Look at this [clown](<$USER_AVATAR>).",
 		"Why hello there, **$USER_NAME**!",
 		"Why hello there.",
         "Nice try, you rapscallion. I'm not paying my taxes.",
+		"As of $month/$day/$year, you're still a fucking bitch.",
         "There's not enough hot steamy hardcore corn starring the Banana Man these days...",
 		"Why goodbye there.",
 		"Fuck off, you little shit.",
@@ -95,6 +95,12 @@
 	],
 
 	"replies_special": [
+		{
+			"USER_ID": "842555247145779211",
+			"REPLIES": [
+				"Doors are optional."
+			]
+		},
 		{
 			"USER_ID": "396906362916831233",
 			"REPLIES": [
