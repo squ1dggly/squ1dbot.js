@@ -12,12 +12,14 @@
  * @property {import("./dT_dynaSend").SendMethod} sendMethod The method to send the embed. */
 
 // prettier-ignore
-const { User, GuildMember, CommandInteraction, TextChannel, Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js");
+const { User, GuildMember, CommandInteraction, Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js");
 
 const BetterEmbed = require("./dT_betterEmbed");
 const dynaSend = require("./dT_dynaSend");
 const logger = require("../logger");
 const jt = require("../jsTools");
+
+const config = require("./dT_config.json");
 
 /** Send a confirmation message and await the user's response.
 
@@ -43,7 +45,7 @@ async function awaitConfirm(handler, options) {
 		deleteOnCancel: true,
 		allowedMentions: {},
 		sendMethod: "reply",
-		timeout: "15s",
+		timeout: config.timeouts.CONFIRMATION,
 		...options
 	};
 
@@ -56,10 +58,8 @@ async function awaitConfirm(handler, options) {
 	/* - - - - - { Error Checking } - - - - - */
 	if (!options.userAccess?.length) throw new Error("[AwaitConfirm]: 'users' must be provided to handle the interaction.");
 
-	if (!Object.keys(options.embed).length && !dontEmbed)
-		throw new Error("[AwaitConfirm]: 'dontEmbed' is false, but 'embedConfig' is empty.");
-
-	if (!options.text && !dontEmbed) throw new Error("[AwaitConfirm]: 'dontEmbed' is true, but 'content' is empty.");
+	if (!options.text && !Object.keys(options.embed).length)
+		throw new Error("[AwaitConfirm]: you must either provide 'text' or 'embed' to send the message.");
 
 	if (options.timeout < 1000) logger.debug("[AwaitConfirm]: 'timeout' is less than 1 second; Is this intentional?");
 
@@ -110,8 +110,7 @@ async function awaitConfirm(handler, options) {
 				// prettier-ignore
 				// Edit the confirmation message
 				return await message.edit({
-					// clears content if dontEmbed was used, or if content was provided
-					content: options.dontEmbed ? "" : options.text ? "" : message.content,
+					content: options.text ? "" : message.content,
 					components: message.components
 				}).catch(() => null);
 			};
