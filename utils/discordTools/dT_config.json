@@ -10,6 +10,8 @@
 	},
 
 	"navigator": {
+		"DEFAULT_SELECT_MENU_PLACEHOLDER": "Choose a page to view...",
+
 		"buttons": {
 			"to_first": { "TEXT": "◀◀", "emoji": { "NAME": "⏮️", "ID": "⏮️" } },
 			"back": { "TEXT": "◀", "emoji": { "NAME": "◀️", "ID": "◀️" } },
