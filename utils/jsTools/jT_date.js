@@ -150,8 +150,8 @@ function etaHMS(unix, options) {
 	let s = Math.floor((seconds % 3600) % 60);
 
 	let h_f = h > 0 ? `${h} ${h === 1 ? "hour" : "hours"}` : "";
-	let m_f = h > 0 ? `${m} ${m === 1 ? "minute" : "minutes"}` : "";
-	let s_f = h > 0 ? `${s} ${s === 1 ? "second" : "seconds"}` : "";
+	let m_f = m > 0 ? `${m} ${m === 1 ? "minute" : "minutes"}` : "";
+	let s_f = s > 0 ? `${s} ${s === 1 ? "second" : "seconds"}` : "";
 
 	let result = [];
 
