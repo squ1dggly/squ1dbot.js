@@ -11,6 +11,8 @@
 
 	"navigator": {
 		"DEFAULT_SELECT_MENU_PLACEHOLDER": "Choose a page to view...",
+		"ASK_PAGE_NUMBER_MESSAGE": "$USER_MENTION say the page number you would like to view.",
+		"ASK_PAGE_NUMBER_ERROR": "$USER_MENTION `$MESSAGE_CONTENT` is not a valid page.",
 
 		"buttons": {
 			"to_first": { "TEXT": "◀◀", "emoji": { "NAME": "⏮️", "ID": "⏮️" } },
