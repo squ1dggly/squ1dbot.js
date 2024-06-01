@@ -12,8 +12,8 @@
 	"COOLDOWN_REGEX": ["cooldown", "cool down", "wait [0-9]+ (sec|min|hour|day|week)", "in [0-9]+ (sec|min|hour|day|week)"],
 
 	"PING_STYLES": [
-		{ "text": "$USER you have a reminder for **$REMINDER**!", "rarity": 100 },
-		{ "text": "$USER reminder about **$REMINDER**! Chop chop!", "rarity": 100 }
+		{ "text": "$USER_NAME you have a reminder for **$REMINDER**!", "rarity": 100 },
+		{ "text": "$USER_NAME reminder about **$REMINDER**! Chop chop!", "rarity": 100 }
 	],
 
 	"FUN_STYLES": [
@@ -28,7 +28,7 @@
 		"It seems you might've forgotten about \"**$REMINDER**\". Let's not let that happen again.",
 
 		"**Stop right there criminal scum!**\nYou can't be stealing those kittens! You're supposed to \"**$REMINDER**\".",
-		"Oh, hey there $USERNAME, didn't you **$REMINDER_CUT_OFF-**\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
+		"Oh, hey there $USER_NAMENAME, didn't you **$REMINDER_CUT_OFF-**\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
 		"It's \"**$REMINDER**\"in' time!",
 		"Anotha one! \"**$REMINDER**\".",
 
@@ -37,7 +37,7 @@
 		"Don't forget about \"**$REMINDER**\"! (***or else***)",
 		"Don't forget about \"**$REMINDER**\"!",
 
-		"✨ Oh to wish upon a star... Do you know what I'd wish for, $USER? I'd wish you'd remember \"**$REMINDER**\" youself!",
+		"✨ Oh to wish upon a star... Do you know what I'd wish for, $USER_NAME? I'd wish you'd remember \"**$REMINDER**\" youself!",
 		"To recieve your reminder, please insert another 🪙.\nNo? Alright, fine. Remember to \"**$REMINDER**\".",
 		"🌠 Once upon a time... There was a \"**$REMINDER**\" that had to be done!",
 		"I think it's time for \"**$REMINDER**\". If you know what I mean... 😎",
