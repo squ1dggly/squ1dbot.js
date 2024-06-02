@@ -45,7 +45,7 @@ module.exports = {
 
 		/* - - - - - { Paginate } - - - - - */
 		let embedNav = new EmbedNavigator({
-			embeds: [embed_info, embed_warns, embed_roles, embed_details],
+			embeds: [embed_info, embed_warns, embed_details],
 			userAccess: interaction.user,
 			selectMenuEnabled: true
 		});
