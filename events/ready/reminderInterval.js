@@ -62,7 +62,7 @@ module.exports = {
 						description: jt.choice(config.reminder.FUN_STYLES)
 							.replace(/\$REMINDER\b/g, reminder.name)
 							.replace(/\$REMINDER_CUT_OFF\b/g, reminder.name.slice(0, 4).trim())
-							.replace(/\$USERNAME\b/g, guildMember?.displayName || guildMember?.username || guildMember?.user?.username),
+							.replace(/\$USER_NAME\b/g, guildMember?.displayName || guildMember?.username || guildMember?.user?.username),
 						footer: `ID: ${reminder._id} ${reminder.repeat ? reminder.limit !== null ? `• Repeat: ${reminder.limit} more ${reminder.limit === 1 ? "time" : "times"}` : "• Repeat: ✅" : ""}`,
 						timestamp: true
 					});

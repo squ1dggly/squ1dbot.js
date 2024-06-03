@@ -5,7 +5,7 @@
  * @property {TextChannel} channel Used for the "sendToChannel" `SendMethod`.
  * @property {Message} message Used for the "messageReply", and "messageEdit" `SendMethod`.
  * @property {string} content The text content to send in the message.
- * @property {EmbedBuilder|BetterEmbed|Array<EmbedBuilder|BetterEmbed>} embeds One or more `Embed`s to send.
+ * @property {EmbedBuilder|BetterEmbed|Array<EmbedBuilder|BetterEmbed>} embeds One or more `Embeds` to send.
  * @property {ActionRowBuilder|ActionRowBuilder[]} components The components to add in the message.
  * @property {import("discord.js").MessageMentionOptions} allowedMentions The allowed mentions of the message.
  * @property {SendMethod} sendMethod The method to send the message.

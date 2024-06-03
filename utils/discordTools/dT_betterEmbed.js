@@ -78,17 +78,6 @@
  * This utilizes `jsTools.parseTime()`, letting you also use "10s", "1m", or "1m 30s" for example.
  * @property {boolean} fetchReply Whether to return the `Message` object after sending. `true` by default. */
 
-/** @typedef {CommandInteraction|import("discord.js").Channel|Message} Handler
- * ***REQUIRED*** to send the embed.
- *
- * The type of handler depends on the `SendMethod` you choose to use.
- *
- * **1.** `CommandInteraction` is required for `Interaction` based `SendMethods`.
- *
- * **2.** `Channel` is required for the "sendToChannel" `SendMethod`.
- *
- * **3.** `Message` is required for `Message` based `SendMethods`. */
-
 // prettier-ignore
 const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder, BaseChannel } = require("discord.js");
 const dynaSend = require("./dT_dynaSend");
