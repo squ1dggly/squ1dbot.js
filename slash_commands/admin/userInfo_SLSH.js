@@ -8,10 +8,10 @@ const config = { client: require("../../configs/config_client.json") };
 function getKeyPermissions(guildMember) {
 	const keyPermissions = [
 		{ key: "Administrator", value: "Admin" },
-		{ key: "ManageMessages", value: "Message" },
-		{ key: "ManageChannels", value: "Channel" },
+		{ key: "ManageMessages", value: "Messages" },
+		{ key: "ManageChannels", value: "Channels" },
 		{ key: "ManageGuild", value: "Guild" },
-		{ key: "ManageRoles", value: "Role" },
+		{ key: "ManageRoles", value: "Roles" },
 		{ key: "BanMembers", value: "Ban" },
 		{ key: "KickMembers", value: "Kick" },
 		{ key: "MentionEveryone", value: "Mention Everyone" }
@@ -52,7 +52,7 @@ module.exports = {
 		let member_keyPerms = getKeyPermissions(member);
 		let member_properties = [];
 
-		if (member.id === interaction.guild.ownerId) member_properties.push("`👑 OWNER`");
+		if (member.id === interaction.guild.ownerId) member_properties.push("`👑 SERVER OWNER`");
 		if (member.permissions.has(PermissionFlagsBits.Administrator)) member_properties.push("`🛠️ ADMIN`");
 		if (member.user.bot) member_properties.push("`🤖 BOT`");
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
