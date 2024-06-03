@@ -40,7 +40,21 @@ module.exports = {
 			author: { text: `User Details - ${member.user.username}`, icon: true },
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
-			description: "something useful's supposed to go here..."
+			description: "something useful's supposed to go here...",
+
+			fields: [
+				{
+					name: "Avatar",
+					value: "[128px](<$128>) - [256px](<$256>) - [512px](<$512>) - [1024px](<$1024>)"
+						.replace("$128", member.user.displayAvatarURL({ size: 128 }))
+						.replace("$256", member.user.displayAvatarURL({ size: 256 }))
+						.replace("$512", member.user.displayAvatarURL({ size: 512 }))
+						.replace("$1024", member.user.displayAvatarURL({ size: 1024 }))
+				},
+
+				{ name: "Account Created", value: `<t:${member.user.createdTimestamp}:R>`, inline: true },
+				{ name: "Joined Guild", value: `<t:${member.joinedTimestamp}:R>`, inline: true }
+			]
 		});
 
 		/* - - - - - { Paginate } - - - - - */

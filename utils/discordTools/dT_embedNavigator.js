@@ -37,7 +37,7 @@
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message. */
 
 // prettier-ignore
-const { CommandInteraction, GuildMember, User, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { CommandInteraction, GuildMember, User, BaseChannel, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const deleteMesssageAfter = require("./dT_deleteMessageAfter");
 const BetterEmbed = require("./dT_betterEmbed");
 const dynaSend = require("./dT_dynaSend");
@@ -594,7 +594,7 @@ class EmbedNavigator {
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
 			...options,
-			embeds: this.options.embeds,
+			embeds: this.data.pages.current,
 			components: this.data.messageComponents
 		});
 
