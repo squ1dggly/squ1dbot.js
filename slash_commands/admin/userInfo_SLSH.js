@@ -17,21 +17,21 @@ function getKeyPermissions(guildMember) {
 		{ key: "MentionEveryone", value: "Mention Everyone" }
 	];
 
-	// Get and array of keys only from the keyPermissions array
-	let keyPermissions_keys = keyPermissions.map(p => p.key);
-
 	// Get the permissions of the member
 	let member_permissions = guildMember.permissions.toArray();
 
 	// Filter out permissions that are not in the keyPermissions array
-	let member_keyPerms = member_permissions.map(p => {
-		let idx = keyPermissions.findIndex(kp => kp.key === p);
+	let member_keyPerms = member_permissions
+		.map(p => {
+			let idx = keyPermissions.findIndex(kp => kp.key === p);
 
-		if (idx >= 0) return keyPermissions[idx].value;
-	});
+			if (idx >= 0) return `\`${keyPermissions[idx].value}\``;
+		})
+		// Filter out empty values
+		.filter(p => p);
 
 	// Return the alphabetically sorted permissions array
-	return member_keyPerms.sort((a, b) => a.name.localeCompare(b.name));
+	return member_keyPerms.sort((a, b) => a.localeCompare(b));
 }
 
 /** @type {import("../../configs/typedefs").SlashCommandExports} */
@@ -64,11 +64,12 @@ module.exports = {
 				icon: true
 			}, */
 			// title: `${member.id === interaction.guild.ownerId ? "👑" : ""} User Info - ${member.user.username}`,
-			title: `User Info - ${member.user.username}`,
+			title: `User Info | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 			// footer: { text: `ID: ${member.id}` },
 
 			description: member_properties.length ? member_properties.join(" ") : "",
+			timestamp: true,
 
 			/* description:
 				"- **Account**\n - Created: $USER_CREATED\n - Bot: $IS_BOT\n\n- **Server**\n - Joined: $JOINED_GUILD\n - Owner: $IS_OWNER\n - Admin: $IS_ADMIN"
@@ -108,7 +109,7 @@ module.exports = {
 
 				{
 					name: `Key Permissions (${member_keyPerms.length})`,
-					value: member_keyPerms.length ? member_keyPerms.join(" ") : "`None`"
+					value: member_keyPerms.length ? member_keyPerms.join(", ") : "`None`"
 				}
 			]
 
