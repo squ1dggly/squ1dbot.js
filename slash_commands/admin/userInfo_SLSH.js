@@ -50,34 +50,32 @@ module.exports = {
 
 		/* - - - - - { Info Embed } - - - - - */
 		let member_keyPerms = getKeyPermissions(member);
+		let member_roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).values());
+		// Strip @everyone role
+		member_roles.pop();
+
 		let member_properties = [];
 
+		// Is guild owner
 		if (member.id === interaction.guild.ownerId) member_properties.push("`👑 SERVER OWNER`");
+		// Has admin permission in the current guild
 		if (member.permissions.has(PermissionFlagsBits.Administrator)) member_properties.push("`🛠️ ADMIN`");
+		// User's account is a bot
 		if (member.user.bot) member_properties.push("`🤖 BOT`");
+		// User is a squ1dbot admin/developer
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
+
+		// TODO: add infracture tag if user's been warned at or past a certain threshold
+		// TODO: add user biography to embed_info if set
+		// TODO: add user note to footer if one was set by an admin
 
 		let embed_info = new BetterEmbed({
 			context: { interaction },
-			/* author: {
-				text: `User Info - ${member.user.username} ${member.id === interaction.guild.ownerId ? "(👑)" : ""}`,
-				icon: true
-			}, */
-			// title: `${member.id === interaction.guild.ownerId ? "👑" : ""} User Info - ${member.user.username}`,
 			title: `User Info | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
-			// footer: { text: `ID: ${member.id}` },
 
 			description: member_properties.length ? member_properties.join(" ") : "",
 			timestamp: true,
-
-			/* description:
-				"- **Account**\n - Created: $USER_CREATED\n - Bot: $IS_BOT\n\n- **Server**\n - Joined: $JOINED_GUILD\n - Owner: $IS_OWNER\n - Admin: $IS_ADMIN"
-					.replace("$USER_CREATED", `<t:${jt.msToSec(member.user.createdTimestamp)}:R>`)
-					.replace("$IS_BOT", member.user.bot ? "`✅`" : "`❌`")
-					.replace("$JOINED_GUILD", `<t:${jt.msToSec(member.joinedTimestamp)}:R>`)
-					.replace("$IS_OWNER", member.id === interaction.guild.ownerId ? "`👑`" : "`❌`")
-					.replace("$IS_ADMIN", member.permissions.has(PermissionFlagsBits.Administrator) ? "`✅`" : "`❌`"), */
 
 			fields: [
 				{
@@ -100,10 +98,12 @@ module.exports = {
 
 				{
 					name: "Server",
-					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`"
+					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`\n- Roles:\n - Highest: $ROLE_HIGHEST\n - Total: `$ROLE_COUNT`"
 						.replace("$JOINED_GUILD", `<t:${jt.msToSec(member.joinedTimestamp)}:R>`)
 						.replace("$USER_MENTION", `${member}`)
-						.replace("$WARN_COUNT", "0"),
+						.replace("$WARN_COUNT", "0")
+						.replace("$ROLE_HIGHEST", member_roles[0])
+						.replace("$ROLE_COUNT", member_roles.length),
 					inline: true
 				},
 
@@ -111,28 +111,14 @@ module.exports = {
 					name: `Key Permissions (${member_keyPerms.length})`,
 					value: member_keyPerms.length ? member_keyPerms.join(", ") : "`None`"
 				}
+
+				/* {
+					name: `Roles (${member_roles.length})`,
+					value: `$TOP_ROLES $PLUS_MORE`
+						.replace("$TOP_ROLES", member_roles[0])
+						.replace("$PLUS_MORE", member_roles.length - 3 ? `**+ ${member_roles.length - 3} more...**` : "")
+				} */
 			]
-
-			/* fields: [
-				{
-					name: "Avatar",
-					value: "[128px]($128>) - [256px]($256) - [512px]($512) - [1024px]($1024)"
-						.replace("$128", member.user.displayAvatarURL({ size: 128 }))
-						.replace("$256", member.user.displayAvatarURL({ size: 256 }))
-						.replace("$512", member.user.displayAvatarURL({ size: 512 }))
-						.replace("$1024", member.user.displayAvatarURL({ size: 1024 }))
-				},
-
-				{ name: "Account Created", value: `<t:${jt.msToSec(member.user.createdTimestamp)}:R>`, inline: true },
-				{ name: "Bot", value: member.user.bot ? "✅" : "❌", inline: true },
-
-				{ name: "Joined Guild", value: `<t:${jt.msToSec(member.joinedTimestamp)}:R>` },
-				{
-					name: "Admin",
-					value: member.permissions.has(PermissionFlagsBits.Administrator) ? "✅" : "❌",
-					inline: true
-				}
-			] */
 		});
 
 		/* - - - - - { Details Embed } - - - - - */

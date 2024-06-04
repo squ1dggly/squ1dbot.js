@@ -12,8 +12,8 @@
 	"COOLDOWN_REGEX": ["cooldown", "cool down", "wait [0-9]+ (sec|min|hour|day|week)", "in [0-9]+ (sec|min|hour|day|week)"],
 
 	"PING_STYLES": [
-		{ "text": "$USER_NAME you have a reminder for **$REMINDER**!", "rarity": 100 },
-		{ "text": "$USER_NAME reminder about **$REMINDER**! Chop chop!", "rarity": 100 }
+		{ "text": "$USER_MENTION you have a reminder for **$REMINDER**!", "rarity": 100 },
+		{ "text": "$USER_MENTION reminder about **$REMINDER**! Chop chop!", "rarity": 100 }
 	],
 
 	"FUN_STYLES": [
@@ -28,7 +28,7 @@
 		"It seems you might've forgotten about \"**$REMINDER**\". Let's not let that happen again.",
 
 		"**Stop right there criminal scum!**\nYou can't be stealing those kittens! You're supposed to \"**$REMINDER**\".",
-		"Oh, hey there $USER_NAMENAME, didn't you **$REMINDER_CUT_OFF-**\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
+		"Oh, hey there $USER_NAME, didn't you **$REMINDER_CUT_OFF-**\nWait, what was my line again? Oh yeah. \"**$REMINDER**\"!",
 		"It's \"**$REMINDER**\"in' time!",
 		"Anotha one! \"**$REMINDER**\".",
 
