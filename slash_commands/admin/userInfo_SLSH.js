@@ -47,6 +47,7 @@ module.exports = {
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
 		let member = interaction.options.getMember("user") || interaction.member;
+		let user = await client.users.fetch(member.id, { force: true });
 
 		/* - - - - - { Info Embed } - - - - - */
 		let member_keyPerms = getKeyPermissions(member);
@@ -66,6 +67,8 @@ module.exports = {
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
 
 		// TODO: add infracture tag if user's been warned at or past a certain threshold
+		// member_properties.push("`⚠️ INFRACTURE`");
+
 		// TODO: add user biography to embed_info if set
 		// TODO: add user note to footer if one was set by an admin
 
@@ -75,7 +78,9 @@ module.exports = {
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
 			description: member_properties.length ? member_properties.join(" ") : "",
-			timestamp: true,
+			imageURL: user.bannerURL({ size: 1024 }),
+			color: user.banner ? user.hexAccentColor : "#2B2D31",
+			// footer: '🔴 "this user is a fucking cunt"',
 
 			fields: [
 				{
@@ -89,7 +94,7 @@ module.exports = {
 
 				{
 					name: "Account",
-					value: "- Created: $USER_CREATED\n- User: `$USER_NAME`\n- ID: `$USER_ID`"
+					value: "- Created: $USER_CREATED\n- Name: `$USER_NAME`\n- ID: `$USER_ID`"
 						.replace("$USER_CREATED", `<t:${jt.msToSec(member.user.createdTimestamp)}:R>`)
 						.replace("$USER_NAME", member.user.username)
 						.replace("$USER_ID", member.id),
@@ -98,36 +103,35 @@ module.exports = {
 
 				{
 					name: "Server",
-					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`\n- Roles:\n - Highest: $ROLE_HIGHEST\n - Total: `$ROLE_COUNT`"
+					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`"
 						.replace("$JOINED_GUILD", `<t:${jt.msToSec(member.joinedTimestamp)}:R>`)
 						.replace("$USER_MENTION", `${member}`)
-						.replace("$WARN_COUNT", "0")
-						.replace("$ROLE_HIGHEST", member_roles[0])
-						.replace("$ROLE_COUNT", member_roles.length),
+						.replace("$WARN_COUNT", "0"),
 					inline: true
 				},
 
 				{
 					name: `Key Permissions (${member_keyPerms.length})`,
 					value: member_keyPerms.length ? member_keyPerms.join(", ") : "`None`"
-				}
+				},
 
-				/* {
-					name: `Roles (${member_roles.length})`,
-					value: `$TOP_ROLES $PLUS_MORE`
-						.replace("$TOP_ROLES", member_roles[0])
-						.replace("$PLUS_MORE", member_roles.length - 3 ? `**+ ${member_roles.length - 3} more...**` : "")
-				} */
+				// TODO: add latest warn overview if it exists
+				{
+					name: "⚠️ Last Infracture",
+					value: "$TIMESTAMP - Reason: *$REASON*"
+						.replace("$TIMESTAMP", `<t:${jt.msToSec(Date.now())}:R>`)
+						.replace("$REASON", "Not provided.")
+				}
 			]
 		});
 
 		/* - - - - - { Details Embed } - - - - - */
+		// .replace("$ROLE_HIGHEST", member_roles[0])
+		// .replace("$ROLE_COUNT", member_roles.length)
+
 		let embed_details = new BetterEmbed({
 			context: { interaction },
-			author: {
-				text: `${member.id === interaction.guild.ownerId ? "👑" : ""} User Info - ${member.user.username}`,
-				icon: true
-			},
+			title: `User Details | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
 			description: "something useful's supposed to go here..."
@@ -136,10 +140,7 @@ module.exports = {
 		/* - - - - - { Warns Embed } - - - - - */
 		let embed_warns = new BetterEmbed({
 			context: { interaction },
-			author: {
-				text: `${member.id === interaction.guild.ownerId ? "👑" : ""} User Info - ${member.user.username}`,
-				icon: true
-			},
+			title: `User Warns | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
 			description: "something useful's supposed to go here..."
@@ -147,7 +148,7 @@ module.exports = {
 
 		/* - - - - - { Paginate } - - - - - */
 		let embedNav = new EmbedNavigator({
-			embeds: [embed_info, embed_warns, embed_details],
+			embeds: [embed_info, embed_details, embed_warns],
 			userAccess: interaction.user,
 			selectMenuEnabled: true
 		});
