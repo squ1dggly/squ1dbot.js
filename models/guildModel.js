@@ -8,6 +8,11 @@ const schema_guild = new Schema(
 
 		prefix: { type: String, default: config.client.PREFIX },
 
+		user_warns: {
+			lifetime_count: 0,
+			cases: []
+		},
+
 		timestamp_joined: { type: Number, default: Date.now() }
 	},
 	{ collection: "guilds" }
