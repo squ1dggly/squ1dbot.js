@@ -110,24 +110,28 @@ module.exports = {
 					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`"
 						.replace("$JOINED_GUILD", `<t:${jt.msToSec(member.joinedTimestamp)}:R>`)
 						.replace("$USER_MENTION", `${member}`)
-						.replace("$WARN_COUNT", "0"),
+						.replace("$WARN_COUNT", `${member_warns.length}`),
 					inline: true
 				},
 
 				{
 					name: `Key Permissions (${member_keyPerms.length})`,
 					value: member_keyPerms.length ? member_keyPerms.join(", ") : "`None`"
-				},
-
-				// TODO: add latest warn overview if it exists
-				{
-					name: "⚠️ Latest Warning",
-					value: "$TIMESTAMP - Reason: *$REASON*"
-						.replace("$TIMESTAMP", `<t:${jt.msToSec(Date.now())}:R>`)
-						.replace("$REASON", "Not provided.")
 				}
 			]
 		});
+
+		// Add the latest warning overview, if it exists
+		if (member_warns.length) {
+			let _lastWarn = member_warns[member_warns.length - 1];
+
+			embed_info.addFields({
+				name: "⚠️ Latest Warning",
+				value: '$TIMESTAMP - Reason: "$REASON"'
+					.replace("$TIMESTAMP", `<t:${jt.msToSec(_lastWarn.timestamp)}:R>`)
+					.replace("$REASON", _lastWarn.reason)
+			});
+		}
 
 		/* - - - - - { Details Embed } - - - - - */
 		// .replace("$ROLE_HIGHEST", member_roles[0])
