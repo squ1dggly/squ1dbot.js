@@ -48,8 +48,26 @@ module.exports = {
 		}
 
 		// Warn the user
-		await guildManager.user.warns.add(interaction.guild.id, user.id, reason, severity_f);
+		let warn = await guildManager.user.warns.add(interaction.guild.id, user.id, reason, severity_f);
 
-		return await interaction.editReply({ content: `test warned **${user.username}**` });
+		// prettier-ignore
+		// Create the embed :: { WARN }
+		let embed_warn = new BetterEmbed({
+			color: "Orange",
+            title: `**${user.username}** Warned`,
+            thumbnailURL: user.displayAvatarURL(),
+			description: `\nUser ID: \`${user.id}\``,
+            footer: `ID: ${warn.id}`,
+            
+            fields: [
+                { name: "Reason:", value: `"${warn.reason}"`, inline: true },
+                { name: "Severity:", value: `\`${warn.severity} ${jt.toTitleCase(severity)}\``, inline: true },
+            ]
+		});
+
+		// Send the embed
+		return await embed_warn.send(interaction, {
+			content: `\`⚠️\` ${user} has been warned by **${interaction.member.displayName}**!`
+		});
 	}
 };

@@ -84,6 +84,7 @@ async function user_warns_add(guild_id, user_id, reason = "N/A", severity) {
 
 	// Update the document
 	await _update(guild_id, data, true);
+	return data.$push["user_warns.cases"];
 }
 
 /** @param {string} guild_id @param {string} user_id @param {string} warn_id */

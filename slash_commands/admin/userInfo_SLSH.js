@@ -4,6 +4,7 @@ const { guildManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
 const config = { client: require("../../configs/config_client.json") };
+const WANTED_THRESHOLD = 5;
 
 /** @param {GuildMember} guildMember */
 function getKeyPermissions(guildMember) {
@@ -71,7 +72,7 @@ module.exports = {
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
 
 		// TODO: add infracture tag if user's been warned at or past a certain threshold
-		// member_properties.push("`⚠️ INFRINGED`");
+		if (member_warns.length > WANTED_THRESHOLD) member_properties.push("`⚠️ WANTED`");
 
 		// TODO: add user biography to embed_info if set
 		// TODO: add user note to footer if one was set by an admin
@@ -127,7 +128,9 @@ module.exports = {
 
 			embed_info.addFields({
 				name: "⚠️ Latest Warning",
-				value: '$TIMESTAMP - Reason: "$REASON"'
+				value: '`$ID` `$SEVERITY` $TIMESTAMP - Reason: "$REASON"'
+					.replace("$ID", _lastWarn.id)
+					.replace("$SEVERITY", _lastWarn.severity)
 					.replace("$TIMESTAMP", `<t:${jt.msToSec(_lastWarn.timestamp)}:R>`)
 					.replace("$REASON", _lastWarn.reason)
 			});
