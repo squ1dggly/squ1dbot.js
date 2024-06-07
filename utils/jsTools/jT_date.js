@@ -165,13 +165,18 @@ function etaHMS(unix, options) {
 	return result.join(", ").replace("&,", "and");
 }
 
-/** Format seconds into a dynamic "Y, MTH, D, H, M, and S" time string format.
- * @param {number} seconds time to convert in seconds
- * @example
- * secondsToString(300) // returns "5 minutes"
- * secondsToString(301) // returns "5 minutes, and 1 second"
+/** Format the difference between 2 unix timestamps into a dynamic "Y, MTH, D, H, M, and S" time string format
+ * @param {number} seconds time to convert in unix (milliseconds)
  * @copyright *Code written by **@fujimori_*** */
-function secondsToString(seconds) {
+function unixToString(seconds) {
+	// Get the current time
+	let currentTime = Date.now();
+	let now = Math.floor(currentTime / 1000);
+
+	// Convert time to seconds
+	let seconds = now - time;
+
+	// Break down the counter math
 	let y = Math.floor(seconds / 31536000);
 	let mo = Math.floor((seconds % 31536000) / 2628000);
 	let d = Math.floor(((seconds % 31536000) % 2628000) / 86400);
@@ -179,6 +184,7 @@ function secondsToString(seconds) {
 	let m = Math.floor((seconds % 3600) / 60);
 	let s = Math.floor(seconds % 60);
 
+	// Format the time
 	let yDisplay = y > 0 ? y + (y === 1 ? " year" : " years") : "";
 	let moDisplay = mo > 0 ? mo + (mo === 1 ? " month" : " months") : "";
 	let dDisplay = d > 0 ? d + (d === 1 ? " day" : " days") : "";
@@ -186,6 +192,7 @@ function secondsToString(seconds) {
 	let mDisplay = m > 0 ? m + (m === 1 ? " minute" : " minutes") : "";
 	let sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
 
+	// Combine the time in an array
 	let result = [];
 
 	if (y) result.push(yDisplay);
@@ -204,8 +211,8 @@ function secondsToString(seconds) {
 		result.length = 3;
 	}
 
-	// Filter out empty items
-	result = result.filter(t => t);
+	// Filter out empty results
+	result = result.filter(f => f);
 
 	// Grammar adjustment
 	if (result.length > 1) result.splice(-1, 0, "&");
@@ -213,4 +220,4 @@ function secondsToString(seconds) {
 	return result.join(", ").replace("&,", "and");
 }
 
-module.exports = { parseTime, eta, etaHMS, secondsToString };
+module.exports = { parseTime, eta, etaHMS, unixToString };

@@ -67,7 +67,7 @@ module.exports = {
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
 
 		// TODO: add infracture tag if user's been warned at or past a certain threshold
-		// member_properties.push("`⚠️ INFRACTURE`");
+		// member_properties.push("`⚠️ INFRINGED`");
 
 		// TODO: add user biography to embed_info if set
 		// TODO: add user note to footer if one was set by an admin
@@ -117,7 +117,7 @@ module.exports = {
 
 				// TODO: add latest warn overview if it exists
 				{
-					name: "⚠️ Last Infracture",
+					name: "⚠️ Latest Warning",
 					value: "$TIMESTAMP - Reason: *$REASON*"
 						.replace("$TIMESTAMP", `<t:${jt.msToSec(Date.now())}:R>`)
 						.replace("$REASON", "Not provided.")
