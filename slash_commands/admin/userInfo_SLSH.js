@@ -52,7 +52,7 @@ module.exports = {
 		let user = await client.users.fetch(member.id, { force: true });
 
 		/* - - - - - { Info Embed } - - - - - */
-		let member_warns = await guildManager.userWarns.fetchAll(interaction.guild.id, member.id);
+		let member_warns = await guildManager.user.warns.fetchAll(interaction.guild.id, member.id);
 
 		let member_keyPerms = getKeyPermissions(member);
 		let member_roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).values());

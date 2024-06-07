@@ -166,9 +166,9 @@ function etaHMS(unix, options) {
 }
 
 /** Format the difference between 2 unix timestamps into a dynamic "Y, MTH, D, H, M, and S" time string format
- * @param {number} seconds time to convert in unix (milliseconds)
+ * @param {number} unix time to convert in unix (milliseconds)
  * @copyright *Code written by **@fujimori_*** */
-function unixToString(seconds) {
+function unixToString(unix) {
 	// Get the current time
 	let currentTime = Date.now();
 	let now = Math.floor(currentTime / 1000);

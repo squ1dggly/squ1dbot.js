@@ -9,8 +9,8 @@ const schema_guild = new Schema(
 		prefix: { type: String, default: config.client.PREFIX },
 
 		user_warns: {
-			lifetime_count: 0,
-			cases: []
+			lifetime_count: { type: Number, default: 0 },
+			cases: { type: Array, default: [] }
 		},
 
 		timestamp_joined: { type: Number, default: Date.now() }

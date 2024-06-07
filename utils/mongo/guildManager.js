@@ -72,12 +72,13 @@ async function user_warns_fetchOne(guild_id, user_id, warn_id) {
 }
 
 /** @param {string} guild_id @param {string} user_id @param {string} reason */
-async function user_warns_add(guild_id, user_id, reason = "N/A") {
+async function user_warns_add(guild_id, user_id, reason = "N/A", severity) {
 	// Fetch the warns for the given user, if any
 	let user_warns = await user_warns_fetchAll(guild_id, user_id);
+	let warn_id = `${(user_warns?.length || 0) + 1}`;
 
 	let data = {
-		$push: { "user_warns.cases": { id: `${(user_warns?.length || 0) + 1}`, user_id, reason, timestamp: Date.now() } },
+		$push: { "user_warns.cases": { id: warn_id, user_id, reason, severity, timestamp: Date.now() } },
 		$inc: { "user_warns.lifetime_count": 1 }
 	};
 

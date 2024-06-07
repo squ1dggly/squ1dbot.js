@@ -17,16 +17,39 @@ module.exports = {
         .setDescription("Warn a user in the guild")
     
         .addUserOption(option => option.setName("user").setDescription("The user to warn").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for the warn")),
+        .addStringOption(option => option.setName("reason").setDescription("The reason for the warn (default: N/A)"))
+        .addStringOption(option => option.setName("severity").setDescription("The severity of the warn (default: 🟡 Low)")
+            .addChoices(
+                { name: "🟡 Low", value: "low" },
+                { name: "🟠 Medium", value: "medium" },
+                { name: "🔴 High", value: "high" }
+            )    
+        ),
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
 		let user = interaction.options.getUser("user");
-		let reason = interaction.options.getString("reason");
+		let reason = interaction.options.getString("reason") || "N/A";
+		let severity = interaction.options.getString("severity") || "low";
+
+		// Convert severity into the corresponding emoji
+		let severity_f = "";
+
+		switch (severity) {
+			case "low":
+				severity_f = "🟡";
+				break;
+			case "medium":
+				severity_f = "🟠";
+				break;
+			case "high":
+				severity_f = "🔴";
+				break;
+		}
 
 		// Warn the user
-		await guildManager.user.warns.add(interaction.guild.id, user.id, reason);
+		await guildManager.user.warns.add(interaction.guild.id, user.id, reason, severity_f);
 
-		return await interaction.reply({ content: `test warned **${user.username}**` });
+		return await interaction.editReply({ content: `test warned **${user.username}**` });
 	}
 };
