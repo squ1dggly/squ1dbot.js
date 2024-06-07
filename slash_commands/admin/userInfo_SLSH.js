@@ -1,5 +1,6 @@
 const { Client, CommandInteraction, PermissionFlagsBits, SlashCommandBuilder, GuildMember } = require("discord.js");
 const { BetterEmbed, EmbedNavigator } = require("../../utils/discordTools");
+const { guildManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
 const config = { client: require("../../configs/config_client.json") };
@@ -37,6 +38,7 @@ function getKeyPermissions(guildMember) {
 /** @type {import("../../configs/typedefs").SlashCommandExports} */
 module.exports = {
 	category: "Admin",
+	options: { deferReply: true },
 
 	// prettier-ignore
 	builder: new SlashCommandBuilder().setName("userinfo")
@@ -50,6 +52,8 @@ module.exports = {
 		let user = await client.users.fetch(member.id, { force: true });
 
 		/* - - - - - { Info Embed } - - - - - */
+		let member_warns = await guildManager.userWarns.fetchAll(interaction.guild.id, member.id);
+
 		let member_keyPerms = getKeyPermissions(member);
 		let member_roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).values());
 		// Strip @everyone role

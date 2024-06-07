@@ -37,6 +37,7 @@ async function setPrefix(guild_id, prefix) {
 	await _update(guild_id, { prefix }, true);
 }
 
+/** @param {string} guild_id @param {string} user_id */
 async function userWarns_fetchAll(guild_id, user_id) {
 	// Create the pipeline
 	let pipeline = [
@@ -53,6 +54,7 @@ async function userWarns_fetchAll(guild_id, user_id) {
 	return res.warns;
 }
 
+/** @param {string} guild_id @param {string} user_id @param {string} warn_id */
 async function userWarns_fetchOne(guild_id, user_id, warn_id) {
 	// Create the pipeline
 	let pipeline = [
@@ -69,6 +71,7 @@ async function userWarns_fetchOne(guild_id, user_id, warn_id) {
 	return res.warns[0];
 }
 
+/** @param {string} guild_id @param {string} user_id @param {string} reason */
 async function userWarns_add(guild_id, user_id, reason = "N/A") {
 	// Fetch the warns for the given user, if any
 	let user_warns = await fetchAllUserWarns(guild_id, user_id);
@@ -82,6 +85,7 @@ async function userWarns_add(guild_id, user_id, reason = "N/A") {
 	await _update(guild_id, data, true);
 }
 
+/** @param {string} guild_id @param {string} user_id @param {string} warn_id */
 async function userWarns_delete(guild_id, user_id, warn_id) {
 	await _update(guild_id, { $pull: { "user_warns.cases": { user_id, warn_id } } }, true);
 }
