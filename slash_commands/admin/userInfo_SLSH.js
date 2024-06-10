@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, PermissionFlagsBits, SlashCommandBuilder, GuildMember } = require("discord.js");
 const { BetterEmbed, EmbedNavigator } = require("../../utils/discordTools");
-const { guildManager } = require("../../utils/mongo");
+const { guildManager, userManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
 const config = { client: require("../../configs/config_client.json") };
@@ -54,6 +54,8 @@ module.exports = {
 
 		/* - - - - - { Info Embed } - - - - - */
 		let member_warns = await guildManager.user.warns.fetchAll(interaction.guild.id, member.id);
+		let user_biography = (await userManager._fetch(member.id, { biography: 1 }))?.biography || null;
+		user_biography = "test biography";
 
 		let member_keyPerms = getKeyPermissions(member);
 		let member_roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).values());
@@ -82,10 +84,10 @@ module.exports = {
 			title: `User Info | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
-			description: member_properties.length ? member_properties.join(" ") : "",
+			description:
+				(member_properties.length ? member_properties.join(" ") : "") + user_biography ? `\n> ${user_biography}` : "",
 			imageURL: user.bannerURL({ size: 1024 }),
 			color: user.banner ? user.hexAccentColor : "#2B2D31",
-			// footer: '🔴 "this user is a fucking cunt"',
 
 			fields: [
 				{

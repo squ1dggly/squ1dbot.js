@@ -4,6 +4,8 @@ const schema_user = new Schema(
 	{
 		_id: { type: String, require: true },
 
+		biography: { type: String, default: "" },
+
 		timestamp_started: { type: Number, default: Date.now() }
 	},
 	{ collection: "users" }

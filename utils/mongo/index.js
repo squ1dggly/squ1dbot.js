@@ -6,7 +6,8 @@ const logger = require("../logger");
 const models = {
 	guild: require("../../models/guildModel").model,
 	reminder: require("../../models/reminderModel").model,
-	reminderTrigger: require("../../models/reminderTriggerModel").model
+	reminderTrigger: require("../../models/reminderTriggerModel").model,
+	user: require("../../models/userModel").model
 };
 
 const config = { client: require("../../configs/config_client.json") };
@@ -20,11 +21,13 @@ module.exports = {
 
 	guildManager: require("./guildManager"),
 	reminderManager: require("./reminderManager"),
+	userManager: require("./userManager"),
 
 	/** Connect to MongoDB */
 	connect: async (uri = DEV_MODE ? MONGO_URI_DEV : MONGO_URI) => {
 		/* - - - - - { Check for MONGO_URI } - - - - - */
-		if (DEV_MODE && !MONGO_URI_DEV) return logger.error("MONGO_URI Missing", "DEV_MODE is enabled, but MONGO_URI_DEV is not set");
+		if (DEV_MODE && !MONGO_URI_DEV)
+			return logger.error("MONGO_URI Missing", "DEV_MODE is enabled, but MONGO_URI_DEV is not set");
 		if (!uri) return logger.error("MONGO_URI Missing", "MONGO_URI is not set");
 
 		// Try to connect to MongoDB
