@@ -32,18 +32,22 @@ module.exports = {
 		let reason = interaction.options.getString("reason") || "N/A";
 		let severity = interaction.options.getString("severity") || "low";
 
-		// Convert severity into the corresponding emoji
+		// Convert severity into the corresponding emoji and embed color
 		let severity_f = "";
+		let severity_color = "";
 
 		switch (severity) {
 			case "low":
 				severity_f = "🟡";
+				color = "Yellow";
 				break;
 			case "medium":
 				severity_f = "🟠";
+				color = "Orange";
 				break;
 			case "high":
 				severity_f = "🔴";
+				color = "Red";
 				break;
 		}
 
@@ -53,7 +57,7 @@ module.exports = {
 		// prettier-ignore
 		// Create the embed :: { WARN }
 		let embed_warn = new BetterEmbed({
-			color: "Orange",
+			color: severity_color,
             title: `**${user.username}** Warned`,
             thumbnailURL: user.displayAvatarURL(),
 			description: `\nUser ID: \`${user.id}\``,

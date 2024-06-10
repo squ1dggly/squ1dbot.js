@@ -5,6 +5,7 @@ const jt = require("../../utils/jsTools");
 
 const config = { client: require("../../configs/config_client.json") };
 const WANTED_THRESHOLD = 5;
+const MAX_WARNS_PER_PAGE = 3;
 
 /** @param {GuildMember} guildMember */
 function getKeyPermissions(guildMember) {
@@ -55,7 +56,6 @@ module.exports = {
 		/* - - - - - { Info Embed } - - - - - */
 		let member_warns = await guildManager.user.warns.fetchAll(interaction.guild.id, member.id);
 		let user_biography = (await userManager._fetch(member.id, { biography: 1 }))?.biography || null;
-		user_biography = "test biography";
 
 		let member_keyPerms = getKeyPermissions(member);
 		let member_roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).values());
@@ -72,20 +72,17 @@ module.exports = {
 		if (member.user.bot) member_properties.push("`🤖 BOT`");
 		// User is a squ1dbot admin/developer
 		if ([config.client.OWNER_ID, ...config.client.ADMIN_IDS].includes(member.id)) member_properties.push("`🔥 BOT DEV`");
-
-		// TODO: add infracture tag if user's been warned at or past a certain threshold
+		// User has been warned past a certain threshold
 		if (member_warns.length > WANTED_THRESHOLD) member_properties.push("`⚠️ WANTED`");
-
-		// TODO: add user biography to embed_info if set
-		// TODO: add user note to footer if one was set by an admin
 
 		let embed_info = new BetterEmbed({
 			context: { interaction },
 			title: `User Info | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
-			description:
-				(member_properties.length ? member_properties.join(" ") : "") + user_biography ? `\n> ${user_biography}` : "",
+			description: "$MEMBER_PROPS $USER_BIO"
+				.replace("$MEMBER_PROPS", member_properties.length ? member_properties.join(" ") : "")
+				.replace("$USER_BIO", user_biography ? `\n> ${user_biography}` : ""),
 			imageURL: user.bannerURL({ size: 1024 }),
 			color: user.banner ? user.hexAccentColor : "#2B2D31",
 
@@ -113,18 +110,20 @@ module.exports = {
 					value: "- Joined: $JOINED_GUILD\n- Mention: $USER_MENTION\n- Warns: `$WARN_COUNT`"
 						.replace("$JOINED_GUILD", `<t:${jt.msToSec(member.joinedTimestamp)}:R>`)
 						.replace("$USER_MENTION", `${member}`)
-						.replace("$WARN_COUNT", `${member_warns.length}`),
+						.replace("$WARN_COUNT", `${member_warns.length || "None"}`),
 					inline: true
-				},
-
-				{
-					name: `Key Permissions (${member_keyPerms.length})`,
-					value: member_keyPerms.length ? member_keyPerms.join(", ") : "`None`"
 				}
 			]
 		});
 
-		// Add the latest warning overview, if it exists
+		// prettier-ignore
+		// Add the key permissions field, if any
+		if (member_keyPerms.length) embed_info.addFields({
+			name: `Key Permissions (${member_keyPerms.length})`,
+			value: member_keyPerms.join(", ")
+		});
+
+		// Add the latest warning overview field, if it exists
 		if (member_warns.length) {
 			let _lastWarn = member_warns[member_warns.length - 1];
 
@@ -151,18 +150,55 @@ module.exports = {
 		});
 
 		/* - - - - - { Warns Embed } - - - - - */
-		let embed_warns = new BetterEmbed({
-			context: { interaction },
-			title: `User Warns | ${member.user.username}`,
-			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
+		let embeds_warns = [];
 
-			description: "something useful's supposed to go here..."
-		});
+		if (member_warns.length) {
+			// Split warns per page
+			let warns_split = jt.chunk(member_warns, MAX_WARNS_PER_PAGE);
+
+			for (let i = 0; i < warns_split.length; i++) {
+				// Format each warn into something readable
+				let _warns = warns_split[i].map(w =>
+					'`$ID` `$SEVERITY` $TIMESTAMP - Reason: "$REASON"'
+						.replace("$ID", w.id)
+						.replace("$SEVERITY", w.severity)
+						.replace("$TIMESTAMP", `<t:${jt.msToSec(w.timestamp)}:R>`)
+						.replace("$REASON", w.reason)
+				);
+
+				// Create the embed :: { WARNS }
+				let _embed = new BetterEmbed({
+					context: { interaction },
+					title: `User Warns | ${member.user.username}`,
+					thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
+
+					description: _warns.join("\n"),
+					footer: `Page ${i + 1}/${warns_split.length}`
+				});
+
+				// Push the page to the embed array
+				embeds_warns.push(_embed);
+			}
+		} else {
+			// Create the embed :: { NO WARNS }
+			let embed_noWarns = new BetterEmbed({
+				context: { interaction },
+				title: `User Warns | ${member.user.username}`,
+				thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
+
+				description: `**${member.displayName}** hasn't been warned yet.`,
+				footer: "i encourage someone to change that"
+			});
+
+			// Push the page to the embed array
+			embeds_warns.push(embed_noWarns);
+		}
 
 		/* - - - - - { Paginate } - - - - - */
 		let embedNav = new EmbedNavigator({
-			embeds: [embed_info, embed_details, embed_warns],
+			embeds: [embed_info, embed_details, embeds_warns],
 			userAccess: interaction.user,
+			pagination: { type: "short" },
 			selectMenuEnabled: true
 		});
 
