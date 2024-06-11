@@ -187,7 +187,7 @@ module.exports = {
 				thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
 				description: `**${member.displayName}** hasn't been warned yet.`,
-				footer: "i encourage someone to change that"
+				footer: jt.chance(5) ? "i encourage someone to change that" : ""
 			});
 
 			// Push the page to the embed array

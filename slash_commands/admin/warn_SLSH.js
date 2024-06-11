@@ -39,15 +39,15 @@ module.exports = {
 		switch (severity) {
 			case "low":
 				severity_f = "🟡";
-				color = "Yellow";
+				severity_color = "Yellow";
 				break;
 			case "medium":
 				severity_f = "🟠";
-				color = "Orange";
+				severity_color = "Orange";
 				break;
 			case "high":
 				severity_f = "🔴";
-				color = "Red";
+				severity_color = "Red";
 				break;
 		}
 
@@ -71,7 +71,7 @@ module.exports = {
 
 		// Send the embed
 		return await embed_warn.send(interaction, {
-			content: `\`⚠️\` ${user} has been warned by **${interaction.member.displayName}**!`
+			content: `⚠️ ${user.id} has been warned by **${interaction.member.displayName}**!`,
 		});
 	}
 };
