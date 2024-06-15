@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
 const { BetterEmbed } = require("../../utils/discordTools");
+const { userManager } = require("../../utils/mongo");
 const jt = require("../../utils/jsTools");
 
 const config = { fuck: require("../../configs/config_fuck.json") };
@@ -19,48 +20,73 @@ module.exports = {
 
 	/** @param {Client} client @param {CommandInteraction} interaction */
 	execute: async (client, interaction) => {
-		let specialReply_chance = jt.chance(5);
-		let specialReply_used = false;
+		let customReply_used = false;
+		let customReply_idx = null;
+		let customReply_count = 0;
+		let customReply_totalFound = 0;
+
 		let reply = "";
 
-		if (specialReply_chance) {
-			for (let special of config.fuck.replies_special) {
-				// Check if the interaction was from a special user
-				if (interaction.user.id === special.USER_ID) {
-					// Set reply to the special reply made specifically for that user
-					reply = jt.choice(special.REPLIES);
-					specialReply_used = true;
+		// Check if the user has custom replies
+		for (let custom of config.fuck.replies_custom)
+			if (interaction.user.id === custom.USER_ID) {
+				// Check 5% chance of using a custom reply
+				if (!jt.chance(75)) break;
 
-					// End the for-loop
-					break;
+				// Pick a random custom reply for the user
+				customReply_idx = jt.choiceIndex(custom.REPLIES);
+				customReply_count = custom.REPLIES.length;
+				customReply_used = true;
+
+				// Get the custom reply
+				let _customReply = custom.REPLIES[customReply_idx];
+				reply = _customReply.text;
+
+				// Fetch the custom replies the current user has found, if any
+				let _userData = await userManager._fetch(interaction.user.id, { custom_replies_found: 1 });
+
+				if (_userData?.custom_replies_found) {
+					customReply_totalFound = _userData.custom_replies_found.length;
+
+					// Add the custom reply to the user's array if they haven't found it yet
+					if (!(_userData.custom_replies_found || []).find(crf => crf.id === _customReply.id)) {
+						// Add the reply to the user's custom replies found
+						await userManager._update(
+							interaction.user.id,
+							{ $push: { custom_replies_found: _customReply } },
+							true
+						);
+
+						// Increment local variable
+						customReply_totalFound++;
+					}
 				}
+
+				// End loop
+				break;
 			}
 
-			// If no special reply was found, pick a general reply
-			if (!reply) {
-				reply = jt.choice(config.fuck.REPLIES_GENERAL);
-				specialReply_used = false;
-			}
-		} else {
-			// Pick a general reply
-			reply = jt.choice(config.fuck.REPLIES_GENERAL);
-		}
+		// Pick a random reply if no custom reply was used
+		reply ||= jt.choice(config.fuck.REPLIES_GENERAL);
 
 		// Create the embed :: { FUCK }
 		let embed_fuck = new BetterEmbed({
 			context: { interaction },
+			// description: `>>> ${reply}`,
 			description: reply,
-			author: specialReply_chance
+			author: customReply_used
 				? {
-						text: `Special reply: ${interaction.user.username}`,
-						hyperlink: jt.choice(["https://cornhub.website", "https://youtu.be/dQw4w9WgXcQ"])
+						text: `Custom Reply #${customReply_idx}`,
+						hyperlink: jt.choice(config.fuck.CUSTOM_REPLY_LINKS)
 				  }
-				: null,
-			footer: specialReply_chance ? `there's only a 5% chance of this happening` : null,
-			color: specialReply_used
+				: "FUCK",
+
+			footer: customReply_used ? `found ${customReply_totalFound}/${customReply_count}` : "",
+
+			color: customReply_used
 				? "#FFCB47"
-				: ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"],
-			disableAutomaticContext: false
+				: // : ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
+				  ["DarkRed", "Orange", "Greyple", "Aqua", "Navy", "White", "DarkButNotBlack", "LuminousVividPink"]
 		});
 
 		// Reply to the interaction with the embed

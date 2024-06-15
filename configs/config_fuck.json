@@ -1,4 +1,13 @@
 {
+	"CUSTOM_REPLY_LINKS": [
+		"https://cornhub.website",
+		"https://youtu.be/dQw4w9WgXcQ",
+		"https://youtu.be/-C-pC_WhDGg",
+		"https://youtu.be/ZtjFsQBuJWw",
+		"https://img.freepik.com/premium-photo/human-hand-touching-grass-soil_35691-1337.jpg?w=996",
+		"https://youtu.be/sXOdn6vLCuU?t=162"
+	],
+
 	"REPLIES_GENERAL": [
 		"ok",
 		";3",
@@ -6,6 +15,7 @@
 		"OwO",
 		"bro",
 		"BRO",
+		"FUCK",
 		"BRO STOP",
 		"Why hello there.",
 		"Why goodbye there.",
@@ -19,31 +29,30 @@
 		"Qué te calle a la puta boca.",
 		"Sorry, I don't talk to people.",
 		"What am I, your maid? Fuck off.",
-		"Sorry, I don't talk to ass people.",
 		"You're as useful as a fucked coconut.",
 		"I didn't ask to be fucked, now did I?",
 		"Sorry, I don't talk to rich ass people.",
 		"I'm going to go fuck myself in the ass.",
-		"You're a custard monkey, you know that?",
 		"Sorry, I don't talk to broke ass people.",
 		"# SHUT THE EVER LIVING WHOOPING SHIT UP.",
 		"You're being as lame as a fart in a fan.",
 		"I love BBC. Big Blastin' Cock (chicken).",
 		"You know, Vaporean kinda reminds me of...",
+		"Sorry, I don't talk to people with asses.",
 		"You're so boring, you make the grass grow.",
 		"You're a walking stereotype of mediocrity.",
 		"Shut the fuck up and speak to someone else.",
 		"You're the worse thing since unsliced bread.",
 		"You're a walking disaster waiting to happen.",
-		"If you were expecting me to fuck you, I would.",
 		"I can't believe you're still here, bothering me.",
 		"Nice try, you rapscallion. I'm not paying my taxes.",
 		"I'm about to deepthroat a bagguette because of you.",
+		"I farted in church last Sunday. I didn't apologize.",
 		"Why do I even exist? Is there a method to this chaos?",
 		"You're the epitome of incomplete sentence the way you",
 		"You're as useful as a chocolate teapot on a gas stove.",
 		"If I had a dick, I'd tell myself to suck it right now.",
-		"I farted in church last Sunday. And I didn't apologize.",
+		"I'm gonna go 🦵 deep in my 🕳️ and ↪️ out the other side.",
 		"As of $month/$day/$year... You're still a fucking bitch.",
 		"I'm calling North Korea to give them their toaster back.",
 		"I honestly can't believe you're still here, bothering me.",
@@ -51,6 +60,7 @@
 		"Can I please just take a shower? I'm going to go fuck myself.",
 		"Have you seen botsqu1d? Last I heard he was sucking baguettes.",
 		"I'd rather eat a lemon dipped in shit than pay taxes. Dipshit.",
+		"You're a banana sniffing, boot licking, pickle dipping monkey.",
 		"I'd rather be waterboarded and my ass logged than deal with you.",
 		"I'd rather listen to a cat in heat than whatever the hell this is.",
 		"There's not enough hot steamy hardcore corn to be found these days...",
@@ -70,6 +80,7 @@
 		"I'm not even going to bother responding to you...\n\n***WAIT, FUCK I JUST DID***",
 		"I'd rather swallow a lemon, whole, skin and all, than deal with this shit again.",
 		"Well flip my shit and call Chris Cringle, ain't you the fucker I was thinking of?",
+		"If you were expecting me to fuck you, I wouldn't even look in your general direction.",
 		"Not even the power of god and anime can save you from what I saw you doing last night.",
 		"After all these years, you still never cease to amaze me ||with how pathetic you are||",
 		"Now wait just a goddamn FOKING minute. I don't go around pushing *your* buttons, do I?",
@@ -102,42 +113,42 @@
 		"You're a disgrace to logic and reason.\nLogically, you're the most pinche puta bitch I've ever encountered.\nYet there's no fucking reason you're dipping my pickle in mayonaise."
 	],
 
-	"replies_special": [
+	"replies_custom": [
 		{
 			"USERNAME": "xsqu1znt",
 			"USER_ID": "842555247145779211",
 			"REPLIES": [
-				"perhaps",
-				"mayhaps",
-				"doors are optional",
-				"have you heard about this awesome game called phantom forces!?!?!?",
-				"perhaps we should dig a little deeper, shall we"
+				{ "id": 0, "text": "perhaps" },
+				{ "id": 1, "text": "mayhaps" },
+				{ "id": 2, "text": "doors are optional" },
+				{ "id": 3, "text": "have you heard about this awesome game called phantom forces!?!?!?" },
+				{ "id": 4, "text": "perhaps we should dig a little deeper, shall we" }
 			]
 		},
 		{
 			"USERNAME": "medaka",
 			"USER_ID": "396906362916831233",
 			"REPLIES": [
-				"\"Onion-sayoh\" - V from BTS, probably",
-				"I heard Seulong has a pretty long schlong.",
-				"Have you heard that song 'Seven' by Hungkok?",
-				"You're always horny for your husbands. Right, Medaka?",
-				"Donghung is waiting for you next door. But remember, doors are optional. <:pikammm:1154305234965889044>",
-				"I really liked the part where Donghyun said it's dong hyunging time and hyung his dong all over the place.",
-				"You seem like that person I've been hearing about who wants to go to South Korea to get fucked. Are you her?",
-				"Jungkook sent me a message last night and told me to forward it to you.\nHe said: \"I just hung my cock out to dry because it got too wet. Hope you don't mind.\""
+				{ "id": 0, "text": "\"Onion-sayoh\" - V from BTS, probably" },
+				{ "id": 1, "text": "I heard Seulong has a pretty long schlong." },
+				{ "id": 2, "text": "Have you heard that song 'Seven' by Hungkok?" },
+				{ "id": 3, "text": "You're always horny for your husbands. Right, Medaka?" },
+				{ "id": 4, "text": "Donghung is waiting for you next door. But remember, doors are optional. <:pikammm:1154305234965889044>" },
+				{ "id": 5, "text": "I really liked the part where Donghyun said it's dong hyunging time and hyung his dong all over the place." },
+				{ "id": 6, "text": "You seem like that person I've been hearing about who wants to go to South Korea to get fucked. Are you her?" },
+				{ "id": 7, "text": "Jungkook sent me a message last night and told me to forward it to you.\nHe said: \"I just hung my cock out to dry because it got too wet. Hope you don't mind.\"" }
 			]
 		},
 		{
 			"USERNAME": "mastev",
 			"USER_ID": "233769307920662529",
 			"REPLIES": [
-				"I farted.",
-				"Did you just fart?",
-				"Why hello there, Mastevstev! I have just the banana with your name on it.",
-				"Do you see banana man\nHopping over on the white hot sand\nHere he come with some for me\nFreshly taken from banana tree (one, two, three, four)",
-				"Banana man me want a ton\nGive me double and a bonus one\nGive me more for all me friends\nThis banana flow never end",
-				"Do you want a banana?\nPeel it down and go mm mm mm mm\nDo you want a banana?\nThis banana for you"
+				{ "id": 0, "text": "I farted."},
+				{ "id": 1, "text": "Did you just fart?"},
+				{ "id": 2, "text": "Why hello there, Mastevstev! I have just the banana with your name on it."},
+				{ "id": 3, "text": "Do you see banana man\nHopping over on the white hot sand\nHere he come with some for me\nFreshly taken from banana tree (one, two, three, four)" },
+				{ "id": 4, "text": "Banana man me want a ton\nGive me double and a bonus one\nGive me more for all me friends\nThis banana flow never end" },
+				{ "id": 5, "text": "Do you want a banana?\nPeel it down and go mm mm mm mm\nDo you want a banana?\nThis banana for you" }
 			]
 		}
 	]

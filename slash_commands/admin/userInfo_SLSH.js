@@ -138,15 +138,14 @@ module.exports = {
 		}
 
 		/* - - - - - { Details Embed } - - - - - */
-		// .replace("$ROLE_HIGHEST", member_roles[0])
-		// .replace("$ROLE_COUNT", member_roles.length)
-
 		let embed_details = new BetterEmbed({
 			context: { interaction },
 			title: `User Details | ${member.user.username}`,
 			thumbnailURL: member.user.displayAvatarURL({ dynamic: true }),
 
-			description: "something useful's supposed to go here..."
+			description: "**Highest Role**: $ROLE_HIGHEST\n**Role Count**: $ROLE_COUNT"
+				.replace("$ROLE_HIGHEST", member_roles[0])
+				.replace("$ROLE_COUNT", member_roles.length)
 		});
 
 		/* - - - - - { Warns Embed } - - - - - */
