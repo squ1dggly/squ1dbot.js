@@ -78,7 +78,6 @@ module.exports = {
 		// Create the embed :: { FUCK }
 		let embed_fuck = new BetterEmbed({
 			context: { interaction },
-			// description: `>>> ${reply}`,
 			description: reply,
 			author: customReply_used
 				? {
@@ -91,8 +90,7 @@ module.exports = {
 
 			color: customReply_used
 				? "#FFCB47"
-				: // : ["#F3DE8A", "#EB9486", "#161925", "#81F499", "#FFFFFF", "#6BF178", "#35A7FF", "#6B6C9E"]
-				  ["DarkRed", "Orange", "Greyple", "Aqua", "Navy", "White", "DarkButNotBlack", "LuminousVividPink"]
+				: ["DarkRed", "Orange", "Greyple", "Aqua", "Navy", "White", "DarkButNotBlack", "LuminousVividPink"]
 		});
 
 		// Reply to the interaction with the embed
