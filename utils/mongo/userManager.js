@@ -22,7 +22,7 @@ async function _fetch(user_id, query = {}, upsert = false) {
 
 /** @param {string} user_id @param {{}} query @param {boolean} upsert */
 async function _update(user_id, query, upsert = false) {
-	return await models.user.findByIdAndUpdate(user_id, query), { upsert };
+	return await models.user.findByIdAndUpdate(user_id, query, { upsert });
 }
 
 module.exports = {

@@ -31,7 +31,7 @@ module.exports = {
 		for (let custom of config.fuck.replies_custom)
 			if (interaction.user.id === custom.USER_ID) {
 				// Check 5% chance of using a custom reply
-				if (!jt.chance(75)) break;
+				if (!jt.chance(5)) break;
 
 				// Pick a random custom reply for the user
 				customReply_idx = jt.choiceIndex(custom.REPLIES);
@@ -60,6 +60,12 @@ module.exports = {
 						// Increment local variable
 						customReply_totalFound++;
 					}
+				} else {
+					// Add the reply to the user's custom replies found
+					await userManager._update(interaction.user.id, { $push: { custom_replies_found: _customReply } }, true);
+
+					// Increment local variable
+					customReply_totalFound++;
 				}
 
 				// End loop
