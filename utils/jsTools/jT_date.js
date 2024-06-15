@@ -165,4 +165,59 @@ function etaHMS(unix, options) {
 	return result.join(", ").replace("&,", "and");
 }
 
-module.exports = { parseTime, eta, etaHMS };
+/** Format the difference between 2 unix timestamps into a dynamic "Y, MTH, D, H, M, and S" time string format
+ * @param {number} unix time to convert in unix (milliseconds)
+ * @copyright *Code written by **@fujimori_*** */
+function unixToString(unix) {
+	// Get the current time
+	let currentTime = Date.now();
+	let now = Math.floor(currentTime / 1000);
+
+	// Convert time to seconds
+	let seconds = now - time;
+
+	// Break down the counter math
+	let y = Math.floor(seconds / 31536000);
+	let mo = Math.floor((seconds % 31536000) / 2628000);
+	let d = Math.floor(((seconds % 31536000) % 2628000) / 86400);
+	let h = Math.floor((seconds % (3600 * 24)) / 3600);
+	let m = Math.floor((seconds % 3600) / 60);
+	let s = Math.floor(seconds % 60);
+
+	// Format the time
+	let yDisplay = y > 0 ? y + (y === 1 ? " year" : " years") : "";
+	let moDisplay = mo > 0 ? mo + (mo === 1 ? " month" : " months") : "";
+	let dDisplay = d > 0 ? d + (d === 1 ? " day" : " days") : "";
+	let hDisplay = h > 0 ? h + (h === 1 ? " hour" : " hours") : "";
+	let mDisplay = m > 0 ? m + (m === 1 ? " minute" : " minutes") : "";
+	let sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
+
+	// Combine the time in an array
+	let result = [];
+
+	if (y) result.push(yDisplay);
+	if (mo) result.push(moDisplay);
+	if (d) result.push(dDisplay);
+	if (h) result.push(hDisplay);
+	if (m) result.push(mDisplay);
+	if (s) result.push(sDisplay);
+
+	// Shorten time
+	if (result.includes(yDisplay)) {
+		result.length = 3;
+	} else if (result.includes(moDisplay)) {
+		result.length = 3;
+	} else if (result.includes(dDisplay)) {
+		result.length = 3;
+	}
+
+	// Filter out empty results
+	result = result.filter(f => f);
+
+	// Grammar adjustment
+	if (result.length > 1) result.splice(-1, 0, "&");
+
+	return result.join(", ").replace("&,", "and");
+}
+
+module.exports = { parseTime, eta, etaHMS, unixToString };

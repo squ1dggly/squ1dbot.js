@@ -88,7 +88,7 @@ module.exports = {
 					if (userHasPermission && clientHasPermission) {
 						return await channel.send({
 							content: jt.choiceWeighted(config.reminder.PING_STYLES).text
-								.replace("$USER", guildMember)
+								.replace("$USER_MENTION", guildMember)
 								.replace("$REMINDER", reminder.name),
 							embeds: [embed_reminder]
 						});
