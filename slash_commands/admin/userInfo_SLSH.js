@@ -195,7 +195,8 @@ module.exports = {
 
 		/* - - - - - { Paginate } - - - - - */
 		let embedNav = new EmbedNavigator({
-			embeds: [embed_info, embed_details, embeds_warns],
+			// embeds: [embed_info, embed_details, embeds_warns],
+			embeds: [embed_info, embeds_warns],
 			userAccess: interaction.user,
 			pagination: { type: "short" },
 			selectMenuEnabled: true
@@ -204,7 +205,7 @@ module.exports = {
 		// Populate the select menu
 		embedNav.addSelectMenuOptions(
 			{ /* emoji: "📑", */ label: "At a Glance" },
-			{ /* emoji: "📜", */ label: "Detailed View" },
+			// { /* emoji: "📜", */ label: "Detailed View" },
 			{ /* emoji: "⚠️", */ label: "Warns" }
 		);
 
