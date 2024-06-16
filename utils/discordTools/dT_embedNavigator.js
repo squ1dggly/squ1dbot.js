@@ -433,8 +433,12 @@ class EmbedNavigator {
 			embeds: [],
 			selectMenuEnabled: false,
 			pagination: { type: "", useReactions: false, dynamic: false },
+			timeout: config.timeouts.PAGINATION,
 			...options
 		};
+
+		// Parse timeout string
+		this.options.timeout = jt.parseTime(this.options.timeout);
 
 		/* - - - - - { Error Checking } - - - - - */
 		if (this.options?.pagination?.useReactions)
@@ -445,7 +449,7 @@ class EmbedNavigator {
             }
 
 		if (!this.options.embeds || (Array.isArray(this.options.embeds) && !this.options.embeds.length))
-			throw new Error("[EmbedNavigator]: You must provide at least 1 embed");
+			throw new Error("[EmbedNavigator]: You must provide at least 1 embed.");
 
 		/* - - - - - { Parse Options } - - - - - */
 		this.options.userAccess = jt.forceArray(this.options.userAccess);
