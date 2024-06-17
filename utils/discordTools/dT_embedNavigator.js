@@ -268,8 +268,7 @@ class EmbedNavigator {
 		}
 
 		/// Variables
-		let filter_userIDs = this.options.users ? this.options.users.map(user => user.id) : [];
-		if (this.options.interaction) filter_userIDs.push(this.options.interaction.user.id);
+		let filter_userIDs = this.options.userAccess?.length ? this.options.userAccess.map(user => user.id) : [];
 
 		/// Create the reaction collector
 		const collector = this.data.message.createReactionCollector(
@@ -342,8 +341,7 @@ class EmbedNavigator {
 		}
 
 		/// Variables
-		let filter_userIDs = this.options.users?.length ? this.options.users.map(user => user.id) : [];
-		if (this.options.interaction) filter_userIDs.push(this.options.interaction.user.id);
+		let filter_userIDs = this.options.userAccess?.length ? this.options.userAccess.map(user => user.id) : [];
 
 		/// Create the component collector
 		const collector = this.data.message.createMessageComponentCollector(
