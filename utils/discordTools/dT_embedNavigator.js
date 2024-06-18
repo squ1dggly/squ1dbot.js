@@ -392,13 +392,9 @@ class EmbedNavigator {
 							this.#_configurePage();
 
 							// Check for event listeners
-							if (this.data.eventListeners.selectMenuInteraction.length) {
-								// console.log("selectmenu");
-
+							if (this.data.eventListeners.selectMenuInteraction.length)
 								// Execute each callback in the array
-								for (let listener of this.data.eventListeners.selectMenuInteraction) {
-									// console.log(listener);
-
+								for (let listener of this.data.eventListeners.selectMenuInteraction)
 									listener(
 										_interaction,
 										this.data.components.selectMenu.options[_selectMenuOptionIndex].data,
@@ -409,10 +405,6 @@ class EmbedNavigator {
 											message: this.data.message
 										}
 									);
-
-									// console.log("listener executed");
-								}
-							}
 
 							return await this.refresh();
 	
@@ -442,9 +434,7 @@ class EmbedNavigator {
 	
 						default: return;
 					}
-				} catch (err) {
-					console.error(err);
-				}
+				} catch {}
 			});
 
 			// Collector :: { END }
