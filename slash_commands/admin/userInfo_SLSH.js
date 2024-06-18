@@ -209,6 +209,10 @@ module.exports = {
 			{ /* emoji: "⚠️", */ label: "Warns" }
 		);
 
+		embedNav.addEventListener("selectMenuInteraction", (i, selectMenuOption, data) => {
+			console.log(i, selectMenuOption, data);
+		});
+
 		// Send the embeds with pagination
 		return await embedNav.send(interaction);
 	}

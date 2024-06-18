@@ -1,3 +1,9 @@
+/** @callback cb_selectMenuInteraction
+ * @param {CommandInteraction} interaction
+ * @param {eN_selectMenuOptionData} selectedMenuOption
+ * @param {{embed: BetterEmbed|EmbedBuilder, pageIndex: number, nestedPageIndex: number, message: Message}} data */
+
+/** @typedef {"pageChange"|"pageJump"|"buttonInteraction"|"reactionInteraction"|"selectMenuInteraction"} EventType */
 /** @typedef {"short"|"shortJump"|"long"|"longJump"} PaginationType */
 
 /** @typedef eN_paginationOptions
@@ -367,10 +373,12 @@ class EmbedNavigator {
 					// prettier-ignore
 					switch (_interaction.customId) {
 						case "ssm_pageSelect":
-							// Find the page index for the option the user selected
-							this.data.pages.idx.current = this.data.selectMenu.optionValues.findIndex(
+							let _selectMenuOptionIndex = this.data.selectMenu.optionValues.findIndex(
 								val => val === _interaction.values[0]
 							);
+
+							// Find the page index for the option the user selected
+							this.data.pages.idx.current = _selectMenuOptionIndex;
 	
 							// Reset nested index
 							this.data.pages.idx.nested = 0;
@@ -380,7 +388,26 @@ class EmbedNavigator {
 							this.data.components.selectMenu.options[this.data.pages.idx.current].setDefault(true);
 						
 							// Update the page
-							this.#_configurePage(); return await this.refresh();
+							this.#_configurePage();
+
+							// Check for event listeners
+							if (this.data.eventListeners.selectMenuInteraction.length) {
+								// Execute each callback in the array
+								for (let cb of this.data.eventListeners.selectMenuInteraction) {
+									cb(
+										_interaction,
+										this.data.components.selectMenu.data.options[_selectMenuOptionIndex],
+										{
+											embed: this.data.pages.current,
+											pageIndex: this.data.pages.idx.current,
+											nestedPageIndex: this.data.pages.idx.nested,
+											message: this.data.message
+										}
+									);
+								}
+							}
+
+							return await this.refresh();
 	
 						case "btn_to_first":
 							this.data.pages.idx.nested = 0;
@@ -497,6 +524,11 @@ class EmbedNavigator {
 				}
 			},
 
+			eventListeners: {
+				/** @type {cb_selectMenuInteraction[]} */
+				selectMenuInteraction: []
+			},
+
 			/** @type {Message} */
 			message: null,
 			messageComponents: []
@@ -554,6 +586,17 @@ class EmbedNavigator {
 	 * @param {Number} index The index of the options you want to remove. */
 	removeSelectMenuOptions(...index) {
 		for (let i of index) this.data.components.selectMenu.spliceOptions(i, 1);
+		return this;
+	}
+
+	/** Add a function which will be called whenever the given `eventType` is triggered.
+	 * @param {EventType} eventType The type of event to listen for.
+	 * @param {cb_selectMenuInteraction} callback The callback to execute when the event is triggered. */
+	addEventListener(eventType, callback) {
+		if (!this.data.eventListeners[eventType])
+			new Error(`[EmbedNavigator>addEventListener]: '${eventType}' is not a valid event type.`);
+
+		this.data.eventListeners[eventType].push(callback);
 		return this;
 	}
 
