@@ -638,9 +638,9 @@ class BetterEmbed {
 		};
 
 		// SendMethod defaults
-		if (sendData.interaction) sendData.sendMethod = "reply";
-		else if (sendData.channel) sendData.sendMethod = "sendToChannel";
-		else if (sendData.message) sendData.sendMethod = "messageReply";
+		if (sendData.interaction) sendData.sendMethod ||= "reply";
+		else if (sendData.channel) sendData.sendMethod ||= "sendToChannel";
+		else if (sendData.message) sendData.sendMethod ||= "messageReply";
 
 		// Send the message
 		return await dynaSend(sendData);

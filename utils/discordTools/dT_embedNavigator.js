@@ -633,14 +633,23 @@ class EmbedNavigator {
 		this.#_configurePagination();
 
 		/* - - - - - { Send the Navigator } - - - - - */
-		this.data.message = await dynaSend({
+		let sendData = {
 			interaction: handler instanceof CommandInteraction ? handler : null,
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
+			sendMethod: "",
 			...options,
 			embeds: this.data.pages.current,
 			components: this.data.messageComponents
-		});
+		};
+
+		// SendMethod defaults
+		if (sendData.interaction) sendData.sendMethod ||= "reply";
+		else if (sendData.channel) sendData.sendMethod ||= "sendToChannel";
+		else if (sendData.message) sendData.sendMethod ||= "messageReply";
+
+		// Send the message
+		this.data.message = await dynaSend(sendData);
 
 		// Return null if failed
 		if (!this.data.message) return null;
