@@ -1,9 +1,10 @@
+/** @typedef {"pageChange"|"pageJump"|"buttonInteraction"|"reactionInteraction"|"selectMenuInteraction"} EventType */
+
 /** @callback cb_selectMenuInteraction
- * @param {CommandInteraction} interaction
+ * @param {StringSelectMenuInteraction} interaction
  * @param {eN_selectMenuOptionData} selectedMenuOption
  * @param {{embed: BetterEmbed|EmbedBuilder, pageIndex: number, nestedPageIndex: number, message: Message}} data */
 
-/** @typedef {"pageChange"|"pageJump"|"buttonInteraction"|"reactionInteraction"|"selectMenuInteraction"} EventType */
 /** @typedef {"short"|"shortJump"|"long"|"longJump"} PaginationType */
 
 /** @typedef eN_paginationOptions
@@ -43,7 +44,7 @@
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message. */
 
 // prettier-ignore
-const { CommandInteraction, GuildMember, User, BaseChannel, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { CommandInteraction, GuildMember, User, BaseChannel, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuInteraction } = require("discord.js");
 const deleteMesssageAfter = require("./dT_deleteMessageAfter");
 const BetterEmbed = require("./dT_betterEmbed");
 const dynaSend = require("./dT_dynaSend");
@@ -367,7 +368,7 @@ class EmbedNavigator {
 
 				// prettier-ignore
 				// Defer the interaction & reset the collector's timer
-				{ await _interaction.deferUpdate(); collector.resetTimer }
+				{ await _interaction.deferUpdate(); collector.resetTimer() }
 
 				try {
 					// prettier-ignore
@@ -392,11 +393,15 @@ class EmbedNavigator {
 
 							// Check for event listeners
 							if (this.data.eventListeners.selectMenuInteraction.length) {
+								// console.log("selectmenu");
+
 								// Execute each callback in the array
-								for (let cb of this.data.eventListeners.selectMenuInteraction) {
-									cb(
+								for (let listener of this.data.eventListeners.selectMenuInteraction) {
+									// console.log(listener);
+
+									listener(
 										_interaction,
-										this.data.components.selectMenu.data.options[_selectMenuOptionIndex],
+										this.data.components.selectMenu.options[_selectMenuOptionIndex].data,
 										{
 											embed: this.data.pages.current,
 											pageIndex: this.data.pages.idx.current,
@@ -404,6 +409,8 @@ class EmbedNavigator {
 											message: this.data.message
 										}
 									);
+
+									// console.log("listener executed");
 								}
 							}
 
@@ -435,7 +442,9 @@ class EmbedNavigator {
 	
 						default: return;
 					}
-				} catch {}
+				} catch (err) {
+					console.error(err);
+				}
 			});
 
 			// Collector :: { END }
@@ -538,6 +547,17 @@ class EmbedNavigator {
 		this.data.actionRows.selectMenu.setComponents(this.data.components.selectMenu);
 	}
 
+	/** Add a listener function to be called whenever the `EventType` is triggered.
+	 * @param {EventType} event The type of event to listen for.
+	 * @param {cb_selectMenuInteraction} listener The callback to execute when the event is triggered. */
+	on(event, listener) {
+		if (!this.data.eventListeners[event])
+			new Error(`[EmbedNavigator>addEventListener]: '${event}' is not a valid event type.`);
+
+		this.data.eventListeners[event].push(listener);
+		return this;
+	}
+
 	/** Add new options to the select menu.
 	 * @param {...eN_selectMenuOptionData} options The options you want to add. */
 	addSelectMenuOptions(...options) {
@@ -586,17 +606,6 @@ class EmbedNavigator {
 	 * @param {Number} index The index of the options you want to remove. */
 	removeSelectMenuOptions(...index) {
 		for (let i of index) this.data.components.selectMenu.spliceOptions(i, 1);
-		return this;
-	}
-
-	/** Add a function which will be called whenever the given `eventType` is triggered.
-	 * @param {EventType} eventType The type of event to listen for.
-	 * @param {cb_selectMenuInteraction} callback The callback to execute when the event is triggered. */
-	addEventListener(eventType, callback) {
-		if (!this.data.eventListeners[eventType])
-			new Error(`[EmbedNavigator>addEventListener]: '${eventType}' is not a valid event type.`);
-
-		this.data.eventListeners[eventType].push(callback);
 		return this;
 	}
 
