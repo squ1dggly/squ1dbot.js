@@ -14,7 +14,7 @@ module.exports = {
 		description: "An escape for when Med's tired of our bullshit",
 		type: 1,
 		integration_types: [0, 1],
-		context: [0, 1, 2]
+		contexts: [0, 1, 2]
 	},
 
 	/** @param {Client} client @param {CommandInteraction} interaction */

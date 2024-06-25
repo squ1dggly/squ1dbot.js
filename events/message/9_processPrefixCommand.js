@@ -177,7 +177,7 @@ module.exports = {
 			// Log the error to the console
 			return logger.error(
 				"Could not execute command",
-				`PRFX_CMD: ${prefix}${commandName} | guildID: '${message.guild.id}' | userID: '${message.author.id}'`,
+				`PRFX_CMD: ${prefix}${commandName} | guildID: '${message.guild?.id || "n/a"}' | userID: '${message.author.id}'`,
 				err
 			);
 		}

@@ -63,7 +63,7 @@ importers_dir.forEach(fn => {
 // Connect the client to discord
 logger.log("connecting to Discord...");
 // prettier-ignore
-client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {	
+client.login(DEV_MODE ? TOKEN_DEV : TOKEN).then(async () => {
 	// Register slash commands to a specific server :: { LOCAL }
 	// await slashCommandManager.push(client, { ids: "1052726201086656612" });
 

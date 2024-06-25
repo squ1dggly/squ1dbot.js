@@ -13,7 +13,7 @@
  * - `0` `GUILD_INSTALL`
  *
  * - `1` `USER_INSTALL`
- * @property {number[]} context Context of the integration.
+ * @property {number[]} contexts Context of the integration.
  *
  * - `0` `GUILD`
  *

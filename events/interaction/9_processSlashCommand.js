@@ -155,7 +155,7 @@ module.exports = {
 			// Log the error to the console
 			return logger.error(
 				"Could not execute command",
-				`SLSH_CMD: /${interaction.commandName} | guildID: '${interaction.guild.id}' | userID: '${interaction.user.id}'`,
+				`SLSH_CMD: /${interaction.commandName} | guildID: '${interaction.guild?.id || "n/a"}' | userID: '${interaction.user.id}'`,
 				err
 			);
 		}
