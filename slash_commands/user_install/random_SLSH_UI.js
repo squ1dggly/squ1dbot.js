@@ -3,7 +3,7 @@ const { BetterEmbed } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
 const fetch = require("node-fetch");
 
-const games = [findTheEggplant, truthOrDare, memeFromReddit];
+const games = [findTheEggplant, truthOrDare, redditMeme];
 
 /** @param {Client} client @param {CommandInteraction} interaction */
 async function findTheEggplant(client, interaction) {
@@ -106,7 +106,7 @@ async function truthOrDare(client, interaction) {
 }
 
 /** @param {Client} client @param {CommandInteraction} interaction */
-async function memeFromReddit(client, interaction) {
+async function redditMeme(client, interaction) {
 	// Defer the interaction
 	await interaction.deferReply().catch(() => null);
 
