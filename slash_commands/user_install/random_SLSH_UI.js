@@ -3,7 +3,7 @@ const { BetterEmbed } = require("../../utils/discordTools");
 const jt = require("../../utils/jsTools");
 const fetch = require("node-fetch");
 
-const games = [findTheEggplant, truthOrDare];
+const games = [findTheEggplant, truthOrDare, redditMeme];
 
 /** @param {Client} client @param {CommandInteraction} interaction */
 async function findTheEggplant(client, interaction) {
@@ -103,6 +103,25 @@ async function truthOrDare(client, interaction) {
 		// Edit the message
 		return await message.edit({ components: message.components }).catch(() => null);
 	});
+}
+
+/** @param {Client} client @param {CommandInteraction} interaction */
+async function redditMeme(client, interaction) {
+	// Defer the interaction
+	await interaction.deferReply().catch(() => null);
+
+	// Send a GET request to the API
+	let res = await fetch("https://meme-api.com/gimme").then(res => res.json());
+
+	// Create the embed :: { MEME }
+	let embed_meme = new BetterEmbed({
+		title: { text: res.title, hyperlink: res.postLink },
+		imageURL: res.url,
+		footer: `r/${res.subreddit} | 👍 ${res.ups}`
+	});
+
+	// Send the message
+	return await embed_meme.send(interaction);
 }
 
 /** @type {import("../../configs/typedefs").RawCommandExports} */
