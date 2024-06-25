@@ -26,7 +26,7 @@ if (!config.timeouts.ERROR_MESSAGE)
 
 // prettier-ignore
 for (let [key, val] of Object.entries(config.navigator.buttons)) if (!val.TEXT) throw new Error(
-	`\`${key}.TEXT\` is an empty value; This is required to be able to use EmbedNavigator. Fix this in \'_dT_config.json\'`
+	`\'${key}.TEXT\' is an empty value; This is required to be able to use EmbedNavigator. Fix this in \'_dT_config.json\'`
 );
 
 module.exports = {

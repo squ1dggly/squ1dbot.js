@@ -1,3 +1,10 @@
+/** @typedef {"pageChange"|"pageJump"|"buttonInteraction"|"reactionInteraction"|"selectMenuInteraction"} EventType */
+
+/** @callback cb_selectMenuInteraction
+ * @param {StringSelectMenuInteraction} interaction
+ * @param {eN_selectMenuOptionData} selectedMenuOption
+ * @param {{embed: BetterEmbed|EmbedBuilder, pageIndex: number, nestedPageIndex: number, message: Message}} data */
+
 /** @typedef {"short"|"shortJump"|"long"|"longJump"} PaginationType */
 
 /** @typedef eN_paginationOptions
@@ -37,7 +44,7 @@
  * @property {number|string} deleteAfter The amount of time to wait in **MILLISECONDS** before deleting the message. */
 
 // prettier-ignore
-const { CommandInteraction, GuildMember, User, BaseChannel, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { CommandInteraction, GuildMember, User, BaseChannel, Message, InteractionCollector, ReactionCollector, ComponentType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuInteraction, BaseInteraction } = require("discord.js");
 const deleteMesssageAfter = require("./dT_deleteMessageAfter");
 const BetterEmbed = require("./dT_betterEmbed");
 const dynaSend = require("./dT_dynaSend");
@@ -268,8 +275,7 @@ class EmbedNavigator {
 		}
 
 		/// Variables
-		let filter_userIDs = this.options.users ? this.options.users.map(user => user.id) : [];
-		if (this.options.interaction) filter_userIDs.push(this.options.interaction.user.id);
+		let filter_userIDs = this.options.userAccess?.length ? this.options.userAccess.map(user => user.id) : [];
 
 		/// Create the reaction collector
 		const collector = this.data.message.createReactionCollector(
@@ -342,8 +348,7 @@ class EmbedNavigator {
 		}
 
 		/// Variables
-		let filter_userIDs = this.options.users?.length ? this.options.users.map(user => user.id) : [];
-		if (this.options.interaction) filter_userIDs.push(this.options.interaction.user.id);
+		let filter_userIDs = this.options.userAccess?.length ? this.options.userAccess.map(user => user.id) : [];
 
 		/// Create the component collector
 		const collector = this.data.message.createMessageComponentCollector(
@@ -363,16 +368,18 @@ class EmbedNavigator {
 
 				// prettier-ignore
 				// Defer the interaction & reset the collector's timer
-				{ await _interaction.deferUpdate(); collector.resetTimer }
+				{ await _interaction.deferUpdate(); collector.resetTimer() }
 
 				try {
 					// prettier-ignore
 					switch (_interaction.customId) {
 						case "ssm_pageSelect":
-							// Find the page index for the option the user selected
-							this.data.pages.idx.current = this.data.selectMenu.optionValues.findIndex(
+							let _selectMenuOptionIndex = this.data.selectMenu.optionValues.findIndex(
 								val => val === _interaction.values[0]
 							);
+
+							// Find the page index for the option the user selected
+							this.data.pages.idx.current = _selectMenuOptionIndex;
 	
 							// Reset nested index
 							this.data.pages.idx.nested = 0;
@@ -382,7 +389,24 @@ class EmbedNavigator {
 							this.data.components.selectMenu.options[this.data.pages.idx.current].setDefault(true);
 						
 							// Update the page
-							this.#_configurePage(); return await this.refresh();
+							this.#_configurePage();
+
+							// Check for event listeners
+							if (this.data.eventListeners.selectMenuInteraction.length)
+								// Execute each callback in the array
+								for (let listener of this.data.eventListeners.selectMenuInteraction)
+									listener(
+										_interaction,
+										this.data.components.selectMenu.options[_selectMenuOptionIndex].data,
+										{
+											embed: this.data.pages.current,
+											pageIndex: this.data.pages.idx.current,
+											nestedPageIndex: this.data.pages.idx.nested,
+											message: this.data.message
+										}
+									);
+
+							return await this.refresh();
 	
 						case "btn_to_first":
 							this.data.pages.idx.nested = 0;
@@ -433,8 +457,12 @@ class EmbedNavigator {
 			embeds: [],
 			selectMenuEnabled: false,
 			pagination: { type: "", useReactions: false, dynamic: false },
+			timeout: config.timeouts.PAGINATION,
 			...options
 		};
+
+		// Parse timeout string
+		this.options.timeout = jt.parseTime(this.options.timeout);
 
 		/* - - - - - { Error Checking } - - - - - */
 		if (this.options?.pagination?.useReactions)
@@ -445,7 +473,7 @@ class EmbedNavigator {
             }
 
 		if (!this.options.embeds || (Array.isArray(this.options.embeds) && !this.options.embeds.length))
-			throw new Error("[EmbedNavigator]: You must provide at least 1 embed");
+			throw new Error("[EmbedNavigator]: You must provide at least 1 embed.");
 
 		/* - - - - - { Parse Options } - - - - - */
 		this.options.userAccess = jt.forceArray(this.options.userAccess);
@@ -495,6 +523,11 @@ class EmbedNavigator {
 				}
 			},
 
+			eventListeners: {
+				/** @type {cb_selectMenuInteraction[]} */
+				selectMenuInteraction: []
+			},
+
 			/** @type {Message} */
 			message: null,
 			messageComponents: []
@@ -502,6 +535,17 @@ class EmbedNavigator {
 
 		// Add the StringSelectMenuBuilder component to the select menu action row
 		this.data.actionRows.selectMenu.setComponents(this.data.components.selectMenu);
+	}
+
+	/** Add a listener function to be called whenever the `EventType` is triggered.
+	 * @param {EventType} event The type of event to listen for.
+	 * @param {cb_selectMenuInteraction} listener The callback to execute when the event is triggered. */
+	on(event, listener) {
+		if (!this.data.eventListeners[event])
+			new Error(`[EmbedNavigator>addEventListener]: '${event}' is not a valid event type.`);
+
+		this.data.eventListeners[event].push(listener);
+		return this;
 	}
 
 	/** Add new options to the select menu.
@@ -589,14 +633,23 @@ class EmbedNavigator {
 		this.#_configurePagination();
 
 		/* - - - - - { Send the Navigator } - - - - - */
-		this.data.message = await dynaSend({
-			interaction: handler instanceof CommandInteraction ? handler : null,
+		let sendData = {
+			interaction: handler instanceof BaseInteraction ? handler : null,
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
+			sendMethod: "",
 			...options,
 			embeds: this.data.pages.current,
 			components: this.data.messageComponents
-		});
+		};
+
+		// SendMethod defaults
+		if (sendData.interaction) sendData.sendMethod ||= "reply";
+		else if (sendData.channel) sendData.sendMethod ||= "sendToChannel";
+		else if (sendData.message) sendData.sendMethod ||= "messageReply";
+
+		// Send the message
+		this.data.message = await dynaSend(sendData);
 
 		// Return null if failed
 		if (!this.data.message) return null;

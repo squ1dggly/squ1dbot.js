@@ -79,7 +79,7 @@
  * @property {boolean} fetchReply Whether to return the `Message` object after sending. `true` by default. */
 
 // prettier-ignore
-const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder, BaseChannel } = require("discord.js");
+const { CommandInteraction, GuildMember, User, Message, EmbedBuilder, ActionRowBuilder, BaseChannel, BaseInteraction } = require("discord.js");
 const dynaSend = require("./dT_dynaSend");
 const logger = require("../logger");
 const jt = require("../jsTools");
@@ -627,7 +627,7 @@ class BetterEmbed {
 		}
 
 		let sendData = {
-			interaction: handler instanceof CommandInteraction ? handler : null,
+			interaction: handler instanceof BaseInteraction ? handler : null,
 			channel: handler instanceof BaseChannel ? handler : null,
 			message: handler instanceof Message ? handler : null,
 			embeds: [_embed],
@@ -638,9 +638,9 @@ class BetterEmbed {
 		};
 
 		// SendMethod defaults
-		if (sendData.interaction) sendData.sendMethod = "reply";
-		else if (sendData.channel) sendData.sendMethod = "sendToChannel";
-		else if (sendData.message) sendData.sendMethod = "messageReply";
+		if (sendData.interaction) sendData.sendMethod ||= "reply";
+		else if (sendData.channel) sendData.sendMethod ||= "sendToChannel";
+		else if (sendData.message) sendData.sendMethod ||= "messageReply";
 
 		// Send the message
 		return await dynaSend(sendData);
