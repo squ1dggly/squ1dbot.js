@@ -95,13 +95,14 @@ async function truthOrDare(client, interaction) {
 	collector.on("end", async () => {
 		if (!message.editable) return;
 
-		// Disable the buttons
-		for (i = 0; i < message.components[0].components.length; i++) {
-			message.components[0].components[i].data.disabled = true;
-		}
+		buttons.truth.setDisabled(false);
+		buttons.dare.setDisabled(false);
+		buttons.wyr.setDisabled(false);
+		buttons.nhie.setDisabled(false);
+		buttons.paranoia.setDisabled(false);
 
 		// Edit the message
-		return await message.edit({ components: message.components }).catch(() => null);
+		return await message.edit({ components: [ar] }).catch(() => null);
 	});
 }
 
